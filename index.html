@@ -6,6 +6,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="Tom's Meds">
+<meta name="theme-color" content="#0d0d0f">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj4KICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgcng9IjQ0IiBmaWxsPSIjMGQwZDBmIi8+CiAgPHJlY3QgeD0iMjYiIHk9IjcyIiB3aWR0aD0iMTQ4IiBoZWlnaHQ9IjU2IiByeD0iMjgiIGZpbGw9IiMxYTFhMWQiLz4KICA8cGF0aCBkPSJNNTQsNzIgTDEwMCw3MiBMMTAwLDEyOCBMNTQsMTI4IEEyOCwyOCAwIDAsMSA1NCw3MiBaIiBmaWxsPSIjZmY0NTNhIi8+CiAgPGVsbGlwc2UgY3g9IjU0IiBjeT0iMTAwIiByeD0iMjgiIHJ5PSIyOCIgZmlsbD0iI2ZmNDUzYSIvPgogIDxwYXRoIGQ9Ik0xMDAsNzIgTDE0OCw3MiBBMjgsMjggMCAwLDEgMTQ4LDEyOCBMMTAwLDEyOCBaIiBmaWxsPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMTApIi8+CiAgPGVsbGlwc2UgY3g9IjE0OCIgY3k9IjEwMCIgcng9IjI4IiByeT0iMjgiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xMCkiLz4KICA8bGluZSB4MT0iMTAwIiB5MT0iNzIiIHgyPSIxMDAiIHkyPSIxMjgiIHN0cm9rZT0iIzBkMGQwZiIgc3Ryb2tlLXdpZHRoPSIzIi8+CiAgPGxpbmUgeDE9IjU0IiB5MT0iODgiIHgyPSI1NCIgeTI9IjExMiIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSI3IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8bGluZSB4MT0iNDAiIHkxPSIxMDAiIHgyPSI2OCIgeTI9IjEwMCIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSI3IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8dGV4dCB4PSIxNDgiIHk9IjExNiIgZm9udC1zaXplPSI0MCIgZm9udC13ZWlnaHQ9IjcwMCIgZm9udC1mYW1pbHk9Ii1hcHBsZS1zeXN0ZW0sc2Fucy1zZXJpZiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjQ1KSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+VDwvdGV4dD4KPC9zdmc+">
 <title>Tom's Meds</title>
 <style>
   :root {
@@ -125,6 +127,10 @@
   .hist-del{background:none;border:none;color:var(--ios-lbl3);font-size:18px;cursor:pointer;padding:2px 4px;flex-shrink:0;line-height:1;transition:color 0.15s}
   .hist-del:active{color:var(--ios-red)}
 
+  .sync-bar{margin:0 16px 16px;background:var(--ios-bg2);border-radius:var(--r-lg);padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+  .sync-bar-label{font-size:14px;color:var(--ios-lbl2)}
+  .sync-bar-result{font-size:13px;color:var(--ios-lbl3)}
+
   .empty{text-align:center;padding:60px 30px;color:var(--ios-lbl2);font-size:15px;line-height:1.5}
   .empty-icon{font-size:48px;margin-bottom:14px}
   .empty-title{font-size:20px;font-weight:600;color:var(--ios-lbl);margin-bottom:8px}
@@ -162,7 +168,7 @@
   <div class="nav-title-bar">
     <div class="nav-title">Tom's Medications</div>
     <div class="nav-right">
-      <div class="sync-indicator" id="sync-indicator">
+      <div class="sync-indicator">
         <div class="sync-dot" id="sync-dot"></div>
         <span id="sync-label"></span>
       </div>
@@ -220,7 +226,7 @@
 </div>
 
 <script>
-// ─── SUPABASE CONFIG ──────────────────────────────────────────────────────────
+// ─── SUPABASE ─────────────────────────────────────────────────────────────────
 const SUPA_URL = 'https://twnnqelxvjjtgqlbczrc.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3bm5xZWx4dmpqdGdxbGJjenJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NjE5MTUsImV4cCI6MjA5MjAzNzkxNX0.5GSiZJBX5ZUZIeMm52PQ_UJRDyK1OZlDqRLE1j0tef4';
 const TABLE   = 'doses';
@@ -232,12 +238,12 @@ async function supaFetch(method, path, body) {
       'apikey': SUPA_KEY,
       'Authorization': `Bearer ${SUPA_KEY}`,
       'Content-Type': 'application/json',
-      'Prefer': method === 'POST' ? 'return=representation' : ''
+      'Prefer': method==='POST' ? 'return=representation' : ''
     },
     body: body ? JSON.stringify(body) : undefined
   });
   if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
-  return method === 'DELETE' ? null : res.json();
+  return method==='DELETE' ? null : res.json();
 }
 
 // ─── MEDS ─────────────────────────────────────────────────────────────────────
@@ -262,7 +268,7 @@ function pillCount(med, dose) {
 }
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
-let logs = JSON.parse(localStorage.getItem('tomMedLogs_v2') || '[]');
+let logs      = JSON.parse(localStorage.getItem('tomMedLogs_v2') || '[]');
 let currentTab = 'tracker';
 let openMedId  = null;
 let confirmCb  = null;
@@ -313,50 +319,55 @@ function localDTVal(ts) {
 
 // ─── SYNC STATUS UI ───────────────────────────────────────────────────────────
 function setSyncStatus(status, label) {
-  const dot = document.getElementById('sync-dot');
-  const lbl = document.getElementById('sync-label');
+  const dot=document.getElementById('sync-dot');
+  const lbl=document.getElementById('sync-label');
   if (!dot) return;
-  dot.className = 'sync-dot ' + (status==='ok'?'green':status==='syncing'?'orange':status==='error'?'red':'');
-  lbl.textContent = label || '';
+  dot.className='sync-dot'+(status==='ok'?' green':status==='syncing'?' orange':status==='error'?' red':'');
+  lbl.textContent=label||'';
 }
 
 // ─── SUPABASE: PUSH ONE ENTRY ─────────────────────────────────────────────────
 async function pushEntry(entry) {
-  const med = MEDS.find(m=>m.id===entry.medId);
+  const med=MEDS.find(m=>m.id===entry.medId);
   try {
-    setSyncStatus('syncing', 'Saving…');
+    setSyncStatus('syncing','Saving…');
     await supaFetch('POST', TABLE, {
-      entry_id:  entry.id,
-      med_id:    entry.medId,
-      med_brand: med ? med.brand : entry.medId,
-      time:      entry.time,
-      dose:      entry.dose,
-      unit:      entry.unit,
-      past:      !!entry.past,
-      override:  !!entry.override
+      entry_id: entry.id,
+      med_id:   entry.medId,
+      med_brand:med ? med.brand : entry.medId,
+      time:     entry.time,
+      dose:     entry.dose,
+      unit:     entry.unit,
+      past:     !!entry.past,
+      override: !!entry.override
     });
-    setSyncStatus('ok', 'Saved');
-    setTimeout(()=>setSyncStatus('',''), 2000);
+    setSyncStatus('ok','Saved');
+    setTimeout(()=>setSyncStatus('',''),2000);
   } catch(e) {
     console.warn('Supabase push failed:', e);
-    setSyncStatus('error', 'Sync error');
-    setTimeout(()=>setSyncStatus('',''), 4000);
+    setSyncStatus('error','Sync error');
+    setTimeout(()=>setSyncStatus('',''),4000);
   }
 }
 
 // ─── SUPABASE: DELETE ONE ENTRY ───────────────────────────────────────────────
-async function deleteEntry(entryId) {
+async function deleteFromCloud(entryId) {
   try {
+    setSyncStatus('syncing','Deleting…');
     await supaFetch('DELETE', `${TABLE}?entry_id=eq.${entryId}`, null);
+    setSyncStatus('ok','Deleted');
+    setTimeout(()=>setSyncStatus('',''),2000);
   } catch(e) {
     console.warn('Supabase delete failed:', e);
+    setSyncStatus('error','Delete error');
+    setTimeout(()=>setSyncStatus('',''),4000);
   }
 }
 
 // ─── SUPABASE: LOAD ALL FROM CLOUD ───────────────────────────────────────────
 async function loadFromCloud() {
   try {
-    setSyncStatus('syncing', 'Loading…');
+    setSyncStatus('syncing','Loading…');
     const rows = await supaFetch('GET', `${TABLE}?order=time.asc`, null);
     if (rows && rows.length >= 0) {
       // Cloud is the single source of truth — replace local entirely
@@ -371,13 +382,34 @@ async function loadFromCloud() {
       }));
       saveLogs();
     }
-    setSyncStatus('ok', 'Synced');
-    setTimeout(()=>setSyncStatus('',''), 2000);
+    setSyncStatus('ok','Synced');
+    setTimeout(()=>setSyncStatus('',''),2000);
     render();
   } catch(e) {
     console.warn('Supabase load failed:', e);
-    setSyncStatus('error', 'Offline — showing local data');
-    setTimeout(()=>setSyncStatus('',''), 4000);
+    setSyncStatus('error','Offline — local data');
+    setTimeout(()=>setSyncStatus('',''),4000);
+  }
+}
+
+// ─── SUPABASE: CHECK SYNC ─────────────────────────────────────────────────────
+async function checkSyncStatus() {
+  const el=document.getElementById('sync-check-result');
+  if (!el) return;
+  try {
+    const rows = await supaFetch('GET', `${TABLE}?select=entry_id`, null);
+    const cloudCount = rows ? rows.length : 0;
+    const localCount = logs.length;
+    if (cloudCount===localCount) {
+      el.textContent=`✅ In sync (${cloudCount} entries)`;
+      el.style.color='var(--ios-green)';
+    } else {
+      el.textContent=`⚠️ Local: ${localCount} · Cloud: ${cloudCount}`;
+      el.style.color='var(--ios-orange)';
+    }
+  } catch(e) {
+    el.textContent='📵 Offline — can\'t check';
+    el.style.color='var(--ios-lbl3)';
   }
 }
 
@@ -395,7 +427,7 @@ function logDose(medId, overrideTime, isPast, isOverride) {
   const msg=isOverride?`Override — ${med.brand} ${dose}${med.doseUnit}${pillCount(med,dose)}`
            :isPast    ?`Past dose — ${med.brand} ${dose}${med.doseUnit}${pillCount(med,dose)}`
            :            `${med.brand} ${dose}${med.doseUnit}${pillCount(med,dose)} logged`;
-  showToast(icon, msg);
+  showToast(icon,msg);
   render();
 }
 
@@ -409,7 +441,7 @@ function askDelete(logId) {
     () => {
       logs=logs.filter(l=>l.id!==logId);
       saveLogs();
-      deleteEntry(logId);
+      deleteFromCloud(logId); // ← also deletes from Supabase
       showToast('🗑','Entry deleted');
       render();
     }
@@ -417,7 +449,7 @@ function askDelete(logId) {
 }
 
 // ─── CONFIRM ──────────────────────────────────────────────────────────────────
-function showConfirm(title, msg, actionLabel, destructive, cb) {
+function showConfirm(title,msg,actionLabel,destructive,cb) {
   document.getElementById('confirm-title').textContent=title;
   document.getElementById('confirm-msg').textContent=msg;
   const btn=document.getElementById('confirm-act-btn');
@@ -434,7 +466,7 @@ function closeConfirm() {
 
 // ─── TOAST ────────────────────────────────────────────────────────────────────
 let toastTimer;
-function showToast(icon, msg) {
+function showToast(icon,msg) {
   document.getElementById('toast-icon').textContent=icon;
   document.getElementById('toast-text').textContent=msg;
   const t=document.getElementById('toast');
@@ -504,7 +536,7 @@ function selectDose(medId,dose) {
 function activateCustom(medId) { getState(medId).useCustom=true; renderSheet(medId); }
 function onCustomInput(medId,val) { getState(medId).customVal=val; updateActionBtn(medId); }
 function updateActionBtn(medId) {
-  const med=MEDS.find(m=>m.id===medId),{ok,msLeft}=canTake(med),s=getState(medId);
+  const med=MEDS.find(m=>m.id===medId),{ok}=canTake(med),s=getState(medId);
   const effDose=s.useCustom?(s.customVal?`${s.customVal}${med.doseUnit}${pillCount(med,parseFloat(s.customVal)||0)}`:`?${med.doseUnit}`):`${s.selectedDose}${med.doseUnit}${pillCount(med,s.selectedDose)}`;
   const btn=document.getElementById('main-action-btn');
   if(btn&&ok) btn.textContent=`OK to Take — ${effDose}`;
@@ -633,14 +665,25 @@ function submitPast(medId) {
 
 // ─── RENDER HISTORY ───────────────────────────────────────────────────────────
 function renderHistory() {
+  let html='<div style="height:8px"></div>';
+
+  // Sync check bar — always shown at top of history
+  html+=`<div class="sync-bar">
+    <div class="sync-bar-label">☁️ Cloud sync</div>
+    <div class="sync-bar-result" id="sync-check-result">Checking…</div>
+  </div>`;
+  setTimeout(checkSyncStatus, 300);
+
   if(!logs.length) {
-    document.getElementById('history-content').innerHTML=`<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No History Yet</div><div>Start logging doses in the Tracker tab.</div></div>`;
+    html+='<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No History Yet</div><div>Start logging doses in the Tracker tab.</div></div>';
+    document.getElementById('history-content').innerHTML=html;
     return;
   }
+
   const sorted=[...logs].sort((a,b)=>b.time-a.time);
   const byDay={};
   sorted.forEach(log=>{const d=fmtDate(log.time);if(!byDay[d])byDay[d]=[];byDay[d].push(log);});
-  let html='<div style="height:8px"></div>';
+
   Object.entries(byDay).forEach(([day,entries])=>{
     html+=`<div style="padding:0 16px 6px"><div class="list-header">${day}</div></div><div style="margin:0 16px 16px"><div class="list-group">`;
     entries.forEach(log=>{
@@ -660,6 +703,7 @@ function renderHistory() {
     });
     html+='</div></div>';
   });
+
   html+=`<button class="copy-btn" onclick="copyToNotes()">📋 Copy for Notes App</button>`;
   document.getElementById('history-content').innerHTML=html;
 }
@@ -694,7 +738,7 @@ function render() {
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 setInterval(render, 10000);
 render();
-loadFromCloud(); // load latest from Supabase on startup
+loadFromCloud();
 </script>
 </body>
 </html>
