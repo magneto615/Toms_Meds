@@ -358,11 +358,9 @@ async function loadFromCloud() {
   try {
     setSyncStatus('syncing', 'Loading…');
     const rows = await supaFetch('GET', `${TABLE}?order=time.asc`, null);
-    if (rows && rows.length > 0) {
-      // Merge: cloud is source of truth, but keep any local-only entries not yet in cloud
-      const cloudIds = new Set(rows.map(r=>r.entry_id));
-      const localOnly = logs.filter(l=>!cloudIds.has(l.id));
-      const cloudLogs = rows.map(r=>({
+    if (rows && rows.length >= 0) {
+      // Cloud is the single source of truth — replace local entirely
+      logs = rows.map(r=>({
         id:       r.entry_id,
         medId:    r.med_id,
         time:     r.time,
@@ -371,9 +369,6 @@ async function loadFromCloud() {
         past:     r.past,
         override: r.override
       }));
-      logs = [...cloudLogs, ...localOnly];
-      // Push any local-only entries up
-      for (const entry of localOnly) { await pushEntry(entry); }
       saveLogs();
     }
     setSyncStatus('ok', 'Synced');
@@ -381,7 +376,7 @@ async function loadFromCloud() {
     render();
   } catch(e) {
     console.warn('Supabase load failed:', e);
-    setSyncStatus('error', 'Offline');
+    setSyncStatus('error', 'Offline — showing local data');
     setTimeout(()=>setSyncStatus('',''), 4000);
   }
 }
