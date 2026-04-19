@@ -354,7 +354,7 @@ async function pushEntry(entry) {
   try {
     setSyncStatus('syncing','Saving…');
     await supaFetch('POST', TABLE, {
-      entry_id:entry.id, med_id:entry.medId, med_brand:med?med.brand:entry.medId,
+      entry_id:String(entry.id), med_id:entry.medId, med_brand:med?med.brand:entry.medId,
       time:entry.time, dose:entry.dose, unit:entry.unit, past:!!entry.past, override:!!entry.override
     });
     setSyncStatus('ok','Saved');
@@ -369,7 +369,7 @@ async function pushEntry(entry) {
 async function deleteFromCloud(entryId) {
   try {
     setSyncStatus('syncing','Deleting…');
-    await supaFetch('DELETE',`${TABLE}?entry_id=eq.${entryId}`,null);
+    await supaFetch('DELETE', `${TABLE}?entry_id=eq.${String(entryId)}`, null);
     setSyncStatus('ok','Deleted');
     setTimeout(()=>setSyncStatus('',''),2000);
   } catch(e) {
