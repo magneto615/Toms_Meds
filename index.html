@@ -404,21 +404,21 @@ async function checkSyncStatus() {
 }
 
 // ─── SHORTCUTS ────────────────────────────────────────────────────────────────
-function launchReminder(medId) {
+function launchShortcut(medId, type) {
   const med=MEDS.find(m=>m.id===medId);
   const nextTs=nextDoseAt(med);
   if(!nextTs){showToast('✅',`${med.brand} is already available!`);return;}
   const nextDate=new Date(nextTs);
   const payload=JSON.stringify({
     med:   med.brand,
-    type:  'reminder',
+    type:  type,
     time:  nextTs,
     hh:    nextDate.getHours(),
     mm:    nextDate.getMinutes(),
     label: `${med.brand} — OK to take at ${fmtTime(nextTs)}`
   });
   window.location.href=`shortcuts://run-shortcut?name=TomsMeds&input=text&text=${encodeURIComponent(payload)}`;
-  showToast('🔔',`Setting reminder for ${med.brand}…`);
+  showToast('🔔',`Opening Shortcuts for ${type}…`);
 }
 
 // ─── LOG DOSE ─────────────────────────────────────────────────────────────────
@@ -546,7 +546,10 @@ function renderSheet(medId) {
 
   // Single reminder button — only shown when med is in countdown
   const notifyHtml=isWaiting
-    ?`<button class="action-btn btn-teal" onclick="launchReminder('${medId}')">🔔 Set Reminder — ${fmtTime(nextTs)}</button>`
+    ?`<div style="display:flex;gap:10px;margin-bottom:10px">
+        <button class="action-btn btn-teal" style="margin-bottom:0;font-size:15px;padding:12px" onclick="launchShortcut('${medId}','reminder')">🔔 Reminder</button>
+        <button class="action-btn btn-red" style="margin-bottom:0;font-size:15px;padding:12px" onclick="launchShortcut('${medId}','alarm')">⏰ Alarm</button>
+      </div>`
     :'';
 
   document.getElementById('sheet-body').innerHTML=`${lastHtml}${packHtml}${doseHtml}${actionHtml}${notifyHtml}`;
