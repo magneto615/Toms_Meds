@@ -405,21 +405,30 @@ async function checkSyncStatus() {
 
 // ─── SHORTCUTS ────────────────────────────────────────────────────────────────
 function launchShortcut(medId, type) {
-  const med=MEDS.find(m=>m.id===medId);
-  const nextTs=nextDoseAt(med);
-  if(!nextTs){showToast('✅',`${med.brand} is already available!`);return;}
-  const nextDate=new Date(nextTs);
-  const payload=JSON.stringify({
-    med:   med.brand,
-    type:  type,
-    time:  nextTs,
-    hh:    nextDate.getHours(),
-    mm:    nextDate.getMinutes(),
-    date:  nextDate
-    label: `${med.brand} — OK to take at ${fmtTime(nextTs)}`
+  const med = MEDS.find(m=>m.id===medId);
+  const nextTs = nextDoseAt(med);
+  if (!nextTs) { showToast('✅', `${med.brand} is already available!`); return; }
+
+  const nextDate = new Date(nextTs);
+  const now = new Date();
+  const isNextDay = nextDate.toDateString() !== now.toDateString();
+
+  // Format: "3:45 PM" or "Tomorrow at 3:45 AM"
+  const timeStr = nextDate.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+  const displayTime = isNextDay ? `Tomorrow at ${timeStr}` : timeStr;
+
+  const payload = JSON.stringify({
+    med:         med.brand,
+    type:        type,
+    time:        nextTs,
+    time:  `${String(nextDate.getHours()).padStart(2,'0')}:${String(nextDate.getMinutes()).padStart(2,'0')}`,
+    timeStr:     timeStr,        // e.g. "3:45 PM"
+    displayTime: displayTime,    // e.g. "Tomorrow at 3:45 AM"
+    label:       `${med.brand} — OK to take at ${displayTime}`
   });
-  window.location.href=`shortcuts://run-shortcut?name=TomsMeds&input=text&text=${encodeURIComponent(payload)}`;
-  showToast('🔔',`Opening Shortcuts for ${type}…`);
+
+  window.location.href = `shortcuts://run-shortcut?name=TomsMeds&input=text&text=${encodeURIComponent(payload)}`;
+  showToast('🔔', `Opening Shortcuts for ${type}…`);
 }
 
 // ─── LOG DOSE ─────────────────────────────────────────────────────────────────
