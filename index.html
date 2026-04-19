@@ -156,6 +156,9 @@
 <div class="nav-bar">
   <div class="nav-title-bar">
     <div class="nav-title">Tom's Medications</div>
+      <div style="position:absolute;left:16px;top:50%;transform:translateY(-50%)">
+        <button onclick="manualRefresh()" style="background:none;border:none;color:var(--ios-blue);font-family:var(--sf);font-size:15px;font-weight:500;cursor:pointer;padding:4px 0">Refresh</button>
+      </div>
     <div class="nav-right">
       <div class="sync-indicator">
         <div class="sync-dot" id="sync-dot"></div>
@@ -219,6 +222,11 @@
 const SUPA_URL = 'https://twnnqelxvjjtgqlbczrc.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3bm5xZWx4dmpqdGdxbGJjenJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NjE5MTUsImV4cCI6MjA5MjAzNzkxNX0.5GSiZJBX5ZUZIeMm52PQ_UJRDyK1OZlDqRLE1j0tef4';
 const TABLE = 'doses';
+
+async function manualRefresh() {
+  showToast('🔄', 'Refreshing…');
+  await loadFromCloud();
+}
 
 async function supaFetch(method, path, body) {
   const res = await fetch(`${SUPA_URL}/rest/v1/${path}`, {
@@ -771,7 +779,7 @@ function render() {
   else renderHistory();
 }
 
-setInterval(render,10000);
+setInterval(loadFromCloud, 30000);
 render();
 loadFromCloud();
 </script>
