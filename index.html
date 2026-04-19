@@ -415,6 +415,7 @@ function launchShortcut(medId, type) {
     time:  nextTs,
     hh:    nextDate.getHours(),
     mm:    nextDate.getMinutes(),
+    date:  nextDate
     label: `${med.brand} — OK to take at ${fmtTime(nextTs)}`
   });
   window.location.href=`shortcuts://run-shortcut?name=TomsMeds&input=text&text=${encodeURIComponent(payload)}`;
