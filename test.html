@@ -101,7 +101,6 @@
   .btn-teal{background:rgba(90,200,250,0.18);color:var(--ios-teal);border:1.5px solid rgba(90,200,250,0.3)}
   .btn-purple{background:rgba(191,90,242,0.18);color:var(--ios-purple);border:1.5px solid rgba(191,90,242,0.3)}
 
-  /* Notify button row */
   .notify-row{display:flex;gap:10px;margin-bottom:10px}
   .notify-row .action-btn{margin-bottom:0;font-size:15px;padding:12px}
 
@@ -151,7 +150,6 @@
   input[type=number]::-webkit-inner-spin-button,
   input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 
-  /* Medrol pack day indicator */
   .pack-day-block{background:var(--ios-bg3);border-radius:var(--r-md);padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
   .pack-day-label{font-size:13px;color:var(--ios-lbl2)}
   .pack-day-value{font-size:20px;font-weight:700;color:var(--ios-purple)}
@@ -241,48 +239,38 @@ async function supaFetch(method, path, body) {
   return method==='DELETE' ? null : res.json();
 }
 
-// ─── MED DEFINITIONS ──────────────────────────────────────────────────────────
-// packDays: if set, this is a tapering dose pack (Medrol)
+// ─── MEDS ─────────────────────────────────────────────────────────────────────
 const MEDS = [
-  // ── AS-NEEDED ──
-  {id:'dilaudid',  brand:'Dilaudid',     generic:'HYDROmorphone',      emoji:'💊',color:'orange', intervalHours:4,  defaultDose:2,    doseOptions:[2,4],        hasCustom:true,  doseUnit:'mg',    tabletMg:2,    note:'Every 4h as needed · up to 5 days'},
-  {id:'valium',    brand:'Valium',        generic:'DiazePAM',           emoji:'💊',color:'orange', intervalHours:6,  defaultDose:7.5,  doseOptions:[5,7.5,10],   hasCustom:true,  doseUnit:'mg',    tabletMg:5,    note:'Every 6h for muscle spasms · up to 10 days'},
-  {id:'tylenol',   brand:'Tylenol',       generic:'Acetaminophen',      emoji:'💊',color:'green',  intervalHours:6,  defaultDose:1000, doseOptions:[500,1000],   hasCustom:false, doseUnit:'mg',    tabletMg:500,  note:'Every 6h as needed · up to 10 days'},
-  {id:'colace',    brand:'Colace',        generic:'Docusate Sodium',    emoji:'💊',color:'green',  intervalHours:8,  defaultDose:100,  doseOptions:[100],         hasCustom:false, doseUnit:'mg',    tabletMg:100,  note:'3× daily · 10 days'},
-  // ── SCHEDULED ──
-  {id:'journavx',  brand:'Journavx',      generic:'Suzetrigine',        emoji:'💊',color:'blue',   intervalHours:12, defaultDose:50,   doseOptions:[50],          hasCustom:false, doseUnit:'mg',    tabletMg:50,   note:'Every 12h · take on empty stomach'},
-  {id:'lyrica',    brand:'Lyrica',        generic:'Pregabalin',         emoji:'🔵',color:'blue',   intervalHours:12, defaultDose:75,   doseOptions:[75],          hasCustom:false, doseUnit:'mg',    tabletMg:75,   note:'Twice daily'},
-  {id:'vitaminc',  brand:'Vitamin C',     generic:'Ascorbic Acid',      emoji:'🟡',color:'yellow', intervalHours:12, defaultDose:500,  doseOptions:[500],         hasCustom:false, doseUnit:'mg',    tabletMg:500,  note:'Twice daily'},
-  {id:'vitamind',  brand:'Vitamin D3',    generic:'Cholecalciferol',    emoji:'🟡',color:'yellow', intervalHours:12, defaultDose:2000, doseOptions:[2000],        hasCustom:false, doseUnit:'units', tabletMg:null, note:'Twice daily'},
-  {id:'multivit',  brand:'Multivitamin',  generic:'Theragran',          emoji:'🟡',color:'yellow', intervalHours:24, defaultDose:1,    doseOptions:[1],           hasCustom:false, doseUnit:'tablet',tabletMg:null, note:'Once daily'},
-  {id:'vitamine',  brand:'Vitamin E',     generic:'400 units',          emoji:'🟡',color:'yellow', intervalHours:24, defaultDose:400,  doseOptions:[400],         hasCustom:false, doseUnit:'units', tabletMg:null, note:'Once daily'},
-  {id:'zinc',      brand:'Zincate',       generic:'Zinc Sulfate',       emoji:'🟡',color:'yellow', intervalHours:24, defaultDose:220,  doseOptions:[220],         hasCustom:false, doseUnit:'mg',    tabletMg:220,  note:'Once daily'},
-  // ── MEDROL DOSE PACK (special) ──
-  {id:'medrol',    brand:'Medrol',        generic:'Methylprednisolone', emoji:'💜',color:'purple', intervalHours:24, defaultDose:6,    doseOptions:[6,5,4,3,2,1], hasCustom:false, doseUnit:'tabs',  tabletMg:4,    note:'6-day taper pack · take with food',
-   isPack:true, packSchedule:[6,5,4,3,2,1]}, // tablets per day
+  {id:'dilaudid', brand:'Dilaudid',    generic:'HYDROmorphone',      emoji:'💊',color:'orange',intervalHours:4,  defaultDose:2,    doseOptions:[2,4],        hasCustom:true,  doseUnit:'mg',    tabletMg:2,   note:'Every 4h as needed · up to 5 days'},
+  {id:'valium',   brand:'Valium',      generic:'DiazePAM',           emoji:'💊',color:'orange',intervalHours:6,  defaultDose:7.5,  doseOptions:[5,7.5,10],   hasCustom:true,  doseUnit:'mg',    tabletMg:5,   note:'Every 6h for muscle spasms · up to 10 days'},
+  {id:'tylenol',  brand:'Tylenol',     generic:'Acetaminophen',      emoji:'💊',color:'green', intervalHours:6,  defaultDose:1000, doseOptions:[500,1000],   hasCustom:false, doseUnit:'mg',    tabletMg:500, note:'Every 6h as needed · up to 10 days'},
+  {id:'colace',   brand:'Colace',      generic:'Docusate Sodium',    emoji:'💊',color:'green', intervalHours:8,  defaultDose:100,  doseOptions:[100],        hasCustom:false, doseUnit:'mg',    tabletMg:100, note:'3× daily · 10 days'},
+  {id:'journavx', brand:'Journavx',    generic:'Suzetrigine',        emoji:'💊',color:'blue',  intervalHours:12, defaultDose:50,   doseOptions:[50],         hasCustom:false, doseUnit:'mg',    tabletMg:50,  note:'Every 12h · take on empty stomach'},
+  {id:'lyrica',   brand:'Lyrica',      generic:'Pregabalin',         emoji:'🔵',color:'blue',  intervalHours:12, defaultDose:75,   doseOptions:[75],         hasCustom:false, doseUnit:'mg',    tabletMg:75,  note:'Twice daily'},
+  {id:'vitaminc', brand:'Vitamin C',   generic:'Ascorbic Acid',      emoji:'🟡',color:'yellow',intervalHours:12, defaultDose:500,  doseOptions:[500],        hasCustom:false, doseUnit:'mg',    tabletMg:500, note:'Twice daily'},
+  {id:'vitamind', brand:'Vitamin D3',  generic:'Cholecalciferol',    emoji:'🟡',color:'yellow',intervalHours:12, defaultDose:2000, doseOptions:[2000],       hasCustom:false, doseUnit:'units', tabletMg:null,note:'Twice daily'},
+  {id:'multivit', brand:'Multivitamin',generic:'Theragran',          emoji:'🟡',color:'yellow',intervalHours:24, defaultDose:1,    doseOptions:[1],          hasCustom:false, doseUnit:'tablet',tabletMg:null,note:'Once daily'},
+  {id:'vitamine', brand:'Vitamin E',   generic:'400 units',          emoji:'🟡',color:'yellow',intervalHours:24, defaultDose:400,  doseOptions:[400],        hasCustom:false, doseUnit:'units', tabletMg:null,note:'Once daily'},
+  {id:'zinc',     brand:'Zincate',     generic:'Zinc Sulfate',       emoji:'🟡',color:'yellow',intervalHours:24, defaultDose:220,  doseOptions:[220],        hasCustom:false, doseUnit:'mg',    tabletMg:220, note:'Once daily'},
+  {id:'medrol',   brand:'Medrol',      generic:'Methylprednisolone', emoji:'💜',color:'purple',intervalHours:24, defaultDose:6,    doseOptions:[6,5,4,3,2,1],hasCustom:false, doseUnit:'tabs',  tabletMg:4,   note:'6-day taper pack · take with food',
+   isPack:true, packSchedule:[6,5,4,3,2,1]},
 ];
 
-// ─── PILL COUNT ───────────────────────────────────────────────────────────────
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
 function pillCount(med, dose) {
   if (!med.tabletMg || med.doseUnit==='tablet' || med.doseUnit==='units' || med.doseUnit==='tabs') return '';
   const n = dose / med.tabletMg;
   const nice = n===Math.floor(n) ? n : parseFloat(n.toFixed(2));
   return ` · ${nice} ${nice===1?'tab':'tabs'}`;
 }
-
-// Medrol: figure out what day of the pack we're on based on logs
 function getMedrolPackDay() {
-  const packLogs = logs.filter(l=>l.medId==='medrol').sort((a,b)=>a.time-b.time);
-  const dayNum = packLogs.length + 1; // next day to log
-  return Math.min(dayNum, 6);
+  const pl = logs.filter(l=>l.medId==='medrol').sort((a,b)=>a.time-b.time);
+  return Math.min(pl.length + 1, 6);
 }
-function getMedrolDayDose(day) {
-  const sched = [6,5,4,3,2,1];
-  return sched[Math.min(day-1, 5)];
-}
+function getMedrolDayDose(day) { return [6,5,4,3,2,1][Math.min(day-1,5)]; }
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
-let logs      = JSON.parse(localStorage.getItem('tomMedLogs_v2') || '[]');
+let logs = JSON.parse(localStorage.getItem('tomMedLogs_v2') || '[]');
 let currentTab = 'tracker';
 let openMedId  = null;
 let confirmCb  = null;
@@ -295,9 +283,7 @@ function getState(medId) {
   }
   return medState[medId];
 }
-
 function saveLogs() { localStorage.setItem('tomMedLogs_v2', JSON.stringify(logs)); }
-
 function getLastLog(medId) {
   const ml = logs.filter(l=>l.medId===medId);
   return ml.length ? ml.reduce((a,b)=>a.time>b.time?a:b) : null;
@@ -307,14 +293,11 @@ function canTake(med) {
   const elapsed=Date.now()-last.time, iv=med.intervalHours*3600000;
   return elapsed>=iv ? {ok:true,msLeft:0} : {ok:false,msLeft:iv-elapsed};
 }
-
-// Returns timestamp when next dose is available (null if available now)
 function nextDoseAt(med) {
   const last=getLastLog(med.id); if(!last) return null;
-  const nextTs = last.time + med.intervalHours*3600000;
-  return nextTs > Date.now() ? nextTs : null;
+  const next=last.time+med.intervalHours*3600000;
+  return next>Date.now() ? next : null;
 }
-
 function getEffectiveDose(medId) {
   const med=MEDS.find(m=>m.id===medId), s=getState(medId);
   if (med.hasCustom && s.useCustom) { const v=parseFloat(s.customVal); return isNaN(v)?s.selectedDose:v; }
@@ -354,8 +337,14 @@ async function pushEntry(entry) {
   try {
     setSyncStatus('syncing','Saving…');
     await supaFetch('POST', TABLE, {
-      entry_id:String(entry.id), med_id:entry.medId, med_brand:med?med.brand:entry.medId,
-      time:entry.time, dose:entry.dose, unit:entry.unit, past:!!entry.past, override:!!entry.override
+      entry_id: String(entry.id),
+      med_id:   entry.medId,
+      med_brand:med?med.brand:entry.medId,
+      time:     entry.time,
+      dose:     entry.dose,
+      unit:     entry.unit,
+      past:     !!entry.past,
+      override: !!entry.override
     });
     setSyncStatus('ok','Saved');
     setTimeout(()=>setSyncStatus('',''),2000);
@@ -384,7 +373,15 @@ async function loadFromCloud() {
     setSyncStatus('syncing','Loading…');
     const rows=await supaFetch('GET',`${TABLE}?order=time.asc`,null);
     if(rows && rows.length>=0) {
-      logs=rows.map(r=>({id:r.entry_id,medId:r.med_id,time:r.time,dose:r.dose,unit:r.unit,past:r.past,override:r.override}));
+      logs=rows.map(r=>({
+        id:       String(r.entry_id),
+        medId:    r.med_id,
+        time:     r.time,
+        dose:     r.dose,
+        unit:     r.unit,
+        past:     r.past,
+        override: r.override
+      }));
       saveLogs();
     }
     setSyncStatus('ok','Synced');
@@ -407,31 +404,22 @@ async function checkSyncStatus() {
   } catch(e){el.textContent='📵 Offline — can\'t check';el.style.color='var(--ios-lbl3)';}
 }
 
-// ─── SHORTCUTS INTEGRATION ────────────────────────────────────────────────────
-// Launches an Apple Shortcut passing the next-available timestamp and med name.
-// The Shortcut is named "TomsMeds" and receives a JSON string as input.
-// It then offers Reminder or Alarm options.
-
+// ─── SHORTCUTS ────────────────────────────────────────────────────────────────
 function launchShortcut(medId, type) {
-  const med = MEDS.find(m=>m.id===medId);
-  const nextTs = nextDoseAt(med);
-  if (!nextTs) { showToast('✅', `${med.brand} is already available!`); return; }
-
-  const nextDate = new Date(nextTs);
-  const payload = JSON.stringify({
+  const med=MEDS.find(m=>m.id===medId);
+  const nextTs=nextDoseAt(med);
+  if(!nextTs){showToast('✅',`${med.brand} is already available!`);return;}
+  const nextDate=new Date(nextTs);
+  const payload=JSON.stringify({
     med:   med.brand,
-    type:  type,               // 'reminder' or 'alarm'
-    time:  nextTs,             // unix ms timestamp
+    type:  type,
+    time:  nextTs,
     hh:    nextDate.getHours(),
     mm:    nextDate.getMinutes(),
     label: `${med.brand} — OK to take at ${fmtTime(nextTs)}`
   });
-
-  // URL-encode and launch
-  const encoded = encodeURIComponent(payload);
-  const url = `shortcuts://run-shortcut?name=TomsMeds&input=text&text=${encoded}`;
-  window.location.href = url;
-  showToast('🔔', `Opening Shortcuts for ${type}…`);
+  window.location.href=`shortcuts://run-shortcut?name=TomsMeds&input=text&text=${encodeURIComponent(payload)}`;
+  showToast('🔔',`Opening Shortcuts for ${type}…`);
 }
 
 // ─── LOG DOSE ─────────────────────────────────────────────────────────────────
@@ -454,12 +442,21 @@ function logDose(medId, overrideTime, isPast, isOverride) {
 
 // ─── DELETE ───────────────────────────────────────────────────────────────────
 function askDelete(logId) {
-  const log=logs.find(l=>l.id===logId); if(!log) return;
+  // Always compare as strings to avoid float precision issues
+  const log=logs.find(l=>String(l.id)===String(logId));
+  if(!log) return;
   const med=MEDS.find(m=>m.id===log.medId);
-  showConfirm('Delete Entry?',
+  showConfirm(
+    'Delete Entry?',
     `${med?med.brand:log.medId} — ${log.dose}${log.unit}\n${fmtDateTime(log.time)}`,
     'Delete Entry', true,
-    ()=>{ logs=logs.filter(l=>l.id!==logId); saveLogs(); deleteFromCloud(logId); showToast('🗑','Entry deleted'); render(); }
+    () => {
+      logs=logs.filter(l=>String(l.id)!==String(logId));
+      saveLogs();
+      deleteFromCloud(logId);
+      showToast('🗑','Entry deleted');
+      render();
+    }
   );
 }
 
@@ -507,13 +504,12 @@ function renderSheet(medId) {
   const {ok,msLeft}=canTake(med);
   const last=getLastLog(medId);
   const s=getState(medId);
-  const nextTs=nextDoseAt(med); // null means available now
-  const isWaiting = !!nextTs;
+  const nextTs=nextDoseAt(med);
+  const isWaiting=!!nextTs;
 
   document.getElementById('sheet-title').textContent=med.brand;
   document.getElementById('sheet-subtitle').textContent=`${med.generic} · ${med.note}`;
 
-  // Last taken
   const lastHtml=last
     ?`<div class="last-block"><div class="last-lbl">Last Taken</div>
        <div class="last-val">${fmtDateTime(last.time)}</div>
@@ -521,22 +517,14 @@ function renderSheet(medId) {
       </div>`
     :`<div class="last-block" style="color:var(--ios-lbl2);font-size:15px">No doses logged yet</div>`;
 
-  // Medrol pack day info
   let packHtml='';
   if(med.isPack) {
-    const day=getMedrolPackDay();
-    const dayDose=getMedrolDayDose(day);
-    if(day<=6) {
-      packHtml=`<div class="pack-day-block">
-        <div class="pack-day-label">Pack day · ${dayDose} tablet${dayDose>1?'s':''} today</div>
-        <div class="pack-day-value">Day ${day} of 6</div>
-      </div>`;
-    } else {
-      packHtml=`<div class="pack-day-block"><div class="pack-day-label" style="color:var(--ios-green)">✅ Pack complete (6 of 6 days logged)</div></div>`;
-    }
+    const day=getMedrolPackDay(), dayDose=getMedrolDayDose(day);
+    packHtml=day<=6
+      ?`<div class="pack-day-block"><div class="pack-day-label">Pack day · ${dayDose} tablet${dayDose>1?'s':''} today</div><div class="pack-day-value">Day ${day} of 6</div></div>`
+      :`<div class="pack-day-block"><div class="pack-day-label" style="color:var(--ios-green)">✅ Pack complete (6 of 6 days logged)</div></div>`;
   }
 
-  // Dose selector — hide for Medrol pack (dose is auto)
   let doseHtml='';
   if(!med.isPack) {
     doseHtml='<div class="dose-lbl">Dose</div><div class="dose-chips" id="dose-chips-wrap">';
@@ -546,22 +534,18 @@ function renderSheet(medId) {
     });
     if(med.hasCustom) doseHtml+=`<button class="dose-chip custom-chip ${s.useCustom?'sel':''}" id="custom-chip-btn" onclick="activateCustom('${medId}')">Custom</button>`;
     doseHtml+='</div>';
-    if(s.useCustom) {
-      doseHtml+=`<div class="custom-row"><input class="custom-input" id="custom-dose-input" type="number" step="0.5" min="0.5" placeholder="Enter dose" value="${s.customVal}" oninput="onCustomInput('${medId}',this.value)"><span class="custom-unit">${med.doseUnit}</span></div>`;
-    }
+    if(s.useCustom) doseHtml+=`<div class="custom-row"><input class="custom-input" id="custom-dose-input" type="number" step="0.5" min="0.5" placeholder="Enter dose" value="${s.customVal}" oninput="onCustomInput('${medId}',this.value)"><span class="custom-unit">${med.doseUnit}</span></div>`;
   }
 
-  const effDose = med.isPack
-    ? `${getMedrolDayDose(getMedrolPackDay())} tabs`
-    : s.useCustom?(s.customVal?`${s.customVal}${med.doseUnit}${pillCount(med,parseFloat(s.customVal)||0)}`:`?${med.doseUnit}`):`${s.selectedDose}${med.doseUnit}${pillCount(med,s.selectedDose)}`;
+  const effDose=med.isPack
+    ?`${getMedrolDayDose(getMedrolPackDay())} tabs`
+    :s.useCustom?(s.customVal?`${s.customVal}${med.doseUnit}${pillCount(med,parseFloat(s.customVal)||0)}`:`?${med.doseUnit}`):`${s.selectedDose}${med.doseUnit}${pillCount(med,s.selectedDose)}`;
 
-  // Main action button
   let actionHtml=ok
     ?`<button class="action-btn btn-green" id="main-action-btn" onclick="logDose('${medId}')">OK to Take — ${effDose}</button>`
     :`<button class="action-btn btn-disabled" id="main-action-btn">Not yet — ${fmtCountdown(msLeft)}</button>
       <button class="action-btn btn-red" onclick="askOverride('${medId}')">⚠️ Override &amp; Log Anyway</button>`;
 
-  // Notify buttons — only shown when waiting (countdown active)
   let notifyHtml='';
   if(isWaiting) {
     notifyHtml=`<div class="notify-row">
@@ -624,8 +608,6 @@ function renderTracker() {
     const pct=last?Math.min(100,(Date.now()-last.time)/(med.intervalHours*3600000)*100):100;
     const barCls=pct<50?'low':pct<80?'mid':'';
     const readyLabel=(med.id==='dilaudid'||med.id==='valium')?'OK to Take':'Take Now';
-
-    // Medrol: show pack day in badge
     let badge;
     if(med.isPack) {
       const day=getMedrolPackDay();
@@ -635,7 +617,6 @@ function renderTracker() {
     } else {
       badge=ok?`<span class="status-pill pill-ok">${readyLabel}</span>`:`<span class="status-pill pill-wait">${fmtCountdown(msLeft)}</span>`;
     }
-
     const lastSub=last?`Last: ${fmtTime(last.time)} · ${last.dose}${last.unit}${pillCount(med,last.dose)}`:'No doses logged';
     html+=`<div class="list-row" onclick="openSheet('${med.id}')">
       <div class="med-icon ${med.color}">${med.emoji}</div>
@@ -671,7 +652,6 @@ function openPastSheet(medId) {
   const med=MEDS.find(m=>m.id===medId),s=getState(medId);
   document.getElementById('sheet-title').textContent=med.brand;
   document.getElementById('sheet-subtitle').textContent=`${med.generic} · Log a past dose`;
-
   let doseHtml='<div class="dose-lbl">Dose</div><div class="dose-chips" id="dose-chips-wrap">';
   med.doseOptions.forEach(d=>{
     const sel=!s.useCustom&&d===s.selectedDose;
@@ -680,7 +660,6 @@ function openPastSheet(medId) {
   if(med.hasCustom) doseHtml+=`<button class="dose-chip custom-chip ${s.useCustom?'sel':''}" id="custom-chip-btn" onclick="activateCustomPast('${medId}')">Custom</button>`;
   doseHtml+='</div>';
   if(s.useCustom) doseHtml+=`<div class="custom-row"><input class="custom-input" id="custom-dose-input" type="number" step="0.5" min="0.5" placeholder="Enter dose" value="${s.customVal}" oninput="onCustomInputPast('${medId}',this.value)"><span class="custom-unit">${med.doseUnit}</span></div>`;
-
   const nowStr=localDTVal(Date.now()),savedVal=s.pastVal||nowStr;
   const pastBlock=`<div class="past-inner"><div class="past-lbl">When was it taken?</div>
     <input class="past-datetime" id="past-dt-input" type="datetime-local" max="${nowStr}" value="${savedVal}" onchange="getState('${medId}').pastVal=this.value">
@@ -727,16 +706,13 @@ function renderHistory() {
   let html='<div style="height:8px"></div>';
   html+=`<div class="sync-bar"><div class="sync-bar-label">☁️ Cloud sync</div><div class="sync-bar-result" id="sync-check-result">Checking…</div></div>`;
   setTimeout(checkSyncStatus,300);
-
   if(!logs.length) {
     html+='<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No History Yet</div><div>Start logging doses in the Tracker tab.</div></div>';
     document.getElementById('history-content').innerHTML=html; return;
   }
-
   const sorted=[...logs].sort((a,b)=>b.time-a.time);
   const byDay={};
   sorted.forEach(log=>{const d=fmtDate(log.time);if(!byDay[d])byDay[d]=[];byDay[d].push(log);});
-
   Object.entries(byDay).forEach(([day,entries])=>{
     html+=`<div style="padding:0 16px 6px"><div class="list-header">${day}</div></div><div style="margin:0 16px 16px"><div class="list-group">`;
     entries.forEach(log=>{
