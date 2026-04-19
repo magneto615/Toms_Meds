@@ -99,10 +99,6 @@
   .btn-red{background:rgba(255,69,58,0.15);color:var(--ios-red);border:1.5px solid rgba(255,69,58,0.3)}
   .btn-orange{background:var(--ios-orange);color:#000}
   .btn-teal{background:rgba(90,200,250,0.18);color:var(--ios-teal);border:1.5px solid rgba(90,200,250,0.3)}
-  .btn-purple{background:rgba(191,90,242,0.18);color:var(--ios-purple);border:1.5px solid rgba(191,90,242,0.3)}
-
-  .notify-row{display:flex;gap:10px;margin-bottom:10px}
-  .notify-row .action-btn{margin-bottom:0;font-size:15px;padding:12px}
 
   .past-inner{background:var(--ios-bg3);border-radius:var(--r-md);padding:14px;margin-bottom:12px}
   .past-lbl{font-size:13px;color:var(--ios-lbl2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em}
@@ -241,10 +237,12 @@ async function supaFetch(method, path, body) {
 
 // ─── MEDS ─────────────────────────────────────────────────────────────────────
 const MEDS = [
+  // ── AS-NEEDED ──
   {id:'dilaudid', brand:'Dilaudid',    generic:'HYDROmorphone',      emoji:'💊',color:'orange',intervalHours:4,  defaultDose:2,    doseOptions:[2,4],        hasCustom:true,  doseUnit:'mg',    tabletMg:2,   note:'Every 4h as needed · up to 5 days'},
   {id:'valium',   brand:'Valium',      generic:'DiazePAM',           emoji:'💊',color:'orange',intervalHours:6,  defaultDose:7.5,  doseOptions:[5,7.5,10],   hasCustom:true,  doseUnit:'mg',    tabletMg:5,   note:'Every 6h for muscle spasms · up to 10 days'},
   {id:'tylenol',  brand:'Tylenol',     generic:'Acetaminophen',      emoji:'💊',color:'green', intervalHours:6,  defaultDose:1000, doseOptions:[500,1000],   hasCustom:false, doseUnit:'mg',    tabletMg:500, note:'Every 6h as needed · up to 10 days'},
-  {id:'colace',   brand:'Colace',      generic:'Docusate Sodium',    emoji:'💊',color:'green', intervalHours:8,  defaultDose:100,  doseOptions:[100],        hasCustom:false, doseUnit:'mg',    tabletMg:100, note:'3× daily · 10 days'},
+  // ── SCHEDULED ──
+  {id:'miralax',  brand:'MiraLAX',     generic:'Polyethylene Glycol',emoji:'🟤',color:'teal',  intervalHours:24, defaultDose:17,   doseOptions:[17],         hasCustom:false, doseUnit:'g',     tabletMg:null,note:'Once daily · mix in 4–8 oz beverage'},
   {id:'journavx', brand:'Journavx',    generic:'Suzetrigine',        emoji:'💊',color:'blue',  intervalHours:12, defaultDose:50,   doseOptions:[50],         hasCustom:false, doseUnit:'mg',    tabletMg:50,  note:'Every 12h · take on empty stomach'},
   {id:'lyrica',   brand:'Lyrica',      generic:'Pregabalin',         emoji:'🔵',color:'blue',  intervalHours:12, defaultDose:75,   doseOptions:[75],         hasCustom:false, doseUnit:'mg',    tabletMg:75,  note:'Twice daily'},
   {id:'vitaminc', brand:'Vitamin C',   generic:'Ascorbic Acid',      emoji:'🟡',color:'yellow',intervalHours:12, defaultDose:500,  doseOptions:[500],        hasCustom:false, doseUnit:'mg',    tabletMg:500, note:'Twice daily'},
@@ -252,13 +250,14 @@ const MEDS = [
   {id:'multivit', brand:'Multivitamin',generic:'Theragran',          emoji:'🟡',color:'yellow',intervalHours:24, defaultDose:1,    doseOptions:[1],          hasCustom:false, doseUnit:'tablet',tabletMg:null,note:'Once daily'},
   {id:'vitamine', brand:'Vitamin E',   generic:'400 units',          emoji:'🟡',color:'yellow',intervalHours:24, defaultDose:400,  doseOptions:[400],        hasCustom:false, doseUnit:'units', tabletMg:null,note:'Once daily'},
   {id:'zinc',     brand:'Zincate',     generic:'Zinc Sulfate',       emoji:'🟡',color:'yellow',intervalHours:24, defaultDose:220,  doseOptions:[220],        hasCustom:false, doseUnit:'mg',    tabletMg:220, note:'Once daily'},
+  // ── MEDROL DOSE PACK ──
   {id:'medrol',   brand:'Medrol',      generic:'Methylprednisolone', emoji:'💜',color:'purple',intervalHours:24, defaultDose:6,    doseOptions:[6,5,4,3,2,1],hasCustom:false, doseUnit:'tabs',  tabletMg:4,   note:'6-day taper pack · take with food',
    isPack:true, packSchedule:[6,5,4,3,2,1]},
 ];
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 function pillCount(med, dose) {
-  if (!med.tabletMg || med.doseUnit==='tablet' || med.doseUnit==='units' || med.doseUnit==='tabs') return '';
+  if (!med.tabletMg || med.doseUnit==='tablet' || med.doseUnit==='units' || med.doseUnit==='tabs' || med.doseUnit==='g') return '';
   const n = dose / med.tabletMg;
   const nice = n===Math.floor(n) ? n : parseFloat(n.toFixed(2));
   return ` · ${nice} ${nice===1?'tab':'tabs'}`;
@@ -405,21 +404,21 @@ async function checkSyncStatus() {
 }
 
 // ─── SHORTCUTS ────────────────────────────────────────────────────────────────
-function launchShortcut(medId, type) {
+function launchReminder(medId) {
   const med=MEDS.find(m=>m.id===medId);
   const nextTs=nextDoseAt(med);
   if(!nextTs){showToast('✅',`${med.brand} is already available!`);return;}
   const nextDate=new Date(nextTs);
   const payload=JSON.stringify({
     med:   med.brand,
-    type:  type,
+    type:  'reminder',
     time:  nextTs,
     hh:    nextDate.getHours(),
     mm:    nextDate.getMinutes(),
     label: `${med.brand} — OK to take at ${fmtTime(nextTs)}`
   });
   window.location.href=`shortcuts://run-shortcut?name=TomsMeds&input=text&text=${encodeURIComponent(payload)}`;
-  showToast('🔔',`Opening Shortcuts for ${type}…`);
+  showToast('🔔',`Setting reminder for ${med.brand}…`);
 }
 
 // ─── LOG DOSE ─────────────────────────────────────────────────────────────────
@@ -442,7 +441,6 @@ function logDose(medId, overrideTime, isPast, isOverride) {
 
 // ─── DELETE ───────────────────────────────────────────────────────────────────
 function askDelete(logId) {
-  // Always compare as strings to avoid float precision issues
   const log=logs.find(l=>String(l.id)===String(logId));
   if(!log) return;
   const med=MEDS.find(m=>m.id===log.medId);
@@ -546,13 +544,10 @@ function renderSheet(medId) {
     :`<button class="action-btn btn-disabled" id="main-action-btn">Not yet — ${fmtCountdown(msLeft)}</button>
       <button class="action-btn btn-red" onclick="askOverride('${medId}')">⚠️ Override &amp; Log Anyway</button>`;
 
-  let notifyHtml='';
-  if(isWaiting) {
-    notifyHtml=`<div class="notify-row">
-      <button class="action-btn btn-teal" onclick="launchShortcut('${medId}','reminder')">🔔 Set Reminder</button>
-      <button class="action-btn btn-purple" onclick="launchShortcut('${medId}','alarm')">⏰ Set Alarm</button>
-    </div>`;
-  }
+  // Single reminder button — only shown when med is in countdown
+  const notifyHtml=isWaiting
+    ?`<button class="action-btn btn-teal" onclick="launchReminder('${medId}')">🔔 Set Reminder — ${fmtTime(nextTs)}</button>`
+    :'';
 
   document.getElementById('sheet-body').innerHTML=`${lastHtml}${packHtml}${doseHtml}${actionHtml}${notifyHtml}`;
   if(s.useCustom) setTimeout(()=>{const el=document.getElementById('custom-dose-input');if(el)el.focus();},80);
