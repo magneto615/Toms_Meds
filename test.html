@@ -439,7 +439,7 @@ function logDose(medId, overrideTime, isPast, isOverride) {
   const med=MEDS.find(m=>m.id===medId);
   const dose=getEffectiveDose(medId);
   const time=overrideTime||Date.now();
-  const entry={id:Date.now()+Math.random(),medId,time,dose,unit:med.doseUnit,past:!!isPast,override:!!isOverride};
+  const entry={id:String(Date.now()+Math.random()),medId,time,dose,unit:med.doseUnit,past:!!isPast,override:!!isOverride};
   logs.push(entry);
   saveLogs();
   pushEntry(entry);
@@ -751,7 +751,7 @@ function renderHistory() {
             <div style="font-size:14px;font-weight:500">${log.dose}${log.unit}${pillCount(med,log.dose)}</div>
             <div style="font-size:12px;color:var(--ios-lbl2)">${fmtTime(log.time)}</div>
           </div>
-          <button class="hist-del" onclick="askDelete(${log.id})">✕</button>
+          <button class="hist-del" onclick="askDelete('${log.id}')">✕</button>
         </div></div>`;
     });
     html+='</div></div>';
