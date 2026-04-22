@@ -15,7 +15,7 @@
     --ios-sep:rgba(255,255,255,0.08);
     --ios-lbl:#ffffff;--ios-lbl2:rgba(255,255,255,0.55);--ios-lbl3:rgba(255,255,255,0.30);
     --ios-blue:#0a84ff;--ios-green:#30d158;--ios-red:#ff453a;--ios-orange:#ff9f0a;
-    --ios-purple:#bf5af2;--ios-teal:#5ac8fa;
+    --ios-purple:#bf5af2;--ios-teal:#5ac8fa;--ios-yellow:#ffd60a;
     --ios-fill:rgba(255,255,255,0.08);--ios-fill2:rgba(255,255,255,0.12);
     --r-lg:16px;--r-md:12px;--r-sm:10px;--tab-h:83px;
     --sf:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Helvetica Neue',sans-serif;
@@ -85,8 +85,8 @@
 
   .dose-lbl{font-size:13px;color:var(--ios-lbl2);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
   .dose-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-  .dose-chip,.filter-chip{padding:8px 18px;border-radius:20px;border:1.5px solid var(--ios-bg4);background:var(--ios-bg3);color:var(--ios-lbl2);font-family:var(--sf);font-size:15px;font-weight:500;cursor:pointer;transition:all 0.15s}
-  .dose-chip.sel,.filter-chip.sel{background:var(--ios-blue);border-color:var(--ios-blue);color:#fff}
+  .dose-chip{padding:8px 18px;border-radius:20px;border:1.5px solid var(--ios-bg4);background:var(--ios-bg3);color:var(--ios-lbl2);font-family:var(--sf);font-size:15px;font-weight:500;cursor:pointer;transition:all 0.15s}
+  .dose-chip.sel{background:var(--ios-blue);border-color:var(--ios-blue);color:#fff}
   .dose-chip.custom-chip{border-style:dashed}
   .dose-chip.custom-chip.sel{background:var(--ios-purple);border-color:var(--ios-purple)}
   .custom-row{display:flex;gap:10px;align-items:center;margin-bottom:14px}
@@ -152,28 +152,80 @@
   .pack-day-label{font-size:13px;color:var(--ios-lbl2)}
   .pack-day-value{font-size:20px;font-weight:700;color:var(--ios-purple)}
 
-  .pain-picker-wrap{margin-bottom:12px}
+  .pain-picker-wrap{margin-bottom:14px}
   .pain-picker{
     width:100%;
-    height:56px;
+    height:48px;
     background:var(--ios-bg3);
     border:1.5px solid var(--ios-bg4);
     border-radius:var(--r-md);
     color:var(--ios-lbl);
     font-family:var(--sf);
-    font-size:17px;
-    text-align:center;
-    appearance:none;
-    -webkit-appearance:none;
-    overflow-y:auto;
-    padding:6px 0;
+    font-size:16px;
+    padding:0 12px;
   }
   .pain-picker:focus{outline:none;border-color:var(--ios-blue)}
-  .pain-picker option{padding:6px 0;text-align:center;background:var(--ios-bg3);color:var(--ios-lbl)}
+  .pain-picker.placeholder{color:var(--ios-lbl3)}
 
-  .filter-wrap{display:flex;gap:8px;flex-wrap:wrap;margin:0 16px 16px}
-  .filter-chip{font-size:14px;padding:7px 14px;user-select:none;-webkit-user-select:none}
-  .filter-chip.alt{border-style:dashed}
+  .filter-bar{position:relative;margin:0 16px 16px}
+  .filter-button{
+    width:100%;display:flex;align-items:center;justify-content:space-between;
+    background:var(--ios-bg2);border:1px solid var(--ios-sep);border-radius:var(--r-lg);
+    padding:14px 16px;color:var(--ios-lbl);font-family:var(--sf);font-size:16px;cursor:pointer
+  }
+  .filter-button-label{font-weight:500}
+  .filter-button-sub{font-size:13px;color:var(--ios-lbl2)}
+  .filter-menu{
+    display:none;position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:210;
+    background:rgba(28,28,30,0.98);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+    border:1px solid var(--ios-sep);border-radius:var(--r-lg);overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.35)
+  }
+  .filter-menu.show{display:block}
+  .filter-menu-head{padding:12px 16px;border-bottom:0.5px solid var(--ios-sep);display:flex;align-items:center;justify-content:space-between}
+  .filter-menu-title{font-size:13px;color:var(--ios-lbl2);text-transform:uppercase;letter-spacing:0.06em}
+  .filter-clear-btn{background:none;border:none;color:var(--ios-blue);font-family:var(--sf);font-size:14px;cursor:pointer}
+  .filter-list{max-height:320px;overflow-y:auto}
+  .filter-item{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;cursor:pointer;position:relative}
+  .filter-item:not(:last-child)::after{content:'';position:absolute;left:16px;right:0;bottom:0;height:0.5px;background:var(--ios-sep)}
+  .filter-item:active{background:var(--ios-fill)}
+  .filter-item-left{display:flex;align-items:center;gap:10px;min-width:0}
+  .filter-item-label{font-size:16px}
+  .checkmark{font-size:16px;color:var(--ios-blue);min-width:16px;text-align:center}
+  .filter-backdrop{display:none;position:fixed;inset:0;z-index:205}
+  .filter-backdrop.show{display:block}
+
+  .segmented{display:inline-flex;background:var(--ios-bg3);border-radius:10px;padding:2px}
+  .seg-btn{
+    min-width:60px;padding:8px 12px;border:none;background:transparent;color:var(--ios-lbl2);
+    font-family:var(--sf);font-size:14px;font-weight:600;border-radius:8px;cursor:pointer
+  }
+  .seg-btn.active{background:var(--ios-fill2);color:var(--ios-lbl)}
+
+  .insight-wrap{margin:0 16px 20px}
+  .insight-card{
+    background:var(--ios-bg2);border-radius:var(--r-lg);padding:16px;margin-bottom:16px
+  }
+  .insight-title{font-size:18px;font-weight:700;letter-spacing:-0.3px}
+  .insight-sub{font-size:13px;color:var(--ios-lbl2);margin-top:4px}
+  .insight-grid{
+    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px
+  }
+  .metric{
+    background:var(--ios-bg3);border-radius:12px;padding:12px
+  }
+  .metric-lbl{font-size:12px;color:var(--ios-lbl2);text-transform:uppercase;letter-spacing:0.05em}
+  .metric-val{font-size:20px;font-weight:700;margin-top:5px}
+  .metric-sub{font-size:12px;color:var(--ios-lbl2);margin-top:4px}
+  .trend-good{color:var(--ios-green)} .trend-mid{color:var(--ios-yellow)} .trend-bad{color:var(--ios-red)}
+
+  .graph-wrap{margin-top:14px}
+  .graph-svg{
+    width:100%;height:auto;display:block;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:12px;border:1px solid var(--ios-sep)
+  }
+  .graph-axis-label{font-size:11px;fill:rgba(255,255,255,0.45);font-family:var(--sf)}
+  .graph-grid{stroke:rgba(255,255,255,0.08);stroke-width:1}
+  .graph-line{fill:none;stroke:rgba(90,200,250,0.8);stroke-width:2.5}
 </style>
 </head>
 <body>
@@ -197,6 +249,7 @@
   <div class="page active" id="page-tracker"><div id="tracker-content"></div></div>
   <div class="page" id="page-past"><div id="past-content"></div></div>
   <div class="page" id="page-history"><div id="history-content"></div></div>
+  <div class="page" id="page-insights"><div id="insights-content"></div></div>
 </div>
 
 <div class="tab-bar">
@@ -208,6 +261,9 @@
   </button>
   <button class="tab-item" onclick="switchTab('history')" id="tab-history">
     <div class="tab-icon">📋</div><div class="tab-label">History</div>
+  </button>
+  <button class="tab-item" onclick="switchTab('insights')" id="tab-insights">
+    <div class="tab-icon">📈</div><div class="tab-label">Insights</div>
   </button>
 </div>
 
@@ -236,6 +292,8 @@
   </div>
   <button class="confirm-cancel" onclick="closeConfirm()">Cancel</button>
 </div>
+
+<div class="filter-backdrop" id="filter-backdrop" onclick="closeFilterMenu()"></div>
 
 <div class="toast" id="toast">
   <div class="toast-icon" id="toast-icon"></div>
@@ -289,16 +347,21 @@ const MEDS = [
   {id:'medrol',     brand:'Medrol',       generic:'Methylprednisolone',   emoji:'💜',color:'purple',intervalHours:24, defaultDose:6,    doseOptions:[6,5,4,3,2,1], hasCustom:false, doseUnit:'tabs',  tabletMg:4,    note:'6-day taper pack · take with food', isPack:true, packSchedule:[6,5,4,3,2,1]},
 ];
 
+const EFFECT_WINDOWS = {
+  dilaudid: {min:30, max:120},
+  xanax:    {min:30, max:90},
+  zanaflex: {min:45, max:120}
+};
+
 // ─── STATE ────────────────────────────────────────────────────────────────────
 let logs = JSON.parse(localStorage.getItem('tomMedLogs_v2') || '[]');
 let currentTab = 'tracker';
 let openMedId  = null;
 let confirmCb  = null;
-let longPressTimer = null;
-let longPressFired = false;
+let activeFilters = new Set(MEDS.map(m=>m.id));
+let filterMenuOpen = false;
+let insightsRange = '24h';
 const medState = {};
-const allFilterIds = getHistoryFilterOrder().map(m => m.id);
-let activeFilters = new Set(allFilterIds);
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 function getMed(medId) { return MEDS.find(m=>m.id===medId); }
@@ -325,14 +388,8 @@ function pillCount(med, dose) {
   return ` · ${nice} ${nice===1?'tab':'tabs'}`;
 }
 
-function fmtDoseDecimal(n) {
-  return Number(n).toFixed(1);
-}
-
-function formatPainValue(n) {
-  return `${fmtDoseDecimal(n)}/10`;
-}
-
+function fmtDoseDecimal(n) { return Number(n).toFixed(1); }
+function formatPainValue(n) { return `${fmtDoseDecimal(n)}/10`; }
 function formatDoseDisplay(med, dose) {
   if (med.isPain) return formatPainValue(dose);
   return `${dose}${med.doseUnit}${pillCount(med,dose)}`;
@@ -342,10 +399,7 @@ function getMedrolPackDay() {
   const pl = logs.filter(l=>l.medId==='medrol').sort((a,b)=>a.time-b.time);
   return Math.min(pl.length + 1, 6);
 }
-
-function getMedrolDayDose(day) {
-  return [6,5,4,3,2,1][Math.min(day-1,5)];
-}
+function getMedrolDayDose(day) { return [6,5,4,3,2,1][Math.min(day-1,5)]; }
 
 function getLastLog(medId) {
   const ml = logs.filter(l=>l.medId===medId);
@@ -384,17 +438,19 @@ function getConflictWarnings(med) {
     const lastXanax = getLastWithinMs('xanax', twoHours);
 
     if (lastDilaudid) {
-      const waitMs = twoHours - (Date.now() - lastDilaudid.time);
+      const clearTs = lastDilaudid.time + twoHours;
       warnings.push({
         otherMedId:'dilaudid',
-        message:`Cannot take Zanaflex within 2 hours of Dilaudid. Wait ${fmtWaitClock(waitMs)}`
+        clearTs,
+        message:`Cannot take Zanaflex within 2 hours of Dilaudid. Wait ${fmtWaitClock(clearTs - Date.now())}`
       });
     }
     if (lastXanax) {
-      const waitMs = twoHours - (Date.now() - lastXanax.time);
+      const clearTs = lastXanax.time + twoHours;
       warnings.push({
         otherMedId:'xanax',
-        message:`Cannot take Zanaflex within 2 hours of Xanax. Wait ${fmtWaitClock(waitMs)}`
+        clearTs,
+        message:`Cannot take Zanaflex within 2 hours of Xanax. Wait ${fmtWaitClock(clearTs - Date.now())}`
       });
     }
   }
@@ -402,10 +458,11 @@ function getConflictWarnings(med) {
   if (med.id === 'dilaudid') {
     const lastXanax = getLastWithinMs('xanax', twoHours);
     if (lastXanax) {
-      const waitMs = twoHours - (Date.now() - lastXanax.time);
+      const clearTs = lastXanax.time + twoHours;
       warnings.push({
         otherMedId:'xanax',
-        message:`Cannot take Dilaudid within 2 hours of Xanax. Wait ${fmtWaitClock(waitMs)}`
+        clearTs,
+        message:`Cannot take Dilaudid within 2 hours of Xanax. Wait ${fmtWaitClock(clearTs - Date.now())}`
       });
     }
   }
@@ -413,10 +470,11 @@ function getConflictWarnings(med) {
   if (med.id === 'xanax') {
     const lastDilaudid = getLastWithinMs('dilaudid', twoHours);
     if (lastDilaudid) {
-      const waitMs = twoHours - (Date.now() - lastDilaudid.time);
+      const clearTs = lastDilaudid.time + twoHours;
       warnings.push({
         otherMedId:'dilaudid',
-        message:`Cannot take Xanax within 2 hours of Dilaudid. Wait ${fmtWaitClock(waitMs)}`
+        clearTs,
+        message:`Cannot take Xanax within 2 hours of Dilaudid. Wait ${fmtWaitClock(clearTs - Date.now())}`
       });
     }
   }
@@ -432,11 +490,13 @@ function canTake(med) {
   };
 }
 
-function nextDoseAt(med) {
+function getNextAvailableTs(med) {
   if (med.isPain) return null;
-  const last=getLastLog(med.id); if(!last) return null;
-  const next=last.time+med.intervalHours*3600000;
-  return next>Date.now() ? next : null;
+  const avail = getAvailability(med);
+  const intervalTs = avail.ok ? Date.now() : Date.now() + avail.msLeft;
+  const warningTs = getConflictWarnings(med).reduce((max, w) => Math.max(max, w.clearTs), 0);
+  const nextTs = Math.max(intervalTs, warningTs || 0);
+  return nextTs > Date.now() ? nextTs : null;
 }
 
 function getEffectiveDose(medId) {
@@ -467,13 +527,17 @@ function validateEffectiveDose(medId) {
 function getPainColor(val) {
   const clamped = Math.max(0, Math.min(10, Number(val)));
   const hue = 120 - (clamped * 12);
-  return `hsl(${hue}, 78%, 58%)`;
+  return `hsl(${hue}, 68%, 58%)`;
 }
 
 function getHistoryFilterOrder() {
   const pain = MEDS.find(m=>m.id==='pain');
   const others = MEDS.filter(m=>m.id!=='pain').slice().sort((a,b)=>a.brand.localeCompare(b.brand));
   return pain ? [pain, ...others] : others;
+}
+
+function allFiltersSelected() {
+  return activeFilters.size === MEDS.length && MEDS.every(m => activeFilters.has(m.id));
 }
 
 // ─── FORMAT ───────────────────────────────────────────────────────────────────
@@ -580,13 +644,12 @@ async function checkSyncStatus() {
 // ─── SHORTCUTS ────────────────────────────────────────────────────────────────
 function launchShortcut(medId, type) {
   const med = getMed(medId);
-  const nextTs = nextDoseAt(med);
+  const nextTs = getNextAvailableTs(med);
   if (!nextTs) { showToast('✅', `${med.brand} is already available!`); return; }
 
   const nextDate = new Date(nextTs);
   const now = new Date();
   const isNextDay = nextDate.toDateString() !== now.toDateString();
-
   const timeStr = nextDate.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
   const displayTime = isNextDay ? `Tomorrow at ${timeStr}` : timeStr;
 
@@ -645,7 +708,7 @@ function askDelete(logId) {
   const log=logs.find(l=>String(l.id)===String(logId));
   if(!log) return;
   const med=getMed(log.medId);
-  const val = med?.isPain ? formatPainValue(log.dose) : `${log.dose}${log.unit}`;
+  const val = med?.isPain ? formatPainValue(log.dose) : formatDoseDisplay(med, log.dose);
   showConfirm(
     'Delete Entry?',
     `${med?med.brand:log.medId} — ${val}\n${fmtDateTime(log.time)}`,
@@ -705,23 +768,28 @@ function closeSheet() {
 
 function setPainValue(val) {
   const s = getState('pain');
-  if (val === '' || val === null || val === undefined) s.selectedDose = null;
-  else s.selectedDose = parseFloat(val);
+  s.selectedDose = val === '' ? null : parseFloat(val);
   updateActionBtn('pain');
+}
+function setPainValuePast(val) {
+  const s = getState('pain');
+  s.selectedDose = val === '' ? null : parseFloat(val);
+  updatePastBtn('pain');
 }
 
 function buildDoseHtml(medId, isPastMode=false) {
   const med=getMed(medId), s=getState(medId);
 
   if (med.isPain) {
-    let options = '';
+    let options = `<option value="" selected>${s.selectedDose == null ? 'Select your pain level' : 'Select your pain level'}</option>`;
     for (let i = 0; i <= 10; i += 0.5) {
-      options += `<option value="${i}">${formatPainValue(i)}</option>`;
+      const val = i.toFixed(1);
+      options += `<option value="${val}">${val}/10</option>`;
     }
     return `
       <div class="dose-lbl">Pain Level</div>
       <div class="pain-picker-wrap">
-        <select id="pain-picker" class="pain-picker" size="3" onchange="${isPastMode ? `setPainValuePast(this.value)` : `setPainValue(this.value)`}">
+        <select id="pain-picker" class="pain-picker ${s.selectedDose==null?'placeholder':''}" onchange="${isPastMode ? `setPainValuePast(this.value)` : `setPainValue(this.value)`}">
           ${options}
         </select>
       </div>
@@ -749,8 +817,7 @@ function renderSheet(medId) {
   const warnings=avail.warnings || [];
   const last=getLastLog(medId);
   const s=getState(medId);
-  const nextTs=nextDoseAt(med);
-  const isWaiting=!!nextTs;
+  const nextSafeTs=getNextAvailableTs(med);
 
   document.getElementById('sheet-title').textContent=med.brand;
   document.getElementById('sheet-subtitle').textContent=`${med.generic} · ${med.note}`;
@@ -771,20 +838,19 @@ function renderSheet(medId) {
   }
 
   const doseHtml = med.isPack ? '' : buildDoseHtml(medId, false);
-
-  let warningHtml='';
-  if (warnings.length) {
-    warningHtml = `<div class="alert-card"><div class="alert-title">⚠️ Overlap Warning</div><div class="alert-body">${warnings.map(w=>w.message).join('\n')}</div></div>`;
-  }
+  const warningHtml = warnings.length
+    ? `<div class="alert-card"><div class="alert-title">⚠️ Overlap Warning</div><div class="alert-body">${warnings.map(w=>w.message).join('\n')}</div></div>`
+    : '';
 
   if (med.isPain) {
     const selected = getEffectiveDose(medId);
     const ready = selected !== null && selected !== undefined && !isNaN(selected);
     document.getElementById('sheet-body').innerHTML=`${lastHtml}${doseHtml}<button class="action-btn ${ready?'btn-green':'btn-disabled'}" id="main-action-btn" ${ready?`onclick="logDose('${medId}')"`:''}>${ready ? `Log Pain — ${formatPainValue(selected)}` : 'Log Pain'}</button>`;
-    setTimeout(() => {
-      const picker = document.getElementById('pain-picker');
-      if (picker) picker.selectedIndex = -1;
-    }, 50);
+    const picker = document.getElementById('pain-picker');
+    if (picker) {
+      picker.value = s.selectedDose == null ? '' : Number(s.selectedDose).toFixed(1);
+      picker.classList.toggle('placeholder', s.selectedDose == null);
+    }
     return;
   }
 
@@ -799,18 +865,17 @@ function renderSheet(medId) {
     }
   } else {
     actionHtml = `<button class="action-btn btn-disabled" id="main-action-btn">Not yet — ${fmtCountdown(avail.msLeft)}</button>
-      <button class="action-btn btn-red" onclick="askOverride('${medId}')">Override — ${effDose}</button>`;
+      <button class="action-btn btn-red" id="override-action-btn" onclick="askOverride('${medId}')">Override — ${effDose}</button>`;
   }
 
-  const notifyHtml=isWaiting
-    ?`<div style="display:flex;gap:10px;margin-bottom:10px">
-        <button class="action-btn btn-teal" style="margin-bottom:0;font-size:15px;padding:12px" onclick="launchShortcut('${medId}','reminder')">🔔 Reminder</button>
-        <button class="action-btn btn-red" style="margin-bottom:0;font-size:15px;padding:12px" onclick="launchShortcut('${medId}','alarm')">⏰ Alarm</button>
-      </div>`
-    :'';
+  const notifyHtml = nextSafeTs
+    ? `<div style="display:flex;gap:10px;margin-bottom:10px">
+         <button class="action-btn btn-teal" style="margin-bottom:0;font-size:15px;padding:12px" onclick="launchShortcut('${medId}','reminder')">🔔 Reminder</button>
+         <button class="action-btn btn-red" style="margin-bottom:0;font-size:15px;padding:12px" onclick="launchShortcut('${medId}','alarm')">⏰ Alarm</button>
+       </div>`
+    : '';
 
   document.getElementById('sheet-body').innerHTML=`${lastHtml}${packHtml}${warningHtml}${doseHtml}${actionHtml}${notifyHtml}`;
-
   if(s.useCustom) {
     setTimeout(()=>{const el=document.getElementById('custom-dose-input');if(el)el.focus();},80);
   }
@@ -832,34 +897,41 @@ function onCustomInput(medId,val) { getState(medId).customVal=val; updateActionB
 
 function updateActionBtn(medId) {
   const med=getMed(medId), avail=canTake(med), warnings=avail.warnings || [];
-  const btn=document.getElementById('main-action-btn');
-  if(!btn) return;
+  const mainBtn=document.getElementById('main-action-btn');
+  const overrideBtn=document.getElementById('override-action-btn');
 
   if (med.isPain) {
+    if (!mainBtn) return;
     const dose = getEffectiveDose(medId);
     const ready = dose !== null && dose !== undefined && !isNaN(dose);
-    btn.className = `action-btn ${ready?'btn-green':'btn-disabled'}`;
-    btn.textContent = ready ? `Log Pain — ${formatPainValue(dose)}` : 'Log Pain';
-    if (ready) btn.setAttribute('onclick', `logDose('${medId}')`);
-    else btn.removeAttribute('onclick');
+    mainBtn.className = `action-btn ${ready?'btn-green':'btn-disabled'}`;
+    mainBtn.textContent = ready ? `Log Pain — ${formatPainValue(dose)}` : 'Log Pain';
+    if (ready) mainBtn.setAttribute('onclick', `logDose('${medId}')`);
+    else mainBtn.removeAttribute('onclick');
+    const picker = document.getElementById('pain-picker');
+    if (picker) picker.classList.toggle('placeholder', !ready);
     return;
   }
 
   const effDose = formatDoseDisplay(med, getEffectiveDose(medId));
+
   if (avail.ok) {
-    if (warnings.length) {
-      btn.className = 'action-btn btn-red';
-      btn.textContent = `Override — ${effDose}`;
-      btn.setAttribute('onclick', `askOverride('${medId}')`);
-    } else {
-      btn.className = 'action-btn btn-green';
-      btn.textContent = `OK to Take — ${effDose}`;
-      btn.setAttribute('onclick', `logDose('${medId}')`);
+    if (mainBtn) {
+      if (warnings.length) {
+        mainBtn.className = 'action-btn btn-red';
+        mainBtn.textContent = `Override — ${effDose}`;
+        mainBtn.setAttribute('onclick', `askOverride('${medId}')`);
+      } else {
+        mainBtn.className = 'action-btn btn-green';
+        mainBtn.textContent = `OK to Take — ${effDose}`;
+        mainBtn.setAttribute('onclick', `logDose('${medId}')`);
+      }
     }
   } else {
-    btn.className = 'action-btn btn-disabled';
-    btn.textContent = `Not yet — ${fmtCountdown(avail.msLeft)}`;
-    btn.removeAttribute('onclick');
+    if (overrideBtn) {
+      overrideBtn.textContent = `Override — ${effDose}`;
+      overrideBtn.setAttribute('onclick', `askOverride('${medId}')`);
+    }
   }
 }
 
@@ -907,18 +979,14 @@ function openPastSheet(medId) {
   document.body.style.overflow='hidden';
 
   if (med.isPain) {
-    setTimeout(() => {
-      const picker = document.getElementById('pain-picker');
-      if (picker) picker.selectedIndex = -1;
-    }, 50);
+    const picker = document.getElementById('pain-picker');
+    if (picker) {
+      picker.value = s.selectedDose == null ? '' : Number(s.selectedDose).toFixed(1);
+      picker.classList.toggle('placeholder', s.selectedDose == null);
+    }
   } else if(s.useCustom) {
     setTimeout(()=>{const el=document.getElementById('custom-dose-input');if(el)el.focus();},80);
   }
-}
-
-function setPainValuePast(val) {
-  setPainValue(val);
-  updatePastBtn('pain');
 }
 
 function selectDosePast(medId,dose) {
@@ -948,6 +1016,8 @@ function updatePastBtn(medId) {
     btn.textContent = ready ? `↩ Log Past Pain — ${formatPainValue(dose)}` : '↩ Log Past Pain';
     if (ready) btn.setAttribute('onclick', `submitPast('${medId}')`);
     else btn.removeAttribute('onclick');
+    const picker = document.getElementById('pain-picker');
+    if (picker) picker.classList.toggle('placeholder', !ready);
     return;
   }
 
@@ -969,61 +1039,48 @@ function submitPast(medId) {
   getState(medId).pastVal='';
 }
 
-// ─── FILTERS ──────────────────────────────────────────────────────────────────
-function allFiltersSelected() {
-  return activeFilters.size === allFilterIds.length && allFilterIds.every(id => activeFilters.has(id));
+// ─── FILTER DROPDOWN ──────────────────────────────────────────────────────────
+function toggleFilterMenu() {
+  filterMenuOpen = !filterMenuOpen;
+  const menu = document.getElementById('filter-menu');
+  const backdrop = document.getElementById('filter-backdrop');
+  if (menu) menu.classList.toggle('show', filterMenuOpen);
+  if (backdrop) backdrop.classList.toggle('show', filterMenuOpen);
 }
-
+function closeFilterMenu() {
+  filterMenuOpen = false;
+  const menu = document.getElementById('filter-menu');
+  const backdrop = document.getElementById('filter-backdrop');
+  if (menu) menu.classList.remove('show');
+  if (backdrop) backdrop.classList.remove('show');
+}
 function toggleAllFilters() {
   if (allFiltersSelected()) activeFilters = new Set();
-  else activeFilters = new Set(allFilterIds);
+  else activeFilters = new Set(MEDS.map(m=>m.id));
   renderHistory();
 }
-
-function deselectAllFilters() {
+function clearAllFilters() {
   activeFilters = new Set();
   renderHistory();
 }
-
 function toggleFilter(medId) {
   if (activeFilters.has(medId)) activeFilters.delete(medId);
   else activeFilters.add(medId);
   renderHistory();
 }
-
-function onlyFilter(medId) {
-  activeFilters = new Set([medId]);
-  showToast('🎯', `Showing only ${getMed(medId)?.brand || medId}`);
-  renderHistory();
-}
-
-function startFilterPress(medId, event) {
-  if (event) event.preventDefault();
-  longPressFired = false;
-  clearTimeout(longPressTimer);
-  longPressTimer = setTimeout(() => {
-    longPressFired = true;
-    onlyFilter(medId);
-  }, 450);
-}
-
-function endFilterPress(medId, event) {
-  if (event) event.preventDefault();
-  clearTimeout(longPressTimer);
-  if (!longPressFired) toggleFilter(medId);
-}
-
-function cancelFilterPress() {
-  clearTimeout(longPressTimer);
-}
-
 function filteredHistoryLogs() {
   return logs.filter(l => activeFilters.has(l.medId));
+}
+function historyFilterLabel() {
+  if (allFiltersSelected()) return 'Filter (All)';
+  if (activeFilters.size === 0) return 'Filter (None)';
+  return `Filter (${activeFilters.size} selected)`;
 }
 
 // ─── TABS ─────────────────────────────────────────────────────────────────────
 function switchTab(tab) {
   currentTab=tab;
+  closeFilterMenu();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+tab).classList.add('active');
@@ -1038,7 +1095,7 @@ function renderTracker() {
     if (m.isPain) return false;
     const a=canTake(m);
     const last=getLastLog(m.id);
-    if (!last || !a.ok) return false;
+    if (!last || !a.ok || a.warnings.length) return false;
     const elapsed=Date.now()-last.time,iv=m.intervalHours*3600000;
     return elapsed>=iv&&elapsed<iv+1800000;
   });
@@ -1117,22 +1174,38 @@ function renderHistory() {
   html+=`<div class="sync-bar"><div class="sync-bar-label">☁️ Cloud sync</div><div class="sync-bar-result" id="sync-check-result">Checking…</div></div>`;
   setTimeout(checkSyncStatus,300);
 
-  const filterMeds = getHistoryFilterOrder();
-  html += `<div class="filter-wrap">`;
-  html += `<button class="filter-chip ${allFiltersSelected()?'sel':''}" onclick="toggleAllFilters()">All</button>`;
-  html += `<button class="filter-chip alt" onclick="deselectAllFilters()">Deselect All</button>`;
-  filterMeds.forEach(med => {
-    html += `<button
-      class="filter-chip ${activeFilters.has(med.id)?'sel':''}"
-      onmousedown="startFilterPress('${med.id}', event)"
-      onmouseup="endFilterPress('${med.id}', event)"
-      onmouseleave="cancelFilterPress()"
-      ontouchstart="startFilterPress('${med.id}', event)"
-      ontouchend="endFilterPress('${med.id}', event)"
-      ontouchcancel="cancelFilterPress()"
-    >${med.brand}</button>`;
-  });
-  html += `</div>`;
+  html += `
+    <div class="filter-bar">
+      <button class="filter-button" onclick="toggleFilterMenu()">
+        <div>
+          <div class="filter-button-label">${historyFilterLabel()}</div>
+          <div class="filter-button-sub">Pain first, others alphabetical</div>
+        </div>
+        <div style="color:var(--ios-lbl2)">▾</div>
+      </button>
+      <div class="filter-menu ${filterMenuOpen?'show':''}" id="filter-menu">
+        <div class="filter-menu-head">
+          <div class="filter-menu-title">History Filters</div>
+          <button class="filter-clear-btn" onclick="clearAllFilters()">Clear All</button>
+        </div>
+        <div class="filter-list">
+          <div class="filter-item" onclick="toggleAllFilters()">
+            <div class="filter-item-left">
+              <div class="checkmark">${allFiltersSelected()?'✓':''}</div>
+              <div class="filter-item-label">All</div>
+            </div>
+          </div>
+          ${getHistoryFilterOrder().map(m=>`
+            <div class="filter-item" onclick="toggleFilter('${m.id}')">
+              <div class="filter-item-left">
+                <div class="checkmark">${activeFilters.has(m.id)?'✓':''}</div>
+                <div class="filter-item-label">${m.brand}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>`;
 
   if(!logs.length) {
     html+='<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No History Yet</div><div>Start logging doses in the Tracker tab.</div></div>';
@@ -1187,6 +1260,210 @@ function renderHistory() {
   document.getElementById('history-content').innerHTML=html;
 }
 
+// ─── INSIGHTS ─────────────────────────────────────────────────────────────────
+function setInsightsRange(range) {
+  insightsRange = range;
+  renderInsights();
+}
+
+function getPainLogsSorted() {
+  return logs.filter(l => l.medId === 'pain').sort((a,b)=>a.time-b.time);
+}
+
+function buildPainGraphSVG(range) {
+  const now = Date.now();
+  const windowMs = range === '24h' ? 24*3600000 : 7*24*3600000;
+  const start = now - windowMs;
+  const painLogs = getPainLogsSorted().filter(l => l.time >= start);
+
+  if (!painLogs.length) {
+    return `<div class="empty" style="padding:36px 20px"><div class="empty-title" style="font-size:18px">No pain data yet</div><div>Log pain to see the graph.</div></div>`;
+  }
+
+  const w = 700, h = 280, left = 44, right = 16, top = 14, bottom = 28;
+  const innerW = w-left-right;
+  const innerH = h-top-bottom;
+
+  const xFor = t => left + ((t - start) / windowMs) * innerW;
+  const yFor = v => top + (1 - (v / 10)) * innerH;
+
+  const points = painLogs.map(p => `${xFor(p.time)},${yFor(p.dose)}`).join(' ');
+  const yLines = [0,2.5,5,7.5,10].map(v =>
+    `<line x1="${left}" y1="${yFor(v)}" x2="${w-right}" y2="${yFor(v)}" class="graph-grid" />
+     <text x="8" y="${yFor(v)+4}" class="graph-axis-label">${v}</text>`
+  ).join('');
+
+  const xLabels = range === '24h'
+    ? [0,6,12,18,24].map(hr=>{
+        const t = start + hr*3600000;
+        const d = new Date(t);
+        return `<text x="${xFor(t)}" y="${h-8}" text-anchor="middle" class="graph-axis-label">${d.toLocaleTimeString([], {hour:'numeric'})}</text>`;
+      }).join('')
+    : [0,2,4,6,7].map(day=>{
+        const t = start + day*24*3600000;
+        const d = new Date(t);
+        return `<text x="${xFor(t)}" y="${h-8}" text-anchor="middle" class="graph-axis-label">${d.toLocaleDateString([], {month:'short', day:'numeric'})}</text>`;
+      }).join('');
+
+  const dots = painLogs.map(p =>
+    `<circle cx="${xFor(p.time)}" cy="${yFor(p.dose)}" r="4.2" fill="${getPainColor(p.dose)}" />`
+  ).join('');
+
+  return `
+    <div class="graph-wrap">
+      <svg viewBox="0 0 ${w} ${h}" class="graph-svg" preserveAspectRatio="none" aria-label="Pain graph">
+        ${yLines}
+        <polyline points="${points}" class="graph-line" />
+        ${dots}
+        ${xLabels}
+      </svg>
+    </div>`;
+}
+
+function computeEffectivenessStats() {
+  const painLogs = getPainLogsSorted();
+  const stats = [];
+
+  Object.entries(EFFECT_WINDOWS).forEach(([medId, win]) => {
+    const med = getMed(medId);
+    const medLogs = logs.filter(l => l.medId === medId).sort((a,b)=>a.time-b.time);
+    const events = [];
+
+    medLogs.forEach(medLog => {
+      const baseline = [...painLogs].reverse().find(p => p.time < medLog.time);
+      if (!baseline) return;
+
+      const start = medLog.time + win.min * 60000;
+      const end = medLog.time + win.max * 60000;
+      const post = painLogs.filter(p => p.time >= start && p.time <= end);
+      if (!post.length) return;
+
+      const best = Math.min(...post.map(p => Number(p.dose)));
+      const relief = Number(baseline.dose) - best;
+
+      events.push({
+        dose: medLog.dose,
+        baseline: Number(baseline.dose),
+        best,
+        relief
+      });
+    });
+
+    const validCount = events.length;
+    if (!validCount) {
+      stats.push({med, validCount:0});
+      return;
+    }
+
+    const avgRelief = events.reduce((s,e)=>s+e.relief,0) / validCount;
+    const successRate = events.filter(e=>e.relief >= 1.0).length / validCount;
+
+    const doseMap = {};
+    events.forEach(e => {
+      const key = String(e.dose);
+      if (!doseMap[key]) doseMap[key] = [];
+      doseMap[key].push(e.relief);
+    });
+
+    let bestDose = null;
+    Object.entries(doseMap).forEach(([dose, rels]) => {
+      const avg = rels.reduce((s,v)=>s+v,0)/rels.length;
+      if (!bestDose || avg > bestDose.avg) bestDose = {dose, avg};
+    });
+
+    stats.push({
+      med,
+      validCount,
+      avgRelief,
+      successRate,
+      bestDose,
+      events
+    });
+  });
+
+  return stats.sort((a,b) => (b.avgRelief ?? -999) - (a.avgRelief ?? -999));
+}
+
+function insightStatusClass(avgRelief) {
+  if (avgRelief >= 2.0) return 'trend-good';
+  if (avgRelief >= 0.75) return 'trend-mid';
+  return 'trend-bad';
+}
+
+function insightStatusLabel(avgRelief) {
+  if (avgRelief >= 2.0) return 'Good';
+  if (avgRelief >= 0.75) return 'Mixed';
+  return 'Poor';
+}
+
+function renderInsights() {
+  const stats = computeEffectivenessStats();
+  let html = '<div style="height:8px"></div>';
+
+  html += `
+    <div class="insight-wrap">
+      <div class="insight-card">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+          <div>
+            <div class="insight-title">Pain Graph</div>
+            <div class="insight-sub">Raw pain entries only</div>
+          </div>
+          <div class="segmented">
+            <button class="seg-btn ${insightsRange==='24h'?'active':''}" onclick="setInsightsRange('24h')">24h</button>
+            <button class="seg-btn ${insightsRange==='7d'?'active':''}" onclick="setInsightsRange('7d')">7d</button>
+          </div>
+        </div>
+        ${buildPainGraphSVG(insightsRange)}
+      </div>
+    </div>`;
+
+  html += `<div class="insight-wrap"><div class="list-header" style="padding-left:0">Medication Effectiveness</div></div>`;
+
+  stats.forEach(stat => {
+    if (!stat.validCount || stat.validCount < 3) {
+      html += `
+        <div class="insight-wrap">
+          <div class="insight-card">
+            <div class="insight-title">${stat.med.brand}</div>
+            <div class="insight-sub">Not enough data yet · Need at least 3 valid events</div>
+          </div>
+        </div>`;
+      return;
+    }
+
+    const cls = insightStatusClass(stat.avgRelief);
+    const label = insightStatusLabel(stat.avgRelief);
+
+    html += `
+      <div class="insight-wrap">
+        <div class="insight-card">
+          <div class="insight-title">${stat.med.brand}</div>
+          <div class="insight-sub ${cls}">${label} · ${stat.validCount} valid event${stat.validCount===1?'':'s'}</div>
+
+          <div class="insight-grid">
+            <div class="metric">
+              <div class="metric-lbl">Avg Relief</div>
+              <div class="metric-val ${cls}">-${Math.abs(stat.avgRelief).toFixed(1)}</div>
+              <div class="metric-sub">Pain drop</div>
+            </div>
+            <div class="metric">
+              <div class="metric-lbl">Best Dose</div>
+              <div class="metric-val">${stat.bestDose.dose}${stat.med.doseUnit}</div>
+              <div class="metric-sub">Avg -${Math.abs(stat.bestDose.avg).toFixed(1)}</div>
+            </div>
+            <div class="metric">
+              <div class="metric-lbl">Success Rate</div>
+              <div class="metric-val">${Math.round(stat.successRate*100)}%</div>
+              <div class="metric-sub">≥ 1.0 relief</div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  });
+
+  document.getElementById('insights-content').innerHTML = html;
+}
+
 // ─── COPY TO NOTES ────────────────────────────────────────────────────────────
 function copyToNotes() {
   const filtered = filteredHistoryLogs().sort((a,b)=>b.time-a.time);
@@ -1204,7 +1481,7 @@ function copyToNotes() {
       const tags=[log.past?'past':'',log.override?'override':''].filter(Boolean).join(', ');
       const label = med?.isPain
         ? `Pain ${formatPainValue(log.dose)}`
-        : `${(med?med.brand:log.medId).padEnd(14)} ${log.dose}${log.unit}${med?pillCount(med,log.dose):''}`;
+        : `${(med?med.brand:log.medId).padEnd(14)} ${formatDoseDisplay(med, log.dose)}`;
       text+=`  ${fmtTime(log.time).padEnd(10)} ${label}${tags?' ['+tags+']':''}\n`;
     });
     text+='\n';
@@ -1217,7 +1494,8 @@ function copyToNotes() {
 function render() {
   if(currentTab==='tracker') renderTracker();
   else if(currentTab==='past') renderPast();
-  else renderHistory();
+  else if(currentTab==='history') renderHistory();
+  else renderInsights();
 }
 
 setInterval(loadFromCloud, 30000);
