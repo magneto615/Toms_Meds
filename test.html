@@ -50,6 +50,7 @@
   .med-icon.orange{background:rgba(255,159,10,0.18)}.med-icon.green{background:rgba(48,209,88,0.18)}
   .med-icon.blue{background:rgba(10,132,255,0.18)}.med-icon.yellow{background:rgba(255,214,10,0.18)}
   .med-icon.purple{background:rgba(191,90,242,0.18)}.med-icon.teal{background:rgba(90,200,250,0.18)}
+  .med-icon.red{background:rgba(255,69,58,0.18)}
 
   .med-text{flex:1;min-width:0}
   .med-name{font-size:17px;font-weight:400}
@@ -59,6 +60,7 @@
   .status-pill{font-size:13px;font-weight:600;padding:4px 10px;border-radius:20px;white-space:nowrap}
   .pill-ok{background:rgba(48,209,88,0.18);color:var(--ios-green)}
   .pill-wait{background:rgba(255,69,58,0.18);color:var(--ios-red)}
+  .pill-warn{background:rgba(255,159,10,0.18);color:var(--ios-orange)}
   .chev{color:var(--ios-lbl3);font-size:14px}
 
   .prog-track{height:3px;background:rgba(255,255,255,0.1);border-radius:2px;margin-top:5px;overflow:hidden}
@@ -99,10 +101,6 @@
   .btn-red{background:rgba(255,69,58,0.15);color:var(--ios-red);border:1.5px solid rgba(255,69,58,0.3)}
   .btn-orange{background:var(--ios-orange);color:#000}
   .btn-teal{background:rgba(90,200,250,0.18);color:var(--ios-teal);border:1.5px solid rgba(90,200,250,0.3)}
-  .btn-purple{background:rgba(191,90,242,0.18);color:var(--ios-purple);border:1.5px solid rgba(191,90,242,0.3)}
-
-  .notify-row{display:flex;gap:10px;margin-bottom:10px}
-  .notify-row .action-btn{margin-bottom:0;font-size:15px;padding:12px}
 
   .past-inner{background:var(--ios-bg3);border-radius:var(--r-md);padding:14px;margin-bottom:12px}
   .past-lbl{font-size:13px;color:var(--ios-lbl2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em}
@@ -160,6 +158,9 @@
 <div class="nav-bar">
   <div class="nav-title-bar">
     <div class="nav-title">Tom's Medications</div>
+      <div style="position:absolute;left:16px;top:50%;transform:translateY(-50%)">
+        <button onclick="manualRefresh()" style="background:none;border:none;color:var(--ios-blue);font-family:var(--sf);font-size:15px;font-weight:500;cursor:pointer;padding:4px 0">Refresh</button>
+      </div>
     <div class="nav-right">
       <div class="sync-indicator">
         <div class="sync-dot" id="sync-dot"></div>
@@ -224,6 +225,11 @@ const SUPA_URL = 'https://twnnqelxvjjtgqlbczrc.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3bm5xZWx4dmpqdGdxbGJjenJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NjE5MTUsImV4cCI6MjA5MjAzNzkxNX0.5GSiZJBX5ZUZIeMm52PQ_UJRDyK1OZlDqRLE1j0tef4';
 const TABLE = 'doses';
 
+async function manualRefresh() {
+  showToast('🔄', 'Refreshing…');
+  await loadFromCloud();
+}
+
 async function supaFetch(method, path, body) {
   const res = await fetch(`${SUPA_URL}/rest/v1/${path}`, {
     method,
@@ -241,24 +247,35 @@ async function supaFetch(method, path, body) {
 
 // ─── MEDS ─────────────────────────────────────────────────────────────────────
 const MEDS = [
-  {id:'dilaudid', brand:'Dilaudid',    generic:'HYDROmorphone',      emoji:'💊',color:'orange',intervalHours:4,  defaultDose:2,    doseOptions:[2,4],        hasCustom:true,  doseUnit:'mg',    tabletMg:2,   note:'Every 4h as needed · up to 5 days'},
-  {id:'valium',   brand:'Valium',      generic:'DiazePAM',           emoji:'💊',color:'orange',intervalHours:6,  defaultDose:7.5,  doseOptions:[5,7.5,10],   hasCustom:true,  doseUnit:'mg',    tabletMg:5,   note:'Every 6h for muscle spasms · up to 10 days'},
-  {id:'tylenol',  brand:'Tylenol',     generic:'Acetaminophen',      emoji:'💊',color:'green', intervalHours:6,  defaultDose:1000, doseOptions:[500,1000],   hasCustom:false, doseUnit:'mg',    tabletMg:500, note:'Every 6h as needed · up to 10 days'},
-  {id:'colace',   brand:'Colace',      generic:'Docusate Sodium',    emoji:'💊',color:'green', intervalHours:8,  defaultDose:100,  doseOptions:[100],        hasCustom:false, doseUnit:'mg',    tabletMg:100, note:'3× daily · 10 days'},
-  {id:'journavx', brand:'Journavx',    generic:'Suzetrigine',        emoji:'💊',color:'blue',  intervalHours:12, defaultDose:50,   doseOptions:[50],         hasCustom:false, doseUnit:'mg',    tabletMg:50,  note:'Every 12h · take on empty stomach'},
-  {id:'lyrica',   brand:'Lyrica',      generic:'Pregabalin',         emoji:'🔵',color:'blue',  intervalHours:12, defaultDose:75,   doseOptions:[75],         hasCustom:false, doseUnit:'mg',    tabletMg:75,  note:'Twice daily'},
-  {id:'vitaminc', brand:'Vitamin C',   generic:'Ascorbic Acid',      emoji:'🟡',color:'yellow',intervalHours:12, defaultDose:500,  doseOptions:[500],        hasCustom:false, doseUnit:'mg',    tabletMg:500, note:'Twice daily'},
-  {id:'vitamind', brand:'Vitamin D3',  generic:'Cholecalciferol',    emoji:'🟡',color:'yellow',intervalHours:12, defaultDose:2000, doseOptions:[2000],       hasCustom:false, doseUnit:'units', tabletMg:null,note:'Twice daily'},
-  {id:'multivit', brand:'Multivitamin',generic:'Theragran',          emoji:'🟡',color:'yellow',intervalHours:24, defaultDose:1,    doseOptions:[1],          hasCustom:false, doseUnit:'tablet',tabletMg:null,note:'Once daily'},
-  {id:'vitamine', brand:'Vitamin E',   generic:'400 units',          emoji:'🟡',color:'yellow',intervalHours:24, defaultDose:400,  doseOptions:[400],        hasCustom:false, doseUnit:'units', tabletMg:null,note:'Once daily'},
-  {id:'zinc',     brand:'Zincate',     generic:'Zinc Sulfate',       emoji:'🟡',color:'yellow',intervalHours:24, defaultDose:220,  doseOptions:[220],        hasCustom:false, doseUnit:'mg',    tabletMg:220, note:'Once daily'},
-  {id:'medrol',   brand:'Medrol',      generic:'Methylprednisolone', emoji:'💜',color:'purple',intervalHours:24, defaultDose:6,    doseOptions:[6,5,4,3,2,1],hasCustom:false, doseUnit:'tabs',  tabletMg:4,   note:'6-day taper pack · take with food',
+  // ── TRACKER / SPECIAL ──
+  {id:'pain',      brand:'Pain Level', generic:'0–10 Scale',            emoji:'📊',color:'red',   intervalHours:0,  defaultDose:5,    doseOptions:[0,2,4,6,8,10], hasCustom:true,  doseUnit:'',      tabletMg:null, note:'Log current pain level', isPain:true},
+
+  // ── AS-NEEDED ──
+  {id:'dilaudid',  brand:'Dilaudid',   generic:'HYDROmorphone',         emoji:'💊',color:'orange',intervalHours:3,  defaultDose:2,    doseOptions:[2,4,6],       hasCustom:true,  doseUnit:'mg',    tabletMg:2,    note:'Every 3h as needed · up to 5 days'},
+  {id:'xanax',     brand:'Xanax',      generic:'ALPRAZolam',            emoji:'💊',color:'orange',intervalHours:8,  defaultDose:0.5,  doseOptions:[0.5],         hasCustom:false, doseUnit:'mg',    tabletMg:0.5,  note:'Every 8h as needed · up to 10 days'},
+  {id:'zanaflex',  brand:'Zanaflex',   generic:'tiZANidine',            emoji:'💊',color:'orange',intervalHours:8,  defaultDose:4,    doseOptions:[4],           hasCustom:false, doseUnit:'mg',    tabletMg:4,    note:'Every 8h as needed for muscle spasms'},
+  {id:'tylenol',   brand:'Tylenol',    generic:'Acetaminophen',         emoji:'💊',color:'green', intervalHours:6,  defaultDose:1000, doseOptions:[500,1000],    hasCustom:false, doseUnit:'mg',    tabletMg:500,  note:'Every 6h as needed · up to 10 days'},
+
+  // ── SCHEDULED ──
+  {id:'journavx',  brand:'Journavx',   generic:'Suzetrigine',           emoji:'💊',color:'blue',  intervalHours:12, defaultDose:50,   doseOptions:[50],          hasCustom:false, doseUnit:'mg',    tabletMg:50,   note:'Every 12h · take on empty stomach'},
+  {id:'lyrica',    brand:'Lyrica',     generic:'Pregabalin',            emoji:'💊',color:'blue',  intervalHours:12, defaultDose:100,  doseOptions:[100],         hasCustom:false, doseUnit:'mg',    tabletMg:100,  note:'Twice daily'},
+  {id:'gabapentin',brand:'Neurontin',  generic:'Gabapentin',            emoji:'💊',color:'blue',  intervalHours:8,  defaultDose:300,  doseOptions:[300],         hasCustom:false, doseUnit:'mg',    tabletMg:300,  note:'Every 8h'},
+  {id:'zoloft',    brand:'Zoloft',     generic:'Sertraline',            emoji:'💊',color:'blue',  intervalHours:24, defaultDose:100,  doseOptions:[100],         hasCustom:false, doseUnit:'mg',    tabletMg:100,  note:'Once daily'},
+  {id:'colace',    brand:'Colace',     generic:'Docusate Sodium',       emoji:'🟤',color:'teal',  intervalHours:8,  defaultDose:100,  doseOptions:[100],         hasCustom:false, doseUnit:'mg',    tabletMg:100,  note:'Every 8h · up to 10 days'},
+  {id:'vitaminc',  brand:'Vitamin C',  generic:'Ascorbic Acid',         emoji:'🟡',color:'yellow',intervalHours:12, defaultDose:500,  doseOptions:[500],         hasCustom:false, doseUnit:'mg',    tabletMg:500,  note:'Twice daily'},
+  {id:'vitamind',  brand:'Vitamin D3', generic:'Cholecalciferol',       emoji:'🟡',color:'yellow',intervalHours:12, defaultDose:2000, doseOptions:[2000],        hasCustom:false, doseUnit:'units', tabletMg:null, note:'Twice daily'},
+  {id:'multivit',  brand:'Multivitamin',generic:'Theragran',            emoji:'🟡',color:'yellow',intervalHours:24, defaultDose:1,    doseOptions:[1],           hasCustom:false, doseUnit:'tablet',tabletMg:null, note:'Once daily'},
+  {id:'vitamine',  brand:'Vitamin E',  generic:'400 units',             emoji:'🟡',color:'yellow',intervalHours:24, defaultDose:400,  doseOptions:[400],         hasCustom:false, doseUnit:'units', tabletMg:null, note:'Once daily'},
+  {id:'zinc',      brand:'Zincate',    generic:'Zinc Sulfate',          emoji:'🟡',color:'yellow',intervalHours:24, defaultDose:220,  doseOptions:[220],         hasCustom:false, doseUnit:'mg',    tabletMg:220,  note:'Once daily'},
+
+  // ── MEDROL DOSE PACK ──
+  {id:'medrol',    brand:'Medrol',     generic:'Methylprednisolone',    emoji:'💜',color:'purple',intervalHours:24, defaultDose:6,    doseOptions:[6,5,4,3,2,1], hasCustom:false, doseUnit:'tabs',  tabletMg:4,    note:'6-day taper pack · take with food',
    isPack:true, packSchedule:[6,5,4,3,2,1]},
 ];
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 function pillCount(med, dose) {
-  if (!med.tabletMg || med.doseUnit==='tablet' || med.doseUnit==='units' || med.doseUnit==='tabs') return '';
+  if (!med.tabletMg || med.doseUnit==='tablet' || med.doseUnit==='units' || med.doseUnit==='tabs' || med.doseUnit==='g' || med.isPain) return '';
   const n = dose / med.tabletMg;
   const nice = n===Math.floor(n) ? n : parseFloat(n.toFixed(2));
   return ` · ${nice} ${nice===1?'tab':'tabs'}`;
@@ -268,6 +285,145 @@ function getMedrolPackDay() {
   return Math.min(pl.length + 1, 6);
 }
 function getMedrolDayDose(day) { return [6,5,4,3,2,1][Math.min(day-1,5)]; }
+function getMed(medId) { return MEDS.find(m=>m.id===medId); }
+function getLastLog(medId) {
+  const ml = logs.filter(l=>l.medId===medId);
+  return ml.length ? ml.reduce((a,b)=>a.time>b.time?a:b) : null;
+}
+function getLastWithinMs(medId, ms) {
+  const cutoff = Date.now() - ms;
+  const ml = logs.filter(l=>l.medId===medId && l.time >= cutoff).sort((a,b)=>b.time-a.time);
+  return ml.length ? ml[0] : null;
+}
+function formatDoseDisplay(med, dose) {
+  if (med.isPain) return `${dose}/10`;
+  return `${dose}${med.doseUnit}${pillCount(med,dose)}`;
+}
+function getConflictInfo(med) {
+  if (!med || med.isPain) return {blocked:false,warn:false,message:'',shortLabel:''};
+
+  const twoHours = 2 * 3600000;
+
+  if (med.id === 'zanaflex') {
+    const lastDilaudid = getLastWithinMs('dilaudid', twoHours);
+    const lastXanax = getLastWithinMs('xanax', twoHours);
+    const lastConflict = [lastDilaudid, lastXanax].filter(Boolean).sort((a,b)=>b.time-a.time)[0];
+    if (lastConflict) {
+      const medName = getMed(lastConflict.medId)?.brand || lastConflict.medId;
+      const waitMs = twoHours - (Date.now() - lastConflict.time);
+      return {
+        blocked:true,
+        warn:false,
+        shortLabel:'2h lockout',
+        message:`Cannot take Zanaflex within 2 hours of ${medName}. Wait ${fmtCountdown(waitMs)}.`
+      };
+    }
+  }
+
+  if (med.id === 'dilaudid') {
+    const lastXanax = getLastWithinMs('xanax', twoHours);
+    if (lastXanax) {
+      const waitMs = twoHours - (Date.now() - lastXanax.time);
+      return {
+        blocked:false,
+        warn:true,
+        shortLabel:'Sedation',
+        message:`Xanax was logged recently. Combining Dilaudid and Xanax increases sedation / breathing risk. Consider spacing them out. ${waitMs>0 ? `Recent Xanax: ${fmtCountdown(waitMs)} ago until 2h mark.` : ''}`
+      };
+    }
+  }
+
+  if (med.id === 'xanax') {
+    const lastDilaudid = getLastWithinMs('dilaudid', twoHours);
+    if (lastDilaudid) {
+      const waitMs = twoHours - (Date.now() - lastDilaudid.time);
+      return {
+        blocked:false,
+        warn:true,
+        shortLabel:'Sedation',
+        message:`Dilaudid was logged recently. Combining Xanax and Dilaudid increases sedation / breathing risk. Consider spacing them out. ${waitMs>0 ? `Recent Dilaudid: ${fmtCountdown(waitMs)} ago until 2h mark.` : ''}`
+      };
+    }
+  }
+
+  return {blocked:false,warn:false,message:'',shortLabel:''};
+}
+function getAvailability(med) {
+  if (med.isPain) return {ok:true,msLeft:0,reason:'pain'};
+  const last=getLastLog(med.id);
+  if(!last) return {ok:true,msLeft:0,reason:'none'};
+  const elapsed=Date.now()-last.time, iv=med.intervalHours*3600000;
+  if (elapsed>=iv) return {ok:true,msLeft:0,reason:'none'};
+  return {ok:false,msLeft:iv-elapsed,reason:'interval'};
+}
+function canTake(med) {
+  const interval = getAvailability(med);
+  if (!interval.ok) return interval;
+  const conflict = getConflictInfo(med);
+  if (conflict.blocked) return {ok:false,msLeft:0,reason:'conflict', conflict};
+  return {ok:true,msLeft:0,reason:'none', conflict};
+}
+function nextDoseAt(med) {
+  if (med.isPain) return null;
+  const last=getLastLog(med.id); if(!last) return null;
+  const next=last.time+med.intervalHours*3600000;
+  return next>Date.now() ? next : null;
+}
+function getEffectiveDose(medId) {
+  const med=getMed(medId), s=getState(medId);
+  if (med.hasCustom && s.useCustom) {
+    const v=parseFloat(s.customVal);
+    return isNaN(v) ? s.selectedDose : v;
+  }
+  if (med.isPack) return getMedrolDayDose(getMedrolPackDay());
+  return s.selectedDose;
+}
+function getDefaultPastValue(medId) {
+  const s=getState(medId);
+  return s.pastVal || localDTVal(Date.now());
+}
+function buildDoseHtml(medId, isPastMode=false) {
+  const med=getMed(medId), s=getState(medId);
+  let doseHtml='<div class="dose-lbl">';
+  doseHtml += med.isPain ? 'Pain Level' : 'Dose';
+  doseHtml += '</div><div class="dose-chips" id="dose-chips-wrap">';
+
+  med.doseOptions.forEach(d=>{
+    const sel=!s.useCustom&&d===s.selectedDose;
+    const label = med.isPain ? `${d}/10` : `${d}${med.doseUnit}${pillCount(med,d)}`;
+    doseHtml+=`<button class="dose-chip ${sel?'sel':''}" onclick="${isPastMode?'selectDosePast':'selectDose'}('${medId}',${d})">${label}</button>`;
+  });
+
+  if(med.hasCustom) doseHtml+=`<button class="dose-chip custom-chip ${s.useCustom?'sel':''}" id="custom-chip-btn" onclick="${isPastMode?'activateCustomPast':'activateCustom'}('${medId}')">Custom</button>`;
+  doseHtml+='</div>';
+
+  if(s.useCustom) {
+    const placeholder = med.isPain ? 'Enter pain 0–10' : 'Enter dose';
+    const step = med.isPain ? '0.5' : '0.5';
+    const min = med.isPain ? '0' : '0.5';
+    const max = med.isPain ? '10' : '';
+    doseHtml+=`<div class="custom-row">
+      <input class="custom-input" id="custom-dose-input" type="number" step="${step}" min="${min}" ${max ? `max="${max}"` : ''} placeholder="${placeholder}" value="${s.customVal}" oninput="${isPastMode?'onCustomInputPast':'onCustomInput'}('${medId}',this.value)">
+      <span class="custom-unit">${med.isPain ? '/10' : med.doseUnit}</span>
+    </div>`;
+  }
+
+  return doseHtml;
+}
+function validateEffectiveDose(medId) {
+  const med = getMed(medId);
+  const dose = getEffectiveDose(medId);
+
+  if (med.isPain) {
+    if (isNaN(dose) || dose < 0 || dose > 10) return {ok:false,msg:'Pain must be between 0 and 10'};
+    const halfStepOk = Math.round(dose * 2) === dose * 2;
+    if (!halfStepOk) return {ok:false,msg:'Pain must use 0.5 increments'};
+    return {ok:true};
+  }
+
+  if (isNaN(dose) || dose <= 0) return {ok:false,msg:'Enter a valid dose'};
+  return {ok:true};
+}
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
 let logs = JSON.parse(localStorage.getItem('tomMedLogs_v2') || '[]');
@@ -278,32 +434,12 @@ const medState = {};
 
 function getState(medId) {
   if (!medState[medId]) {
-    const med = MEDS.find(m=>m.id===medId);
+    const med = getMed(medId);
     medState[medId] = {selectedDose:med.defaultDose, useCustom:false, customVal:'', pastVal:''};
   }
   return medState[medId];
 }
 function saveLogs() { localStorage.setItem('tomMedLogs_v2', JSON.stringify(logs)); }
-function getLastLog(medId) {
-  const ml = logs.filter(l=>l.medId===medId);
-  return ml.length ? ml.reduce((a,b)=>a.time>b.time?a:b) : null;
-}
-function canTake(med) {
-  const last=getLastLog(med.id); if(!last) return {ok:true,msLeft:0};
-  const elapsed=Date.now()-last.time, iv=med.intervalHours*3600000;
-  return elapsed>=iv ? {ok:true,msLeft:0} : {ok:false,msLeft:iv-elapsed};
-}
-function nextDoseAt(med) {
-  const last=getLastLog(med.id); if(!last) return null;
-  const next=last.time+med.intervalHours*3600000;
-  return next>Date.now() ? next : null;
-}
-function getEffectiveDose(medId) {
-  const med=MEDS.find(m=>m.id===medId), s=getState(medId);
-  if (med.hasCustom && s.useCustom) { const v=parseFloat(s.customVal); return isNaN(v)?s.selectedDose:v; }
-  if (med.isPack) return getMedrolDayDose(getMedrolPackDay());
-  return s.selectedDose;
-}
 
 // ─── FORMAT ───────────────────────────────────────────────────────────────────
 function fmtCountdown(ms) {
@@ -333,7 +469,7 @@ function setSyncStatus(status, label) {
 
 // ─── SUPABASE OPS ─────────────────────────────────────────────────────────────
 async function pushEntry(entry) {
-  const med=MEDS.find(m=>m.id===entry.medId);
+  const med=getMed(entry.medId);
   try {
     setSyncStatus('syncing','Saving…');
     await supaFetch('POST', TABLE, {
@@ -406,49 +542,66 @@ async function checkSyncStatus() {
 
 // ─── SHORTCUTS ────────────────────────────────────────────────────────────────
 function launchShortcut(medId, type) {
-  const med=MEDS.find(m=>m.id===medId);
-  const nextTs=nextDoseAt(med);
-  if(!nextTs){showToast('✅',`${med.brand} is already available!`);return;}
-  const nextDate=new Date(nextTs);
-  const payload=JSON.stringify({
-    med:   med.brand,
-    type:  type,
-    time:  nextTs,
-    hh:    nextDate.getHours(),
-    mm:    nextDate.getMinutes(),
-    label: `${med.brand} — OK to take at ${fmtTime(nextTs)}`
+  const med = getMed(medId);
+  const nextTs = nextDoseAt(med);
+  if (!nextTs) { showToast('✅', `${med.brand} is already available!`); return; }
+
+  const nextDate = new Date(nextTs);
+  const now = new Date();
+  const isNextDay = nextDate.toDateString() !== now.toDateString();
+
+  const timeStr = nextDate.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+  const displayTime = isNextDay ? `Tomorrow at ${timeStr}` : timeStr;
+
+  const payload = JSON.stringify({
+    med:         med.brand,
+    type:        type,
+    time:  `${String(nextDate.getHours()).padStart(2,'0')}:${String(nextDate.getMinutes()).padStart(2,'0')}`,
+    timeStr:     timeStr,
+    displayTime: displayTime,
+    label:       `${med.brand} — OK to take at ${displayTime}`
   });
-  window.location.href=`shortcuts://run-shortcut?name=TomsMeds&input=text&text=${encodeURIComponent(payload)}`;
-  showToast('🔔',`Opening Shortcuts for ${type}…`);
+
+  window.location.href = `shortcuts://run-shortcut?name=TomsMeds&input=text&text=${encodeURIComponent(payload)}`;
+  showToast('🔔', `Opening Shortcuts for ${type}…`);
 }
 
 // ─── LOG DOSE ─────────────────────────────────────────────────────────────────
 function logDose(medId, overrideTime, isPast, isOverride) {
-  const med=MEDS.find(m=>m.id===medId);
+  const med=getMed(medId);
+  const valid = validateEffectiveDose(medId);
+  if (!valid.ok) { showToast('⚠️', valid.msg); return; }
+
   const dose=getEffectiveDose(medId);
   const time=overrideTime||Date.now();
   const entry={id:String(Date.now()+Math.random()),medId,time,dose,unit:med.doseUnit,past:!!isPast,override:!!isOverride};
+
   logs.push(entry);
   saveLogs();
   pushEntry(entry);
   closeSheet();
+
   const icon=isOverride?'⚠️':isPast?'↩':'✓';
-  const msg=isOverride?`Override — ${med.brand} ${dose}${med.doseUnit}${pillCount(med,dose)}`
-           :isPast?    `Past dose — ${med.brand} ${dose}${med.doseUnit}${pillCount(med,dose)}`
-           :            `${med.brand} ${dose}${med.doseUnit}${pillCount(med,dose)} logged`;
+  const msg = med.isPain
+    ? `${isPast ? 'Past pain' : 'Pain'} logged — ${dose}/10`
+    : isOverride
+      ? `Override — ${med.brand} ${formatDoseDisplay(med,dose)}`
+      : isPast
+        ? `Past dose — ${med.brand} ${formatDoseDisplay(med,dose)}`
+        : `${med.brand} ${formatDoseDisplay(med,dose)} logged`;
+
   showToast(icon,msg);
   render();
 }
 
 // ─── DELETE ───────────────────────────────────────────────────────────────────
 function askDelete(logId) {
-  // Always compare as strings to avoid float precision issues
   const log=logs.find(l=>String(l.id)===String(logId));
   if(!log) return;
-  const med=MEDS.find(m=>m.id===log.medId);
+  const med=getMed(log.medId);
   showConfirm(
     'Delete Entry?',
-    `${med?med.brand:log.medId} — ${log.dose}${log.unit}\n${fmtDateTime(log.time)}`,
+    `${med?med.brand:log.medId} — ${med?.isPain ? `${log.dose}/10` : `${log.dose}${log.unit}`}\n${fmtDateTime(log.time)}`,
     'Delete Entry', true,
     () => {
       logs=logs.filter(l=>String(l.id)!==String(logId));
@@ -500,8 +653,9 @@ function closeSheet() {
 }
 
 function renderSheet(medId) {
-  const med=MEDS.find(m=>m.id===medId);
-  const {ok,msLeft}=canTake(med);
+  const med=getMed(medId);
+  const avail=canTake(med);
+  const conflict = getConflictInfo(med);
   const last=getLastLog(medId);
   const s=getState(medId);
   const nextTs=nextDoseAt(med);
@@ -511,11 +665,11 @@ function renderSheet(medId) {
   document.getElementById('sheet-subtitle').textContent=`${med.generic} · ${med.note}`;
 
   const lastHtml=last
-    ?`<div class="last-block"><div class="last-lbl">Last Taken</div>
+    ?`<div class="last-block"><div class="last-lbl">${med.isPain ? 'Last Logged' : 'Last Taken'}</div>
        <div class="last-val">${fmtDateTime(last.time)}</div>
-       <div class="last-sub">${last.dose}${last.unit}${pillCount(med,last.dose)}${last.past?' · past entry':''}${last.override?' · override':''}</div>
+       <div class="last-sub">${med.isPain ? `${last.dose}/10` : `${last.dose}${last.unit}${pillCount(med,last.dose)}`}${last.past?' · past entry':''}${last.override?' · override':''}</div>
       </div>`
-    :`<div class="last-block" style="color:var(--ios-lbl2);font-size:15px">No doses logged yet</div>`;
+    :`<div class="last-block" style="color:var(--ios-lbl2);font-size:15px">No ${med.isPain?'pain entries':'doses'} logged yet</div>`;
 
   let packHtml='';
   if(med.isPack) {
@@ -525,36 +679,43 @@ function renderSheet(medId) {
       :`<div class="pack-day-block"><div class="pack-day-label" style="color:var(--ios-green)">✅ Pack complete (6 of 6 days logged)</div></div>`;
   }
 
-  let doseHtml='';
-  if(!med.isPack) {
-    doseHtml='<div class="dose-lbl">Dose</div><div class="dose-chips" id="dose-chips-wrap">';
-    med.doseOptions.forEach(d=>{
-      const sel=!s.useCustom&&d===s.selectedDose;
-      doseHtml+=`<button class="dose-chip ${sel?'sel':''}" onclick="selectDose('${medId}',${d})">${d}${med.doseUnit}${pillCount(med,d)}</button>`;
-    });
-    if(med.hasCustom) doseHtml+=`<button class="dose-chip custom-chip ${s.useCustom?'sel':''}" id="custom-chip-btn" onclick="activateCustom('${medId}')">Custom</button>`;
-    doseHtml+='</div>';
-    if(s.useCustom) doseHtml+=`<div class="custom-row"><input class="custom-input" id="custom-dose-input" type="number" step="0.5" min="0.5" placeholder="Enter dose" value="${s.customVal}" oninput="onCustomInput('${medId}',this.value)"><span class="custom-unit">${med.doseUnit}</span></div>`;
+  const doseHtml = med.isPack ? '' : buildDoseHtml(medId, false);
+
+  let conflictHtml = '';
+  if (conflict.blocked) {
+    conflictHtml = `<div class="alert-card"><div class="alert-title">⛔ Interaction lockout</div><div class="alert-body">${conflict.message}</div></div>`;
+  } else if (conflict.warn) {
+    conflictHtml = `<div class="alert-card"><div class="alert-title">⚠️ Overlap warning</div><div class="alert-body">${conflict.message}</div></div>`;
   }
 
-  const effDose=med.isPack
+  const effDose = med.isPack
     ?`${getMedrolDayDose(getMedrolPackDay())} tabs`
-    :s.useCustom?(s.customVal?`${s.customVal}${med.doseUnit}${pillCount(med,parseFloat(s.customVal)||0)}`:`?${med.doseUnit}`):`${s.selectedDose}${med.doseUnit}${pillCount(med,s.selectedDose)}`;
+    :formatDoseDisplay(med, getEffectiveDose(medId));
 
-  let actionHtml=ok
-    ?`<button class="action-btn btn-green" id="main-action-btn" onclick="logDose('${medId}')">OK to Take — ${effDose}</button>`
-    :`<button class="action-btn btn-disabled" id="main-action-btn">Not yet — ${fmtCountdown(msLeft)}</button>
-      <button class="action-btn btn-red" onclick="askOverride('${medId}')">⚠️ Override &amp; Log Anyway</button>`;
-
-  let notifyHtml='';
-  if(isWaiting) {
-    notifyHtml=`<div class="notify-row">
-      <button class="action-btn btn-teal" onclick="launchShortcut('${medId}','reminder')">🔔 Set Reminder</button>
-      <button class="action-btn btn-purple" onclick="launchShortcut('${medId}','alarm')">⏰ Set Alarm</button>
-    </div>`;
+  if (med.isPain) {
+    document.getElementById('sheet-body').innerHTML=`${lastHtml}${doseHtml}<button class="action-btn btn-green" id="main-action-btn" onclick="logDose('${medId}')">Log Pain — ${effDose}</button>`;
+    if(s.useCustom) setTimeout(()=>{const el=document.getElementById('custom-dose-input');if(el)el.focus();},80);
+    return;
   }
 
-  document.getElementById('sheet-body').innerHTML=`${lastHtml}${packHtml}${doseHtml}${actionHtml}${notifyHtml}`;
+  let actionHtml='';
+  if (avail.ok) {
+    actionHtml=`<button class="action-btn btn-green" id="main-action-btn" onclick="logDose('${medId}')">OK to Take — ${effDose}</button>`;
+  } else if (avail.reason === 'interval') {
+    actionHtml=`<button class="action-btn btn-disabled" id="main-action-btn">Not yet — ${fmtCountdown(avail.msLeft)}</button>
+      <button class="action-btn btn-red" onclick="askOverride('${medId}')">⚠️ Override &amp; Log Anyway</button>`;
+  } else if (avail.reason === 'conflict') {
+    actionHtml=`<button class="action-btn btn-disabled" id="main-action-btn">Blocked by overlap</button>`;
+  }
+
+  const notifyHtml=isWaiting
+    ?`<div style="display:flex;gap:10px;margin-bottom:10px">
+        <button class="action-btn btn-teal" style="margin-bottom:0;font-size:15px;padding:12px" onclick="launchShortcut('${medId}','reminder')">🔔 Reminder</button>
+        <button class="action-btn btn-red" style="margin-bottom:0;font-size:15px;padding:12px" onclick="launchShortcut('${medId}','alarm')">⏰ Alarm</button>
+      </div>`
+    :'';
+
+  document.getElementById('sheet-body').innerHTML=`${lastHtml}${packHtml}${conflictHtml}${doseHtml}${actionHtml}${notifyHtml}`;
   if(s.useCustom) setTimeout(()=>{const el=document.getElementById('custom-dose-input');if(el)el.focus();},80);
 }
 
@@ -562,7 +723,8 @@ function selectDose(medId,dose) {
   const s=getState(medId); s.selectedDose=dose; s.useCustom=false;
   document.querySelectorAll('#dose-chips-wrap .dose-chip').forEach(btn=>{
     if(btn.id==='custom-chip-btn'){btn.classList.remove('sel');return;}
-    btn.classList.toggle('sel',parseFloat(btn.textContent)===dose);
+    const txt = btn.textContent;
+    btn.classList.toggle('sel', parseFloat(txt)===dose);
   });
   const cr=document.querySelector('.custom-row'); if(cr) cr.remove();
   updateActionBtn(medId);
@@ -570,14 +732,15 @@ function selectDose(medId,dose) {
 function activateCustom(medId) { getState(medId).useCustom=true; renderSheet(medId); }
 function onCustomInput(medId,val) { getState(medId).customVal=val; updateActionBtn(medId); }
 function updateActionBtn(medId) {
-  const med=MEDS.find(m=>m.id===medId),{ok}=canTake(med),s=getState(medId);
-  const effDose=s.useCustom?(s.customVal?`${s.customVal}${med.doseUnit}${pillCount(med,parseFloat(s.customVal)||0)}`:`?${med.doseUnit}`):`${s.selectedDose}${med.doseUnit}${pillCount(med,s.selectedDose)}`;
+  const med=getMed(medId),avail=canTake(med);
+  const effDose=formatDoseDisplay(med,getEffectiveDose(medId));
   const btn=document.getElementById('main-action-btn');
-  if(btn&&ok) btn.textContent=`OK to Take — ${effDose}`;
+  if(btn && avail.ok) btn.textContent= med.isPain ? `Log Pain — ${effDose}` : `OK to Take — ${effDose}`;
 }
 function askOverride(medId) {
-  const med=MEDS.find(m=>m.id===medId),{msLeft}=canTake(med);
-  showConfirm('Log Early?',`${med.brand} is not due for another ${fmtCountdown(msLeft)}.\nLog it anyway?`,'Log Override',true,()=>logDose(medId,null,false,true));
+  const med=getMed(medId),avail=canTake(med);
+  if (avail.reason !== 'interval') return;
+  showConfirm('Log Early?',`${med.brand} is not due for another ${fmtCountdown(avail.msLeft)}.\nLog it anyway?`,'Log Override',true,()=>logDose(medId,null,false,true));
 }
 
 // ─── TAB SWITCH ───────────────────────────────────────────────────────────────
@@ -593,31 +756,58 @@ function switchTab(tab) {
 // ─── RENDER TRACKER ───────────────────────────────────────────────────────────
 function renderTracker() {
   const available=MEDS.filter(m=>{
-    const last=getLastLog(m.id); if(!last) return false;
+    if (m.isPain) return false;
+    const a=canTake(m);
+    const last=getLastLog(m.id);
+    if (!last || !a.ok) return false;
     const elapsed=Date.now()-last.time,iv=m.intervalHours*3600000;
     return elapsed>=iv&&elapsed<iv+1800000;
   });
+
   let html='<div style="height:8px"></div>';
+
+  html += `
+    <div style="margin:0 16px 12px">
+      <button class="action-btn btn-red" onclick="openSheet('pain')" style="margin-bottom:0">📊 Log Pain Level</button>
+    </div>`;
+
   if(available.length) {
     html+=`<div class="alert-card"><div class="alert-title">⏰ Now Available</div>
       <div class="alert-body">${available.map(m=>`<strong>${m.brand}</strong>`).join(', ')} can now be taken.</div></div>`;
   }
+
   html+='<div style="margin:0 16px 20px"><div class="list-group">';
   MEDS.forEach(med=>{
-    const {ok,msLeft}=canTake(med),last=getLastLog(med.id);
-    const pct=last?Math.min(100,(Date.now()-last.time)/(med.intervalHours*3600000)*100):100;
+    const avail=canTake(med);
+    const conflict=getConflictInfo(med);
+    const last=getLastLog(med.id);
+    const pct = med.isPain ? 100 : (last ? Math.min(100,(Date.now()-last.time)/(med.intervalHours*3600000)*100) : 100);
     const barCls=pct<50?'low':pct<80?'mid':'';
-    const readyLabel=(med.id==='dilaudid'||med.id==='valium')?'OK to Take':'Take Now';
-    let badge;
-    if(med.isPack) {
+    const readyLabel=(med.id==='dilaudid'||med.id==='xanax'||med.id==='zanaflex')?'OK to Take':'Take Now';
+
+    let badge = '';
+    if (med.isPain) {
+      badge = `<span class="status-pill pill-ok">Log</span>`;
+    } else if (med.isPack) {
       const day=getMedrolPackDay();
-      if(ok&&day<=6) badge=`<span class="status-pill pill-ok">Day ${day}</span>`;
+      if(avail.ok&&day<=6) badge=`<span class="status-pill pill-ok">Day ${day}</span>`;
       else if(day>6) badge=`<span class="status-pill" style="background:rgba(191,90,242,0.18);color:var(--ios-purple)">Done</span>`;
-      else badge=`<span class="status-pill pill-wait">${fmtCountdown(msLeft)}</span>`;
+      else if (avail.reason==='conflict') badge=`<span class="status-pill pill-warn">Blocked</span>`;
+      else badge=`<span class="status-pill pill-wait">${fmtCountdown(avail.msLeft)}</span>`;
     } else {
-      badge=ok?`<span class="status-pill pill-ok">${readyLabel}</span>`:`<span class="status-pill pill-wait">${fmtCountdown(msLeft)}</span>`;
+      if (avail.reason === 'conflict') badge=`<span class="status-pill pill-warn">Blocked</span>`;
+      else badge=avail.ok?`<span class="status-pill pill-ok">${readyLabel}</span>`:`<span class="status-pill pill-wait">${fmtCountdown(avail.msLeft)}</span>`;
     }
-    const lastSub=last?`Last: ${fmtTime(last.time)} · ${last.dose}${last.unit}${pillCount(med,last.dose)}`:'No doses logged';
+
+    let lastSub = '';
+    if (med.isPain) {
+      lastSub = last ? `Last: ${fmtTime(last.time)} · ${last.dose}/10` : 'No pain logged';
+    } else {
+      lastSub = last ? `Last: ${fmtTime(last.time)} · ${formatDoseDisplay(med,last.dose)}` : 'No doses logged';
+      if (conflict.blocked) lastSub += ` · ${conflict.shortLabel}`;
+      else if (conflict.warn) lastSub += ` · caution`;
+    }
+
     html+=`<div class="list-row" onclick="openSheet('${med.id}')">
       <div class="med-icon ${med.color}">${med.emoji}</div>
       <div class="med-text">
@@ -636,7 +826,7 @@ function renderTracker() {
 // ─── RENDER PAST ──────────────────────────────────────────────────────────────
 function renderPast() {
   let html='<div style="height:8px"></div>';
-  html+=`<div style="margin:0 16px 14px;padding:0 4px;font-size:14px;color:var(--ios-lbl2);line-height:1.5">Select a medication, choose the dose, and enter the time it was actually taken.</div>`;
+  html+=`<div style="margin:0 16px 14px;padding:0 4px;font-size:14px;color:var(--ios-lbl2);line-height:1.5">Select an item, choose the dose or pain level, and enter when it was actually taken / logged.</div>`;
   html+='<div style="margin:0 16px 20px"><div class="list-group">';
   MEDS.forEach(med=>{
     html+=`<div class="list-row" onclick="openPastSheet('${med.id}')">
@@ -649,33 +839,32 @@ function renderPast() {
 }
 
 function openPastSheet(medId) {
-  const med=MEDS.find(m=>m.id===medId),s=getState(medId);
+  const med=getMed(medId),s=getState(medId);
   document.getElementById('sheet-title').textContent=med.brand;
-  document.getElementById('sheet-subtitle').textContent=`${med.generic} · Log a past dose`;
-  let doseHtml='<div class="dose-lbl">Dose</div><div class="dose-chips" id="dose-chips-wrap">';
-  med.doseOptions.forEach(d=>{
-    const sel=!s.useCustom&&d===s.selectedDose;
-    doseHtml+=`<button class="dose-chip ${sel?'sel':''}" onclick="selectDosePast('${medId}',${d})">${d}${med.doseUnit}${pillCount(med,d)}</button>`;
-  });
-  if(med.hasCustom) doseHtml+=`<button class="dose-chip custom-chip ${s.useCustom?'sel':''}" id="custom-chip-btn" onclick="activateCustomPast('${medId}')">Custom</button>`;
-  doseHtml+='</div>';
-  if(s.useCustom) doseHtml+=`<div class="custom-row"><input class="custom-input" id="custom-dose-input" type="number" step="0.5" min="0.5" placeholder="Enter dose" value="${s.customVal}" oninput="onCustomInputPast('${medId}',this.value)"><span class="custom-unit">${med.doseUnit}</span></div>`;
-  const nowStr=localDTVal(Date.now()),savedVal=s.pastVal||nowStr;
-  const pastBlock=`<div class="past-inner"><div class="past-lbl">When was it taken?</div>
+  document.getElementById('sheet-subtitle').textContent=`${med.generic} · Log a past ${med.isPain ? 'pain entry' : 'dose'}`;
+
+  const doseHtml = med.isPack ? '' : buildDoseHtml(medId, true);
+  const nowStr=localDTVal(Date.now()),savedVal=getDefaultPastValue(medId);
+
+  const pastBlock=`<div class="past-inner"><div class="past-lbl">${med.isPain ? 'When was this pain level logged?' : 'When was it taken?'}</div>
     <input class="past-datetime" id="past-dt-input" type="datetime-local" max="${nowStr}" value="${savedVal}" onchange="getState('${medId}').pastVal=this.value">
   </div>`;
-  const effDose=s.useCustom?(s.customVal?`${s.customVal}${med.doseUnit}`:`?${med.doseUnit}`):`${s.selectedDose}${med.doseUnit}${pillCount(med,s.selectedDose)}`;
-  document.getElementById('sheet-body').innerHTML=`${doseHtml}${pastBlock}<button class="action-btn btn-orange" id="past-log-btn" onclick="submitPast('${medId}')">↩ Log Past Dose — ${effDose}</button>`;
+
+  const effDose = med.isPack ? `${getMedrolDayDose(getMedrolPackDay())} tabs` : formatDoseDisplay(med,getEffectiveDose(medId));
+
+  document.getElementById('sheet-body').innerHTML=`${doseHtml}${pastBlock}<button class="action-btn btn-orange" id="past-log-btn" onclick="submitPast('${medId}')">${med.isPain ? `↩ Log Past Pain — ${effDose}` : `↩ Log Past Dose — ${effDose}`}</button>`;
   document.getElementById('sheet-overlay').classList.add('show');
   document.getElementById('med-sheet').classList.add('show');
   document.body.style.overflow='hidden';
+  if(s.useCustom) setTimeout(()=>{const el=document.getElementById('custom-dose-input');if(el)el.focus();},80);
 }
 
 function selectDosePast(medId,dose) {
   const s=getState(medId); s.selectedDose=dose; s.useCustom=false;
   document.querySelectorAll('#dose-chips-wrap .dose-chip').forEach(btn=>{
     if(btn.id==='custom-chip-btn'){btn.classList.remove('sel');return;}
-    btn.classList.toggle('sel',parseFloat(btn.textContent)===dose);
+    const txt = btn.textContent;
+    btn.classList.toggle('sel', parseFloat(txt)===dose);
   });
   const cr=document.querySelector('.custom-row'); if(cr) cr.remove();
   updatePastBtn(medId);
@@ -686,11 +875,15 @@ function activateCustomPast(medId) {
 }
 function onCustomInputPast(medId,val) { getState(medId).customVal=val; updatePastBtn(medId); }
 function updatePastBtn(medId) {
-  const med=MEDS.find(m=>m.id===medId),s=getState(medId);
-  const effDose=s.useCustom?(s.customVal?`${s.customVal}${med.doseUnit}${pillCount(med,parseFloat(s.customVal)||0)}`:`?${med.doseUnit}`):`${s.selectedDose}${med.doseUnit}${pillCount(med,s.selectedDose)}`;
-  const btn=document.getElementById('past-log-btn'); if(btn) btn.textContent=`↩ Log Past Dose — ${effDose}`;
+  const med=getMed(medId);
+  const effDose = formatDoseDisplay(med,getEffectiveDose(medId));
+  const btn=document.getElementById('past-log-btn');
+  if(btn) btn.textContent = med.isPain ? `↩ Log Past Pain — ${effDose}` : `↩ Log Past Dose — ${effDose}`;
 }
 function submitPast(medId) {
+  const valid = validateEffectiveDose(medId);
+  if (!valid.ok) { showToast('⚠️', valid.msg); return; }
+
   const inp=document.getElementById('past-dt-input');
   if(!inp||!inp.value){showToast('⚠️','Please pick a date & time');return;}
   const ts=new Date(inp.value).getTime();
@@ -713,18 +906,20 @@ function renderHistory() {
   const sorted=[...logs].sort((a,b)=>b.time-a.time);
   const byDay={};
   sorted.forEach(log=>{const d=fmtDate(log.time);if(!byDay[d])byDay[d]=[];byDay[d].push(log);});
+
   Object.entries(byDay).forEach(([day,entries])=>{
     html+=`<div style="padding:0 16px 6px"><div class="list-header">${day}</div></div><div style="margin:0 16px 16px"><div class="list-group">`;
     entries.forEach(log=>{
-      const med=MEDS.find(m=>m.id===log.medId); if(!med) return;
+      const med=getMed(log.medId); if(!med) return;
       const dotColor=log.override?'var(--ios-red)':log.past?'var(--ios-orange)':'var(--ios-green)';
       const tag=log.override?' · override':log.past?' · past entry':'';
+      const valueText = med.isPain ? `Pain ${log.dose}/10` : formatDoseDisplay(med,log.dose);
       html+=`<div class="list-row" style="cursor:default">
         <div class="hist-dot" style="background:${dotColor}"></div>
         <div class="med-text"><div class="med-name">${med.brand}</div><div class="med-generic">${med.generic}${tag}</div></div>
         <div class="med-right" style="gap:12px">
           <div style="text-align:right">
-            <div style="font-size:14px;font-weight:500">${log.dose}${log.unit}${pillCount(med,log.dose)}</div>
+            <div style="font-size:14px;font-weight:500">${valueText}</div>
             <div style="font-size:12px;color:var(--ios-lbl2)">${fmtTime(log.time)}</div>
           </div>
           <button class="hist-del" onclick="askDelete('${log.id}')">✕</button>
@@ -732,6 +927,7 @@ function renderHistory() {
     });
     html+='</div></div>';
   });
+
   html+=`<button class="copy-btn" onclick="copyToNotes()">📋 Copy for Notes App</button>`;
   document.getElementById('history-content').innerHTML=html;
 }
@@ -747,9 +943,12 @@ function copyToNotes() {
   Object.entries(byDay).forEach(([day,entries])=>{
     text+=`${day}\n`;
     entries.forEach(log=>{
-      const med=MEDS.find(m=>m.id===log.medId);
+      const med=getMed(log.medId);
       const tags=[log.past?'past':'',log.override?'override':''].filter(Boolean).join(', ');
-      text+=`  ${fmtTime(log.time).padEnd(10)} ${(med?med.brand:log.medId).padEnd(14)} ${log.dose}${log.unit}${med?pillCount(med,log.dose):''}${tags?' ['+tags+']':''}\n`;
+      const label = med?.isPain
+        ? `Pain ${log.dose}/10`
+        : `${(med?med.brand:log.medId).padEnd(14)} ${log.dose}${log.unit}${med?pillCount(med,log.dose):''}`;
+      text+=`  ${fmtTime(log.time).padEnd(10)} ${label}${tags?' ['+tags+']':''}\n`;
     });
     text+='\n';
   });
@@ -763,7 +962,7 @@ function render() {
   else renderHistory();
 }
 
-setInterval(render,10000);
+setInterval(loadFromCloud, 30000);
 render();
 loadFromCloud();
 </script>
