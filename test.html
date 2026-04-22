@@ -148,6 +148,18 @@
   input[type=number]::-webkit-inner-spin-button,
   input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
 
+#pain-picker {
+  appearance: none;
+  -webkit-appearance: none;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+}
+
+#pain-picker option {
+  scroll-snap-align: center;
+  padding: 8px 0;
+}
+
   .pack-day-block{background:var(--ios-bg3);border-radius:var(--r-md);padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
   .pack-day-label{font-size:13px;color:var(--ios-lbl2)}
   .pack-day-value{font-size:20px;font-weight:700;color:var(--ios-purple)}
@@ -248,10 +260,10 @@ async function supaFetch(method, path, body) {
 // ─── MEDS ─────────────────────────────────────────────────────────────────────
 const MEDS = [
   // ── TRACKER / SPECIAL ──
-  {id:'pain',      brand:'Pain Level', generic:'0–10 Scale',            emoji:'📊',color:'red',   intervalHours:0,  defaultDose:5,    doseOptions:[0,2,4,6,8,10], hasCustom:true,  doseUnit:'',      tabletMg:null, note:'Log current pain level', isPain:true},
+  {id:'pain',      brand:'Pain Level', generic:'0–10 Scale',            emoji:'📊',color:'red',   intervalHours:0,  defaultDose:5,    doseOptions:[], hasCustom:false,  doseUnit:'',      tabletMg:null, note:'Log current pain level', isPain:true},
 
   // ── AS-NEEDED ──
-  {id:'dilaudid',  brand:'Dilaudid',   generic:'HYDROmorphone',         emoji:'💊',color:'orange',intervalHours:3,  defaultDose:2,    doseOptions:[2,4,6],       hasCustom:true,  doseUnit:'mg',    tabletMg:2,    note:'Every 3h as needed · up to 5 days'},
+  {id:'dilaudid',  brand:'Dilaudid',   generic:'HYDROmorphone',         emoji:'💊',color:'orange',intervalHours:4,  defaultDose:4,    doseOptions:[2,4,6],       hasCustom:false,  doseUnit:'mg',    tabletMg:2,    note:'Every 4h as needed · up to 5 days'},
   {id:'xanax',     brand:'Xanax',      generic:'ALPRAZolam',            emoji:'💊',color:'orange',intervalHours:8,  defaultDose:0.5,  doseOptions:[0.5],         hasCustom:false, doseUnit:'mg',    tabletMg:0.5,  note:'Every 8h as needed · up to 10 days'},
   {id:'zanaflex',  brand:'Zanaflex',   generic:'tiZANidine',            emoji:'💊',color:'orange',intervalHours:8,  defaultDose:4,    doseOptions:[4],           hasCustom:false, doseUnit:'mg',    tabletMg:4,    note:'Every 8h as needed for muscle spasms'},
   {id:'tylenol',   brand:'Tylenol',    generic:'Acetaminophen',         emoji:'💊',color:'green', intervalHours:6,  defaultDose:1000, doseOptions:[500,1000],    hasCustom:false, doseUnit:'mg',    tabletMg:500,  note:'Every 6h as needed · up to 10 days'},
@@ -382,8 +394,39 @@ function getDefaultPastValue(medId) {
   const s=getState(medId);
   return s.pastVal || localDTVal(Date.now());
 }
+function setPainValue(val) {
+  const s = getState('pain');
+  s.selectedDose = parseFloat(val);
+}
 function buildDoseHtml(medId, isPastMode=false) {
   const med=getMed(medId), s=getState(medId);
+  if (med.isPain) {
+  let options = '';
+  for (let i = 0; i <= 10; i += 0.5) {
+    options += `<option value="${i}">${i}</option>`;
+  }
+
+  return `
+    <div class="dose-lbl">Pain Level</div>
+    <div style="margin-bottom:14px">
+      <select id="pain-picker"
+        style="
+          width:100%;
+          height:120px;
+          font-size:22px;
+          background:var(--ios-bg3);
+          color:var(--ios-lbl);
+          border:none;
+          border-radius:12px;
+          text-align:center;
+        "
+        size="5"
+        onchange="setPainValue(this.value)">
+        ${options}
+      </select>
+    </div>
+  `;
+}
   let doseHtml='<div class="dose-lbl">';
   doseHtml += med.isPain ? 'Pain Level' : 'Dose';
   doseHtml += '</div><div class="dose-chips" id="dose-chips-wrap">';
@@ -676,7 +719,11 @@ function renderSheet(medId) {
     const day=getMedrolPackDay(), dayDose=getMedrolDayDose(day);
     packHtml=day<=6
       ?`<div class="pack-day-block"><div class="pack-day-label">Pack day · ${dayDose} tablet${dayDose>1?'s':''} today</div><div class="pack-day-value">Day ${day} of 6</div></div>`
-      :`<div class="pack-day-block"><div class="pack-day-label" style="color:var(--ios-green)">✅ Pack complete (6 of 6 days logged)</div></div>`;
+      :`<div class="pack-day-block"><div class="pack-day-label" style="color:var(--ios-green)">✅ Pack complete (6 of 6 days logged)</div></div>`
+	  setTimeout(() => {
+  const picker = document.getElementById('pain-picker');
+  if (picker) picker.value = getState('pain').selectedDose;
+}, 50);
   }
 
   const doseHtml = med.isPack ? '' : buildDoseHtml(medId, false);
@@ -897,38 +944,91 @@ function submitPast(medId) {
 // ─── RENDER HISTORY ───────────────────────────────────────────────────────────
 function renderHistory() {
   let html='<div style="height:8px"></div>';
+
   html+=`<div class="sync-bar"><div class="sync-bar-label">☁️ Cloud sync</div><div class="sync-bar-result" id="sync-check-result">Checking…</div></div>`;
   setTimeout(checkSyncStatus,300);
+
+  // ─── PAIN HISTORY SECTION ─────────────────────────────
+  const painLogs = logs
+    .filter(l => l.medId === 'pain')
+    .sort((a,b)=>b.time-a.time);
+
+  if (painLogs.length) {
+    html += `
+      <div style="padding:0 16px 6px">
+        <div class="list-header">Pain History</div>
+      </div>
+      <div style="margin:0 16px 16px">
+        <div class="list-group">
+    `;
+
+    painLogs.slice(0, 10).forEach(log => {
+      html += `
+        <div class="list-row" style="cursor:default">
+          <div class="hist-dot" style="background:var(--ios-red)"></div>
+          <div class="med-text">
+            <div class="med-name">Pain Level</div>
+            <div class="med-generic">${fmtDateTime(log.time)}</div>
+          </div>
+          <div style="font-size:18px;font-weight:600">
+            ${log.dose}/10
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div></div>`;
+  }
+
+  // ─── NORMAL HISTORY ──────────────────────────────────
   if(!logs.length) {
     html+='<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No History Yet</div><div>Start logging doses in the Tracker tab.</div></div>';
-    document.getElementById('history-content').innerHTML=html; return;
+    document.getElementById('history-content').innerHTML=html;
+    return;
   }
-  const sorted=[...logs].sort((a,b)=>b.time-a.time);
+
+  const sorted=[...logs]
+    .filter(l => l.medId !== 'pain') // 👈 prevents duplicate display
+    .sort((a,b)=>b.time-a.time);
+
   const byDay={};
-  sorted.forEach(log=>{const d=fmtDate(log.time);if(!byDay[d])byDay[d]=[];byDay[d].push(log);});
+  sorted.forEach(log=>{
+    const d=fmtDate(log.time);
+    if(!byDay[d]) byDay[d]=[];
+    byDay[d].push(log);
+  });
 
   Object.entries(byDay).forEach(([day,entries])=>{
     html+=`<div style="padding:0 16px 6px"><div class="list-header">${day}</div></div><div style="margin:0 16px 16px"><div class="list-group">`;
+
     entries.forEach(log=>{
-      const med=getMed(log.medId); if(!med) return;
+      const med=MEDS.find(m=>m.id===log.medId);
+      if(!med) return;
+
       const dotColor=log.override?'var(--ios-red)':log.past?'var(--ios-orange)':'var(--ios-green)';
       const tag=log.override?' · override':log.past?' · past entry':'';
-      const valueText = med.isPain ? `Pain ${log.dose}/10` : formatDoseDisplay(med,log.dose);
+
       html+=`<div class="list-row" style="cursor:default">
         <div class="hist-dot" style="background:${dotColor}"></div>
-        <div class="med-text"><div class="med-name">${med.brand}</div><div class="med-generic">${med.generic}${tag}</div></div>
+        <div class="med-text">
+          <div class="med-name">${med.brand}</div>
+          <div class="med-generic">${med.generic}${tag}</div>
+        </div>
         <div class="med-right" style="gap:12px">
           <div style="text-align:right">
-            <div style="font-size:14px;font-weight:500">${valueText}</div>
+            <div style="font-size:14px;font-weight:500">${log.dose}${log.unit}${pillCount(med,log.dose)}</div>
             <div style="font-size:12px;color:var(--ios-lbl2)">${fmtTime(log.time)}</div>
           </div>
           <button class="hist-del" onclick="askDelete('${log.id}')">✕</button>
-        </div></div>`;
+        </div>
+      </div>`;
     });
+
     html+='</div></div>';
   });
 
   html+=`<button class="copy-btn" onclick="copyToNotes()">📋 Copy for Notes App</button>`;
+
   document.getElementById('history-content').innerHTML=html;
 }
 
