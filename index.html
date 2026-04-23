@@ -11,75 +11,115 @@
 <title>Tom's Meds</title>
 <style>
   :root {
-    --ios-bg:#000000;--ios-bg2:#1c1c1e;--ios-bg3:#2c2c2e;--ios-bg4:#3a3a3c;
-    --ios-sep:rgba(255,255,255,0.08);
-    --ios-lbl:#ffffff;--ios-lbl2:rgba(255,255,255,0.55);--ios-lbl3:rgba(255,255,255,0.30);
-    --ios-blue:#0a84ff;--ios-green:#30d158;--ios-red:#ff453a;--ios-orange:#ff9f0a;
-    --ios-purple:#bf5af2;--ios-teal:#5ac8fa;--ios-yellow:#ffd60a;
-    --ios-fill:rgba(255,255,255,0.08);--ios-fill2:rgba(255,255,255,0.12);
+    --ios-bg:#f4f6ff;--ios-bg2:#ffffff;--ios-bg3:#eef2ff;--ios-bg4:#dfe6fb;
+    --ios-sep:rgba(70,86,140,0.10);
+    --ios-lbl:#2d396b;--ios-lbl2:rgba(45,57,107,0.70);--ios-lbl3:rgba(45,57,107,0.42);
+    --ios-blue:#59b9f8;--ios-green:#5cca92;--ios-red:#ef7d74;--ios-orange:#f4b163;
+    --ios-purple:#8a8df2;--ios-teal:#67cdd9;--ios-yellow:#f4d26b;
+    --ios-fill:rgba(89,185,248,0.08);--ios-fill2:rgba(89,185,248,0.14);
+    --app-bg:linear-gradient(180deg,#fbfcff 0%,#f3f5ff 32%,#eef2ff 100%);
+    --dock-bg:rgba(255,255,255,0.88);
+    --surface-strong:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);
+    --surface-shadow:0 18px 40px rgba(113,126,181,0.13);
+    --section-bg:rgba(255,255,255,0.72);
+    --section-border:rgba(96,118,179,0.10);
+    --section-shadow:0 10px 24px rgba(113,126,181,0.08);
+    --overlay-surface:rgba(255,255,255,0.96);
+    --theme-btn-bg:rgba(89,185,248,0.12);
+    --theme-btn-color:#3f88c8;
+    --theme-meta:#0d0d0f;
     --r-lg:16px;--r-md:12px;--r-sm:10px;--tab-h:83px;
     --sf:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Helvetica Neue',sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  html,body{background:var(--ios-bg);color:var(--ios-lbl);font-family:var(--sf);font-size:17px;line-height:1.3;min-height:100dvh;-webkit-font-smoothing:antialiased}
+  body[data-theme="dark"]{
+    --ios-bg:#111827;--ios-bg2:#1a2436;--ios-bg3:#223048;--ios-bg4:#2d3e5a;
+    --ios-sep:rgba(182,198,239,0.12);
+    --ios-lbl:#edf3ff;--ios-lbl2:rgba(237,243,255,0.72);--ios-lbl3:rgba(237,243,255,0.44);
+    --ios-fill:rgba(89,185,248,0.14);--ios-fill2:rgba(89,185,248,0.24);
+    --app-bg:linear-gradient(180deg,#09111d 0%,#0d1624 42%,#111c2d 100%);
+    --dock-bg:rgba(17,24,39,0.78);
+    --surface-strong:linear-gradient(180deg,#1c2740 0%,#162033 100%);
+    --surface-shadow:0 18px 44px rgba(0,0,0,0.38);
+    --section-bg:rgba(33,46,69,0.92);
+    --section-border:rgba(182,198,239,0.12);
+    --section-shadow:0 12px 26px rgba(0,0,0,0.22);
+    --overlay-surface:rgba(26,36,54,0.96);
+    --theme-btn-bg:rgba(244,210,107,0.14);
+    --theme-btn-color:#f4d26b;
+    --theme-meta:#0b111a;
+  }
+  html,body{background:var(--app-bg);color:var(--ios-lbl);font-family:var(--sf);font-size:17px;line-height:1.3;min-height:100dvh;-webkit-font-smoothing:antialiased}
 
-  .nav-bar{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(28,28,30,0.85);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border-bottom:0.5px solid var(--ios-sep);padding-top:env(safe-area-inset-top,44px)}
+  .nav-bar{display:none}
   .nav-title-bar{display:flex;align-items:center;justify-content:center;height:44px;position:relative;padding:0 16px}
-  .nav-title{font-size:17px;font-weight:600;letter-spacing:-0.4px}
+  .nav-title{font-size:18px;font-weight:700;letter-spacing:-0.5px}
   .nav-right{position:absolute;right:16px;top:50%;transform:translateY(-50%)}
   .sync-indicator{font-size:12px;color:var(--ios-lbl3);display:flex;align-items:center;gap:5px}
   .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--ios-lbl3);flex-shrink:0;transition:background 0.3s}
   .sync-dot.green{background:var(--ios-green)}.sync-dot.orange{background:var(--ios-orange)}.sync-dot.red{background:var(--ios-red)}
 
-  .tab-bar{position:fixed;bottom:calc(env(safe-area-inset-bottom,20px) + 4px);left:22px;right:22px;z-index:200;background:rgba(28,28,30,0.92);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border:1px solid var(--ios-sep);border-radius:22px;box-shadow:0 18px 38px rgba(0,0,0,0.34);display:flex;overflow:hidden}
+  .tab-bar{position:fixed;bottom:calc(env(safe-area-inset-bottom,20px) + 4px);left:22px;right:22px;z-index:200;background:var(--dock-bg);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border:1px solid var(--section-border);border-radius:24px;box-shadow:0 18px 38px rgba(116,127,178,0.20);display:flex;overflow:hidden}
   .tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 6px;cursor:pointer;border:none;background:none;color:var(--ios-lbl3);font-family:var(--sf);transition:color 0.15s;min-height:58px}
   .tab-item.active{color:var(--ios-blue)}
   .tab-icon{font-size:22px;line-height:1;margin-bottom:2px}
   .tab-label{font-size:10px;font-weight:500;letter-spacing:0.1px}
 
-  .scroll-content{padding-top:calc(env(safe-area-inset-top,44px) + 44px);padding-bottom:calc(env(safe-area-inset-bottom,20px) + var(--tab-h) + 26px);min-height:100dvh}
-  .page{display:none}.page.active{display:block}
+  .scroll-content{padding-top:18px;padding-bottom:calc(env(safe-area-inset-bottom,20px) + var(--tab-h) + 26px);min-height:100dvh}
+  .page{display:none;background:transparent}.page.active{display:block;background:transparent}
 
-  .list-header{font-size:13px;font-weight:400;color:var(--ios-lbl2);text-transform:uppercase;letter-spacing:0.06em;padding:0 16px 6px}
-  .list-group{background:var(--ios-bg2);border-radius:var(--r-lg);overflow:hidden}
-  .list-row{display:flex;align-items:center;padding:12px 16px;gap:14px;position:relative;cursor:pointer}
+  .list-header{font-size:14px;font-weight:700;color:var(--ios-lbl);letter-spacing:-0.02em;padding:0 16px 8px}
+  .tracker-section{margin:0 16px 16px}
+  .section-toggle{width:100%;margin:0;display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--section-bg);border:1px solid var(--section-border);border-radius:18px;color:var(--ios-lbl);font-family:var(--sf);cursor:pointer;padding:12px 14px;text-align:left;box-shadow:var(--section-shadow);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);position:relative;z-index:1}
+  .section-toggle-left{display:flex;align-items:center;gap:8px;min-width:0}
+  .section-toggle-title{font-size:16px;font-weight:800;letter-spacing:-0.03em}
+  .section-toggle.complete .section-toggle-title{color:var(--ios-lbl2)}
+  .section-toggle-meta{font-size:12px;color:var(--ios-lbl2);font-weight:500}
+  .section-toggle-icon{font-size:14px;color:var(--ios-lbl3);min-width:14px;text-align:center}
+  .section-body.collapsed{display:none}
+  .tracker-section.expanded{background:var(--ios-bg2);border:1px solid rgba(96,118,179,0.08);border-radius:24px;overflow:hidden;box-shadow:0 16px 40px rgba(113,126,181,0.12)}
+  .tracker-section.expanded .section-toggle{background:transparent;border:none;border-radius:0;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;padding:14px 16px 10px}
+  .tracker-section.expanded .section-body{margin-top:0}
+  .tracker-section.expanded .list-group{background:transparent;border:none;box-shadow:none;border-radius:0}
+  .list-group{background:var(--ios-bg2);border-radius:24px;overflow:hidden;box-shadow:0 16px 40px rgba(113,126,181,0.12);border:1px solid rgba(96,118,179,0.08)}
+  .list-row{display:flex;align-items:center;padding:15px 16px;gap:14px;position:relative;cursor:pointer}
   .list-row:not(:last-child)::after{content:'';position:absolute;bottom:0;left:16px;right:0;height:0.5px;background:var(--ios-sep)}
   .list-row:active{background:var(--ios-fill)}
 
-  .med-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-  .med-icon.orange{background:rgba(255,159,10,0.18)}.med-icon.green{background:rgba(48,209,88,0.18)}
-  .med-icon.blue{background:rgba(10,132,255,0.18)}.med-icon.yellow{background:rgba(255,214,10,0.18)}
-  .med-icon.purple{background:rgba(191,90,242,0.18)}.med-icon.teal{background:rgba(90,200,250,0.18)}
-  .med-icon.red{background:rgba(255,69,58,0.18)}
+  .med-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,0.75),0 8px 18px rgba(113,126,181,0.12)}
+  .med-icon.orange{background:linear-gradient(180deg,#fff1df,#ffe6c7)}.med-icon.green{background:linear-gradient(180deg,#e6faef,#d6f4e4)}
+  .med-icon.blue{background:linear-gradient(180deg,#e6f5ff,#d9ecff)}.med-icon.yellow{background:linear-gradient(180deg,#fff8dc,#ffefbf)}
+  .med-icon.purple{background:linear-gradient(180deg,#f0ecff,#e2dcff)}.med-icon.teal{background:linear-gradient(180deg,#e9fcff,#d7f5f8)}
+  .med-icon.red{background:linear-gradient(180deg,#ffe9e7,#ffd8d3)}
 
   .med-text{flex:1;min-width:0}
-  .med-name{font-size:17px;font-weight:400}
+  .med-name{font-size:17px;font-weight:700;letter-spacing:-0.02em}
   .med-generic{font-size:13px;color:var(--ios-lbl2);margin-top:1px}
-  .med-sub{font-size:12px;color:var(--ios-lbl3);margin-top:2px}
+  .med-sub{font-size:12px;color:var(--ios-lbl2);margin-top:4px}
   .med-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
-  .status-pill{font-size:13px;font-weight:600;padding:4px 10px;border-radius:20px;white-space:nowrap}
-  .pill-ok{background:rgba(48,209,88,0.18);color:var(--ios-green)}
-  .pill-wait{background:rgba(255,69,58,0.18);color:var(--ios-red)}
-  .pill-warn{background:rgba(255,159,10,0.18);color:var(--ios-orange)}
-  .pill-done{background:rgba(255,69,58,0.18);color:var(--ios-red)}
+  .status-pill{font-size:13px;font-weight:700;padding:8px 13px;border-radius:999px;white-space:nowrap}
+  .pill-ok{background:rgba(92,202,146,0.18);color:#3b9a6a}
+  .pill-wait{background:rgba(89,185,248,0.16);color:#4397d1}
+  .pill-warn{background:rgba(244,177,99,0.28);color:#a75f18}
+  .pill-done{background:rgba(239,125,116,0.18);color:#d46d65}
   .chev{color:var(--ios-lbl3);font-size:14px}
 
-  .prog-track{height:3px;background:rgba(255,255,255,0.1);border-radius:2px;margin-top:5px;overflow:hidden}
-  .prog-fill{height:100%;border-radius:2px;background:var(--ios-green);transition:width 1s linear}
-  .prog-fill.mid{background:var(--ios-orange)}.prog-fill.low{background:var(--ios-red)}
+  .prog-track{height:6px;background:#e9eefb;border-radius:999px;margin-top:7px;overflow:hidden}
+  .prog-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#66c6d2,#74d7a0);transition:width 1s linear}
+  .prog-fill.mid{background:linear-gradient(90deg,#79bdf6,#8ea8f5)}.prog-fill.low{background:linear-gradient(90deg,#f2b26f,#ee867b)}
 
   .sheet-overlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.5)}
   .sheet-overlay.show{display:block}
-  .sheet{position:fixed;bottom:0;left:0;right:0;z-index:301;background:var(--ios-bg2);border-radius:20px 20px 0 0;padding-bottom:env(safe-area-inset-bottom,20px);transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);max-height:92dvh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .sheet{position:fixed;bottom:0;left:0;right:0;z-index:301;background:var(--overlay-surface);border-radius:28px 28px 0 0;padding-bottom:env(safe-area-inset-bottom,20px);transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);max-height:92dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 -24px 50px rgba(113,126,181,0.18)}
   .sheet.show{transform:translateY(0)}
-  .sheet-handle{width:36px;height:5px;border-radius:3px;background:rgba(255,255,255,0.25);margin:10px auto 0}
+  .sheet-handle{width:42px;height:5px;border-radius:3px;background:rgba(91,108,166,0.18);margin:10px auto 0}
   .sheet-header{padding:14px 20px 0;display:flex;align-items:flex-start;justify-content:space-between}
   .sheet-title{font-size:20px;font-weight:700;letter-spacing:-0.4px}
   .sheet-subtitle{font-size:14px;color:var(--ios-lbl2);margin-top:2px}
   .sheet-close{width:30px;height:30px;border-radius:50%;background:var(--ios-fill2);border:none;color:var(--ios-lbl2);font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
   .sheet-body{padding:16px 20px}
 
-  .last-block{background:var(--ios-bg3);border-radius:var(--r-md);padding:12px 14px;margin-bottom:14px}
+  .last-block{background:var(--ios-bg3);border-radius:18px;padding:13px 14px;margin-bottom:14px}
   .last-lbl{font-size:12px;color:var(--ios-lbl2);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px}
   .last-val{font-size:15px;font-weight:500}
   .last-sub{font-size:13px;color:var(--ios-lbl2);margin-top:2px}
@@ -108,15 +148,15 @@
   .past-datetime{width:100%;background:var(--ios-bg4);border:none;border-radius:var(--r-sm);color:var(--ios-lbl);font-family:var(--sf);font-size:15px;padding:10px 12px}
   .past-datetime:focus{outline:none}
 
-  .alert-card{margin:0 0 14px;background:rgba(255,159,10,0.15);border:1px solid rgba(255,159,10,0.35);border-radius:var(--r-lg);padding:14px 16px}
-  .alert-title{font-size:14px;font-weight:600;color:var(--ios-orange);margin-bottom:4px}
+  .alert-card{margin:0 0 14px;background:linear-gradient(180deg,#ffffff,#f8fbff);border:1px solid rgba(96,118,179,0.10);border-radius:24px;padding:14px 16px;box-shadow:0 14px 30px rgba(113,126,181,0.10)}
+  .alert-title{font-size:14px;font-weight:700;color:var(--ios-lbl);margin-bottom:4px}
   .alert-body{font-size:13px;color:var(--ios-lbl2);line-height:1.45;white-space:pre-line}
 
   .hist-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
   .hist-del{background:none;border:none;color:var(--ios-lbl3);font-size:18px;cursor:pointer;padding:2px 4px;flex-shrink:0;line-height:1;transition:color 0.15s}
   .hist-del:active{color:var(--ios-red)}
 
-  .sync-bar{margin:0 16px 16px;background:var(--ios-bg2);border-radius:var(--r-lg);padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+  .sync-bar{margin:0 16px 16px;background:var(--ios-bg2);border-radius:24px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 14px 30px rgba(113,126,181,0.10);border:1px solid rgba(96,118,179,0.08)}
   .sync-bar-label{font-size:14px;color:var(--ios-lbl2)}
   .sync-bar-result{font-size:13px;color:var(--ios-lbl3)}
 
@@ -124,7 +164,7 @@
   .empty-icon{font-size:48px;margin-bottom:14px}
   .empty-title{font-size:20px;font-weight:600;color:var(--ios-lbl);margin-bottom:8px}
 
-  .copy-btn{display:block;width:calc(100% - 32px);margin:0 16px 20px;padding:15px;border-radius:var(--r-md);border:none;background:var(--ios-fill);color:var(--ios-blue);font-family:var(--sf);font-size:17px;font-weight:600;cursor:pointer;text-align:center;transition:opacity 0.15s}
+  .copy-btn{display:block;width:calc(100% - 32px);margin:0 16px 20px;padding:15px;border-radius:18px;border:none;background:rgba(89,185,248,0.12);color:#4fa7e4;font-family:var(--sf);font-size:17px;font-weight:700;cursor:pointer;text-align:center;transition:opacity 0.15s}
   .copy-btn:active{opacity:0.7}
 
   .confirm-overlay{display:none;position:fixed;inset:0;z-index:399;background:rgba(0,0,0,0.5)}
@@ -142,7 +182,7 @@
   .confirm-cancel{width:100%;padding:14px;border:none;background:var(--ios-bg2);border-radius:var(--r-lg);font-family:var(--sf);font-size:17px;font-weight:600;color:var(--ios-blue);cursor:pointer}
   .confirm-cancel:active{background:var(--ios-bg3)}
 
-  .toast{position:fixed;z-index:500;top:calc(env(safe-area-inset-top,44px) + 60px);left:16px;right:16px;background:rgba(44,44,46,0.97);border-radius:var(--r-md);padding:13px 16px;font-size:15px;font-weight:500;display:flex;align-items:center;gap:10px;backdrop-filter:blur(20px);box-shadow:0 4px 24px rgba(0,0,0,0.4);transform:translateY(-20px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none}
+  .toast{position:fixed;z-index:500;top:calc(env(safe-area-inset-top,44px) + 60px);left:16px;right:16px;background:var(--overlay-surface);color:var(--ios-lbl);border-radius:18px;padding:13px 16px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:10px;backdrop-filter:blur(20px);box-shadow:0 10px 30px rgba(113,126,181,0.18);transform:translateY(-20px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none}
   .toast.show{transform:translateY(0);opacity:1}
   .toast-icon{font-size:20px;flex-shrink:0}
 
@@ -160,6 +200,20 @@
   .dose-status-value.ok{color:var(--ios-green)}
   .dose-status-value.warn{color:var(--ios-orange)}
   .dose-status-value.block{color:var(--ios-red)}
+  .hero-card{margin:0 16px 16px;padding:16px;background:var(--surface-strong);border-radius:28px;border:1px solid var(--section-border);box-shadow:var(--surface-shadow)}
+  .hero-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .hero-name{font-size:22px;font-weight:800;letter-spacing:-0.04em;color:var(--ios-lbl)}
+  .hero-progress{font-size:14px;font-weight:600;color:var(--ios-lbl2)}
+  .hero-meter{height:14px;border-radius:999px;background:#e7ecfb;overflow:hidden;margin:14px 0 12px}
+  .hero-meter-fill{height:100%;background:linear-gradient(90deg,#76d39d,#6ec7f6);border-radius:999px}
+  .hero-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+  .hero-chip{background:var(--ios-bg3);border-radius:18px;padding:12px 10px;text-align:center}
+  .hero-chip-val{font-size:19px;font-weight:650;letter-spacing:-0.02em;color:var(--ios-lbl)}
+  .hero-chip-lbl{font-size:11px;color:var(--ios-lbl2);margin-top:4px;text-transform:uppercase;letter-spacing:0.06em}
+  .hero-chip-sub{font-size:11px;color:var(--ios-lbl3);margin-top:2px}
+  .hero-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+  .theme-toggle{border:none;background:var(--theme-btn-bg);color:var(--theme-btn-color);width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-family:var(--sf);cursor:pointer;box-shadow:0 10px 24px rgba(113,126,181,0.12)}
+  .theme-toggle:active{transform:scale(0.97)}
 
   .pain-picker-wrap{margin-bottom:14px}
   .pain-picker{
@@ -185,15 +239,15 @@
   .filter-button-label{font-weight:500}
   .filter-button-sub{font-size:13px;color:var(--ios-lbl2)}
   .filter-menu{
-    display:none;position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:210;
-    background:rgba(28,28,30,0.98);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+    display:none;position:absolute;top:calc(100% + 8px);left:50%;right:auto;width:min(66vw,420px);min-width:240px;max-width:calc(100vw - 32px);max-height:min(70vh,520px);transform:translateX(-50%);z-index:210;
+    background:var(--overlay-surface);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
     border:1px solid var(--ios-sep);border-radius:var(--r-lg);overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.35)
   }
   .filter-menu.show{display:block}
   .filter-menu-head{padding:12px 16px;border-bottom:0.5px solid var(--ios-sep);display:flex;align-items:center;justify-content:space-between}
   .filter-menu-title{font-size:13px;color:var(--ios-lbl2);text-transform:uppercase;letter-spacing:0.06em}
   .filter-clear-btn{background:none;border:none;color:var(--ios-blue);font-family:var(--sf);font-size:14px;cursor:pointer}
-  .filter-list{max-height:320px;overflow-y:auto}
+  .filter-list{max-height:min(58vh,420px);overflow-y:auto}
   .filter-item{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;cursor:pointer;position:relative}
   .filter-item:not(:last-child)::after{content:'';position:absolute;left:16px;right:0;bottom:0;height:0.5px;background:var(--ios-sep)}
   .filter-item:active{background:var(--ios-fill)}
@@ -238,9 +292,7 @@
 
   @media (min-width: 980px) {
     html,body{
-      background:
-        radial-gradient(circle at top, rgba(10,132,255,0.12), transparent 34%),
-        linear-gradient(180deg, #050506, #0b0b0d 24%, #000 100%);
+      background:var(--app-bg);
     }
     .nav-title-bar{
       max-width:1100px;
@@ -312,6 +364,32 @@
     }
     .toast.show{transform:translate(-50%, 0)}
   }
+
+  body[data-theme="dark"] .hero-meter{background:#2b3b58}
+  body[data-theme="dark"] .prog-track{background:#30415e}
+  body[data-theme="dark"] .prog-fill{background:linear-gradient(90deg,#6eb8cb,#6fd2a6)}
+  body[data-theme="dark"] .prog-fill.mid{background:linear-gradient(90deg,#7ca7ea,#8e96e3)}
+  body[data-theme="dark"] .prog-fill.low{background:linear-gradient(90deg,#df9c6d,#d77d79)}
+  body[data-theme="dark"] .pill-ok{background:rgba(98,196,147,0.30);color:#e1ffed}
+  body[data-theme="dark"] .pill-wait{background:rgba(110,164,242,0.28);color:#edf5ff}
+  body[data-theme="dark"] .pill-warn{background:rgba(232,154,88,0.34);color:#fff4e9}
+  body[data-theme="dark"] .pill-done{background:rgba(214,112,112,0.26);color:#ffe8e8}
+  body[data-theme="dark"] .med-icon{box-shadow:inset 0 1px 0 rgba(255,255,255,0.06),0 10px 22px rgba(0,0,0,0.22)}
+  body[data-theme="dark"] .med-icon.orange{background:linear-gradient(180deg,#5b4534,#473528)}
+  body[data-theme="dark"] .med-icon.green{background:linear-gradient(180deg,#345144,#293e35)}
+  body[data-theme="dark"] .med-icon.blue{background:linear-gradient(180deg,#334a5d,#283948)}
+  body[data-theme="dark"] .med-icon.yellow{background:linear-gradient(180deg,#645739,#4f452d)}
+  body[data-theme="dark"] .med-icon.purple{background:linear-gradient(180deg,#4a435f,#39344c)}
+  body[data-theme="dark"] .med-icon.teal{background:linear-gradient(180deg,#35535a,#294046)}
+  body[data-theme="dark"] .med-icon.red{background:linear-gradient(180deg,#613d3d,#4b3030)}
+  body[data-theme="dark"] .tracker-section.expanded{background:var(--ios-bg2);border-color:rgba(182,198,239,0.11);box-shadow:0 18px 40px rgba(0,0,0,0.26)}
+  body[data-theme="dark"] .list-group{border-color:rgba(182,198,239,0.10);box-shadow:0 18px 40px rgba(0,0,0,0.24)}
+  body[data-theme="dark"] .alert-card{background:linear-gradient(180deg,#182133,#131b2b);border-color:rgba(182,198,239,0.10);box-shadow:0 14px 30px rgba(0,0,0,0.24)}
+  body[data-theme="dark"] .sync-bar{background:var(--ios-bg2);border-color:rgba(182,198,239,0.10);box-shadow:0 14px 30px rgba(0,0,0,0.22)}
+  body[data-theme="dark"] .toast{box-shadow:0 16px 34px rgba(0,0,0,0.34)}
+  body[data-theme="dark"] .graph-svg{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00))}
+  body[data-theme="dark"] .graph-axis-label{fill:rgba(237,243,255,0.45)}
+  body[data-theme="dark"] .graph-grid{stroke:rgba(237,243,255,0.09)}
 </style>
 </head>
 <body>
@@ -484,7 +562,7 @@ const MEDS = [
 const SCHEDULE_GROUPS = {
   prn: {label:'As Needed'},
   mornings_empty: {label:'mornings (Empty Stomach)'},
-  morning: {label:'morning'},
+  morning: {label:'Morning'},
   midday: {label:'Midday'},
   evening: {label:'Evening'},
   night: {label:'Night'}
@@ -495,17 +573,18 @@ const TRACKER_GROUP_ORDER = ['prn','mornings_empty','morning','midday','evening'
 MEDS.forEach(m=>{
   if (m.scheduleGroups) return;
   switch(m.id){
-    case 'journavx':      m.scheduleGroups=['morning']; break;
+    case 'journavx':      m.scheduleGroups=['morning','evening']; break;
     case 'xanax':         m.scheduleGroups=['morning','prn']; break;
     case 'zoloft':
-    case 'lyrica':
-    case 'gabapentin':
-    case 'vitaminc':
-    case 'vitamind':
     case 'multivit':
     case 'vitamine':
     case 'zinc':          m.scheduleGroups=['morning']; break;
+    case 'lyrica':
+    case 'vitaminc':
+    case 'vitamind':      m.scheduleGroups=['morning','evening']; break;
+    case 'gabapentin':    m.scheduleGroups=['morning','midday','evening']; break;
     case 'miralax':       m.scheduleGroups=['night']; break;
+    case 'medrol':        m.scheduleGroups=['midday']; break;
     case 'dilaudid':
     case 'zanaflex':
     case 'tylenol':       m.scheduleGroups=['prn']; break;
@@ -532,9 +611,25 @@ let insightsRange = '24h';
 // FIX 4: In-flight guard prevents overlapping cloud fetches
 let cloudFetchInFlight = false;
 const medState = {};
+const trackerSectionExpanded = {};
+const THEME_KEY = 'tomMedsTheme_v1';
+let currentTheme = localStorage.getItem(THEME_KEY) || 'light';
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 function getMed(medId) { return MEDS.find(m=>m.id===medId); }
+
+function applyTheme(theme) {
+  currentTheme = theme === 'dark' ? 'dark' : 'light';
+  document.body.setAttribute('data-theme', currentTheme);
+  localStorage.setItem(THEME_KEY, currentTheme);
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  if (themeMeta) themeMeta.setAttribute('content', currentTheme === 'dark' ? '#0b111a' : '#f4f6ff');
+}
+
+function toggleTheme() {
+  applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+  render();
+}
 
 function getState(medId) {
   if (!medState[medId]) {
@@ -762,6 +857,27 @@ function canTake(med, groupContext = openGroupContext) {
     const rules = getXanaxRules(groupContext);
     return { ok: rules.ok, msLeft: rules.msLeft, reason: rules.ok ? 'none' : 'interval', warnings: getConflictWarnings(med), nextTs: rules.nextTs, specialNote: rules.note, blockLabel: rules.blockLabel };
   }
+  if (groupContext && groupContext !== 'prn' && Array.isArray(med.scheduleGroups) && med.scheduleGroups.includes(groupContext) && hasCompletedScheduledDoseToday(med, groupContext)) {
+    return {
+      ok:false,
+      msLeft:0,
+      reason:'section-complete',
+      warnings:getConflictWarnings(med),
+      specialNote:`Already logged for ${SCHEDULE_GROUPS[groupContext].label.toLowerCase()}`,
+      blockLabel:'Logged'
+    };
+  }
+  const sequenceBlock = getScheduledSequenceBlock(med, groupContext);
+  if (sequenceBlock) {
+    return {
+      ok:false,
+      msLeft:0,
+      reason:'sequence',
+      warnings:getConflictWarnings(med),
+      specialNote:sequenceBlock.specialNote,
+      blockLabel:sequenceBlock.blockLabel
+    };
+  }
   const availability = getAvailability(med);
   return { ...availability, warnings: getConflictWarnings(med) };
 }
@@ -775,6 +891,12 @@ function getNextAvailableTs(med, groupContext = openGroupContext) {
     const nextTs = Math.max(rules.nextTs || 0, warningTs || 0);
     if (!rules.ok && !nextTs) return null;
     return nextTs > Date.now() ? nextTs : null;
+  }
+  if (groupContext && groupContext !== 'prn' && Array.isArray(med.scheduleGroups) && med.scheduleGroups.includes(groupContext) && hasCompletedScheduledDoseToday(med, groupContext)) {
+    return null;
+  }
+  if (getScheduledSequenceBlock(med, groupContext)) {
+    return null;
   }
   const avail = getAvailability(med);
   const intervalTs = avail.ok ? Date.now() : Date.now() + avail.msLeft;
@@ -825,7 +947,10 @@ function allFiltersSelected() {
 }
 
 function getMedDailyFrequency(med, groupKey = null) {
-  if (med.id === 'xanax') return groupKey === 'morning' ? 1 : 3;
+  if (Array.isArray(med.scheduleGroups) && med.scheduleGroups.length) {
+    const scheduled = med.scheduleGroups.filter(g => g !== 'prn');
+    if (scheduled.length) return scheduled.length;
+  }
   if (med.isPack) return 1;
   if (!med.intervalHours || med.intervalHours <= 0) return 1;
   return Math.max(1, Math.round(24 / med.intervalHours));
@@ -839,18 +964,57 @@ function sortMedsForGroup(meds, groupKey) {
   });
 }
 
+function getResolvedDayLogsForMed(med, dayTs = Date.now()) {
+  if (med.id === 'xanax') return getXanaxDayLogs(dayTs);
+  const scheduledGroups = (med.scheduleGroups || []).filter(g => g !== 'prn');
+  const start = startOfDay(dayTs);
+  const end = start + 24*3600000;
+  const dayLogs = logs.filter(l => l.medId === med.id && l.time >= start && l.time < end).sort((a,b)=>a.time-b.time);
+  const expected = scheduledGroups.slice();
+  return dayLogs.map(l => {
+    let ctx = l.groupContext;
+    if (!scheduledGroups.includes(ctx)) {
+      ctx = expected.shift() || scheduledGroups[scheduledGroups.length - 1] || null;
+    } else {
+      const idx = expected.indexOf(ctx);
+      if (idx !== -1) expected.splice(idx, 1);
+    }
+    return {...l, resolvedGroupContext: ctx};
+  });
+}
+
+function getScheduledGroupsForMed(med) {
+  return (med.scheduleGroups || []).filter(g => g !== 'prn');
+}
+
+function getFirstPendingScheduledGroup(med, dayTs = Date.now()) {
+  const scheduledGroups = getScheduledGroupsForMed(med);
+  if (!scheduledGroups.length) return null;
+  const completedGroups = new Set(
+    getResolvedDayLogsForMed(med, dayTs)
+      .map(l => l.resolvedGroupContext)
+      .filter(Boolean)
+  );
+  return scheduledGroups.find(groupKey => !completedGroups.has(groupKey)) || null;
+}
+
+function getScheduledSequenceBlock(med, groupContext, dayTs = Date.now()) {
+  if (!groupContext || groupContext === 'prn' || med.isPain || med.id === 'xanax') return null;
+  const scheduledGroups = getScheduledGroupsForMed(med);
+  if (!scheduledGroups.includes(groupContext) || scheduledGroups.length <= 1) return null;
+  const firstPending = getFirstPendingScheduledGroup(med, dayTs);
+  if (!firstPending || firstPending === groupContext) return null;
+  const pendingLabel = SCHEDULE_GROUPS[firstPending]?.label || firstPending;
+  return {
+    firstPending,
+    specialNote: `${pendingLabel} dose still needs to be logged first`,
+    blockLabel: `${pendingLabel} first`
+  };
+}
+
 function hasCompletedScheduledDoseToday(med, groupKey) {
   if (groupKey === 'prn' || med.isPain) return false;
-  if (med.id === 'xanax') {
-    return getXanaxDayLogs().some(l => l.resolvedGroupContext === groupKey);
-  }
-  const start = startOfDay(Date.now());
-  const end = start + 24*3600000;
-  const dayLogs = logs
-    .filter(l => l.medId === med.id && l.time >= start && l.time < end)
-    .sort((a,b)=>a.time-b.time);
-  if (!dayLogs.length) return false;
-  return dayLogs.length >= getMedDailyFrequency(med, groupKey);
+  return getResolvedDayLogsForMed(med).some(l => l.resolvedGroupContext === groupKey);
 }
 
 function getTrackerProgress(med, groupKey) {
@@ -885,6 +1049,41 @@ function isTrackerRowNewlyAvailable(med, groupKey) {
   const elapsed = Date.now() - last.time;
   const iv = med.intervalHours * 3600000;
   return elapsed >= iv && elapsed < iv + 1800000;
+}
+
+function getSectionRows(groupKey) {
+  return sortMedsForGroup(
+    MEDS.filter(m => !m.isPain && Array.isArray(m.scheduleGroups) && m.scheduleGroups.includes(groupKey)),
+    groupKey
+  );
+}
+
+function getSectionStatus(groupKey) {
+  const rows = getSectionRows(groupKey);
+  const completed = rows.filter(med => hasCompletedScheduledDoseToday(med, groupKey)).length;
+  return { rows, total: rows.length, completed, isComplete: rows.length > 0 && completed === rows.length };
+}
+
+function isTrackerSectionExpanded(groupKey, isComplete) {
+  if (Object.prototype.hasOwnProperty.call(trackerSectionExpanded, groupKey)) return !!trackerSectionExpanded[groupKey];
+  return !isComplete;
+}
+
+function toggleTrackerSection(groupKey) {
+  const status = getSectionStatus(groupKey);
+  trackerSectionExpanded[groupKey] = !isTrackerSectionExpanded(groupKey, status.isComplete);
+  renderTracker();
+}
+
+function getTrackerSummaryStats() {
+  const groups = TRACKER_GROUP_ORDER
+    .filter(groupKey => groupKey !== 'prn')
+    .map(groupKey => ({ groupKey, label: SCHEDULE_GROUPS[groupKey].label, ...getSectionStatus(groupKey) }))
+    .filter(group => group.total > 0);
+
+  const completed = groups.reduce((sum, group) => sum + group.completed, 0);
+  const total = groups.reduce((sum, group) => sum + group.total, 0);
+  return { completed, total, groups };
 }
 
 function getXanaxStatusCard(groupContext) {
@@ -1075,7 +1274,7 @@ function logDose(medId, overrideTime, isPast, isOverride, groupContext) {
   const dose=getEffectiveDose(medId);
   const time=overrideTime||Date.now();
   const resolvedContext = groupContext || null;
-  const entry={id:String(Date.now()+Math.random()),medId,time,dose,unit:med.doseUnit,past:!!isPast,override:!!isOverride,groupContext: medId==='xanax' ? resolvedContext : null};
+  const entry={id:String(Date.now()+Math.random()),medId,time,dose,unit:med.doseUnit,past:!!isPast,override:!!isOverride,groupContext: resolvedContext};
 
   logs.push(entry);
   saveLogs();
@@ -1509,8 +1708,32 @@ function renderTracker() {
     if (m.isPain || !Array.isArray(m.scheduleGroups)) return false;
     return m.scheduleGroups.some(groupKey => isTrackerRowNewlyAvailable(m, groupKey));
   });
+  const summary = getTrackerSummaryStats();
+  const summaryPct = summary.total ? Math.round((summary.completed / summary.total) * 100) : 0;
 
   let html='<div style="height:8px"></div>';
+  html += `
+    <div class="hero-card">
+      <div class="hero-head">
+        <div>
+          <div class="hero-name">Today's Meds</div>
+          <div class="hero-progress">${summary.completed} of ${summary.total} done</div>
+        </div>
+        <div class="hero-actions">
+          <button class="theme-toggle" onclick="toggleTheme()" aria-label="Switch to ${currentTheme === 'dark' ? 'light' : 'dark'} theme" title="Switch to ${currentTheme === 'dark' ? 'light' : 'dark'} theme">${currentTheme === 'dark' ? '☀️' : '🌙'}</button>
+        </div>
+      </div>
+      <div class="hero-meter"><div class="hero-meter-fill" style="width:${summaryPct}%"></div></div>
+      <div class="hero-grid">
+        ${summary.groups.map(group => `
+          <div class="hero-chip">
+            <div class="hero-chip-val">${group.completed} / ${group.total}</div>
+            <div class="hero-chip-lbl">${group.label}</div>
+            <div class="hero-chip-sub">${group.total - group.completed} left</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
   html += `<div style="margin:0 16px 12px"><button class="action-btn btn-red" onclick="openSheet('pain')" style="margin-bottom:0">📊 Log Pain Level</button></div>`;
 
   if(available.length) {
@@ -1518,11 +1741,22 @@ function renderTracker() {
   }
 
   TRACKER_GROUP_ORDER.forEach(groupKey=>{
-    const meds = sortMedsForGroup(MEDS.filter(m => !m.isPain && Array.isArray(m.scheduleGroups) && m.scheduleGroups.includes(groupKey)), groupKey);
+    const section = getSectionStatus(groupKey);
+    const meds = section.rows;
     if (!meds.length) return;
+    const sectionExpanded = isTrackerSectionExpanded(groupKey, section.isComplete);
+    const sectionLabel = section.isComplete ? `${SCHEDULE_GROUPS[groupKey].label} - Complete` : SCHEDULE_GROUPS[groupKey].label;
 
-    html += `<div class="list-header" style="margin:0 16px 6px">${SCHEDULE_GROUPS[groupKey].label}</div>`;
-    html += '<div style="margin:0 16px 16px"><div class="list-group">';
+    html += `<div class="tracker-section ${sectionExpanded ? 'expanded' : 'collapsed'}">`;
+    html += `
+      <button class="section-toggle ${section.isComplete ? 'complete' : ''}" onclick="toggleTrackerSection('${groupKey}')">
+        <div class="section-toggle-left">
+          <div class="section-toggle-title">${sectionLabel}</div>
+          <div class="section-toggle-meta">${section.completed}/${section.total}</div>
+        </div>
+        <div class="section-toggle-icon">${sectionExpanded ? '⌄' : '›'}</div>
+      </button>`;
+    html += `<div class="section-body ${sectionExpanded ? '' : 'collapsed'}"><div><div class="list-group">`;
 
     meds.forEach(med=>{
       // FIX 1: was canTake(med, groupContext) — groupContext was undefined in this scope.
@@ -1566,6 +1800,8 @@ function renderTracker() {
         if (groupKey === 'prn') lastSub += ` · ${Math.max(0, 2 - getXanaxDayLogs().filter(l=>l.resolvedGroupContext==='prn').length)} PRN left today`;
         if (groupKey === 'morning' && getXanaxDayLogs().find(l=>l.resolvedGroupContext==='morning')) lastSub += ' · completed today';
         if (rules.note && !lastSub.includes(rules.note)) lastSub += ` · ${rules.note}`;
+      } else if (avail.reason === 'sequence' && avail.specialNote && !lastSub.includes(avail.specialNote)) {
+        lastSub += ` · ${avail.specialNote}`;
       } else if (completedToday && !lastSub.includes('Completed today')) {
         lastSub += ' · Completed today';
       }
@@ -1583,7 +1819,7 @@ function renderTracker() {
       </div>`;
     });
 
-    html += '</div></div>';
+    html += '</div></div></div></div>';
   });
 
   document.getElementById('tracker-content').innerHTML=html;
@@ -1980,6 +2216,7 @@ function scheduleNextSync() {
 }
 
 updateBackendUi();
+applyTheme(currentTheme);
 render();
 if (backendConfigured()) loadFromCloud().then(scheduleNextSync);
 else setSyncStatus('error', `${getActiveBackend().label} local only`);
