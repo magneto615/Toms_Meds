@@ -330,14 +330,13 @@ async function supaFetch(method, path, body) {
 const MEDS = [
   {id:'pain',       brand:'Pain Level',   generic:'0–10 Scale',          emoji:'📊',color:'red',   intervalHours:0,  defaultDose:null, doseOptions:[],          hasCustom:false, doseUnit:'',      tabletMg:null, note:'Log current pain level', isPain:true},
   {id:'dilaudid',   brand:'Dilaudid',     generic:'HYDROmorphone',        emoji:'💊',color:'orange',intervalHours:4,  defaultDose:2,    doseOptions:[2,4,6],       hasCustom:true,  doseUnit:'mg',    tabletMg:2,    note:'Every 4h as needed · up to 5 days'},
-  {id:'xanax',      brand:'Xanax',        generic:'ALPRAZolam',           emoji:'💊',color:'orange',intervalHours:8,  defaultDose:0.5,  doseOptions:[0.5],         hasCustom:false, doseUnit:'mg',    tabletMg:0.5,  note:'Every 8h as needed · up to 10 days'},
+  {id:'xanax',      brand:'Xanax',        generic:'ALPRAZolam',           emoji:'💊',color:'orange',intervalHours:0,  defaultDose:0.5,  doseOptions:[0.5],         hasCustom:false, doseUnit:'mg',    tabletMg:0.5,  note:'1 every morning + up to 2 as needed through the day'},
   {id:'zanaflex',   brand:'Zanaflex',     generic:'tiZANidine',           emoji:'💊',color:'orange',intervalHours:8,  defaultDose:4,    doseOptions:[4],           hasCustom:false, doseUnit:'mg',    tabletMg:4,    note:'Every 8h as needed for muscle spasms'},
   {id:'tylenol',    brand:'Tylenol',      generic:'Acetaminophen',        emoji:'💊',color:'green', intervalHours:6,  defaultDose:1000, doseOptions:[500,1000],    hasCustom:false, doseUnit:'mg',    tabletMg:500,  note:'Every 6h as needed · up to 10 days'},
   {id:'miralax',    brand:'MiraLAX',      generic:'Polyethylene Glycol',  emoji:'🟤',color:'teal',  intervalHours:24, defaultDose:17,   doseOptions:[17],          hasCustom:false, doseUnit:'g',     tabletMg:null, note:'Once daily · mix in 4–8 oz beverage'},
-  {id:'colace',     brand:'Colace',       generic:'Docusate Sodium',      emoji:'🟤',color:'teal',  intervalHours:8,  defaultDose:100,  doseOptions:[100],         hasCustom:false, doseUnit:'mg',    tabletMg:100,  note:'Every 8h · up to 10 days'},
   {id:'journavx',   brand:'Journavx',     generic:'Suzetrigine',          emoji:'💊',color:'blue',  intervalHours:12, defaultDose:50,   doseOptions:[50],          hasCustom:false, doseUnit:'mg',    tabletMg:50,   note:'Every 12h · take on empty stomach'},
   {id:'lyrica',     brand:'Lyrica',       generic:'Pregabalin',           emoji:'🔵',color:'blue',  intervalHours:12, defaultDose:100,  doseOptions:[100],         hasCustom:false, doseUnit:'mg',    tabletMg:100,  note:'Twice daily'},
-  {id:'gabapentin', brand:'Neurontin',    generic:'Gabapentin',           emoji:'💊',color:'blue',  intervalHours:8,  defaultDose:300,  doseOptions:[300],         hasCustom:false, doseUnit:'mg',    tabletMg:300,  note:'Every 8h'},
+  {id:'gabapentin', brand:'Gabapentin',   generic:'Neurontin',            emoji:'💊',color:'blue',  intervalHours:8,  defaultDose:300,  doseOptions:[300],         hasCustom:false, doseUnit:'mg',    tabletMg:300,  note:'Every 8h'},
   {id:'zoloft',     brand:'Zoloft',       generic:'Sertraline',           emoji:'💊',color:'blue',  intervalHours:24, defaultDose:100,  doseOptions:[100],         hasCustom:false, doseUnit:'mg',    tabletMg:100,  note:'Once daily'},
   {id:'vitaminc',   brand:'Vitamin C',    generic:'Ascorbic Acid',        emoji:'🟡',color:'yellow',intervalHours:12, defaultDose:500,  doseOptions:[500],         hasCustom:false, doseUnit:'mg',    tabletMg:500,  note:'Twice daily'},
   {id:'vitamind',   brand:'Vitamin D3',   generic:'Cholecalciferol',      emoji:'🟡',color:'yellow',intervalHours:12, defaultDose:2000, doseOptions:[2000],        hasCustom:false, doseUnit:'units', tabletMg:null, note:'Twice daily'},
@@ -346,6 +345,51 @@ const MEDS = [
   {id:'zinc',       brand:'Zincate',      generic:'Zinc Sulfate',         emoji:'🟡',color:'yellow',intervalHours:24, defaultDose:220,  doseOptions:[220],         hasCustom:false, doseUnit:'mg',    tabletMg:220,  note:'Once daily'},
   {id:'medrol',     brand:'Medrol',       generic:'Methylprednisolone',   emoji:'💜',color:'purple',intervalHours:24, defaultDose:6,    doseOptions:[6,5,4,3,2,1], hasCustom:false, doseUnit:'tabs',  tabletMg:4,    note:'6-day taper pack · take with food', isPack:true, packSchedule:[6,5,4,3,2,1]},
 ];
+
+
+const SCHEDULE_GROUPS = {
+  prn: {label:'As Needed'},
+  morning_empty: {label:'Morning (Empty Stomach)'},
+  breakfast: {label:'Breakfast'},
+  midday: {label:'Midday'},
+  evening: {label:'Evening'},
+  night: {label:'Night'}
+};
+
+const TRACKER_GROUP_ORDER = ['prn','morning_empty','breakfast','midday','evening','night'];
+
+MEDS.forEach(m=>{
+  if (m.scheduleGroups) return;
+
+  switch(m.id){
+    case 'journavx':
+      m.scheduleGroups=['morning_empty']; break;
+
+    case 'xanax':
+      m.scheduleGroups=['breakfast','prn']; break;
+
+    case 'zoloft':
+    case 'lyrica':
+    case 'gabapentin':
+    case 'vitaminc':
+    case 'vitamind':
+    case 'multivit':
+    case 'vitamine':
+    case 'zinc':
+      m.scheduleGroups=['breakfast']; break;
+
+    case 'miralax':
+      m.scheduleGroups=['night']; break;
+
+    case 'dilaudid':
+    case 'zanaflex':
+    case 'tylenol':
+      m.scheduleGroups=['prn']; break;
+
+    default:
+      m.scheduleGroups=['midday'];
+  }
+});
 
 const EFFECT_WINDOWS = {
   dilaudid: {min:30, max:120},
@@ -431,56 +475,62 @@ function fmtWaitClock(ms) {
 function getConflictWarnings(med) {
   if (!med || med.isPain) return [];
   const twoHours = 2 * 3600000;
+  const oneHour = 3600000;
   const warnings = [];
 
   if (med.id === 'zanaflex') {
     const lastDilaudid = getLastWithinMs('dilaudid', twoHours);
     const lastXanax = getLastWithinMs('xanax', twoHours);
-
     if (lastDilaudid) {
       const clearTs = lastDilaudid.time + twoHours;
-      warnings.push({
-        otherMedId:'dilaudid',
-        clearTs,
+      warnings.push({ otherMedId:'dilaudid', clearTs,
         message:`Cannot take Zanaflex within 2 hours of Dilaudid. Wait ${fmtWaitClock(clearTs - Date.now())}`
       });
     }
     if (lastXanax) {
       const clearTs = lastXanax.time + twoHours;
-      warnings.push({
-        otherMedId:'xanax',
-        clearTs,
+      warnings.push({ otherMedId:'xanax', clearTs,
         message:`Cannot take Zanaflex within 2 hours of Xanax. Wait ${fmtWaitClock(clearTs - Date.now())}`
       });
     }
   }
 
   if (med.id === 'dilaudid') {
-    const lastXanax = getLastWithinMs('xanax', twoHours);
+    const lastZanaflex = getLastWithinMs('zanaflex', twoHours);
+    const lastXanax = getLastWithinMs('xanax', oneHour);
+    if (lastZanaflex) {
+      const clearTs = lastZanaflex.time + twoHours;
+      warnings.push({ otherMedId:'zanaflex', clearTs,
+        message:`Cannot take Dilaudid within 2 hours of Zanaflex. Wait ${fmtWaitClock(clearTs - Date.now())}`
+      });
+    }
     if (lastXanax) {
-      const clearTs = lastXanax.time + twoHours;
-      warnings.push({
-        otherMedId:'xanax',
-        clearTs,
-        message:`Cannot take Dilaudid within 2 hours of Xanax. Wait ${fmtWaitClock(clearTs - Date.now())}`
+      const clearTs = lastXanax.time + oneHour;
+      warnings.push({ otherMedId:'xanax', clearTs,
+        message:`Cannot take Dilaudid within 1 hour of Xanax. Wait ${fmtWaitClock(clearTs - Date.now())}`
       });
     }
   }
 
   if (med.id === 'xanax') {
-    const lastDilaudid = getLastWithinMs('dilaudid', twoHours);
+    const lastZanaflex = getLastWithinMs('zanaflex', twoHours);
+    const lastDilaudid = getLastWithinMs('dilaudid', oneHour);
+    if (lastZanaflex) {
+      const clearTs = lastZanaflex.time + twoHours;
+      warnings.push({ otherMedId:'zanaflex', clearTs,
+        message:`Cannot take Xanax within 2 hours of Zanaflex. Wait ${fmtWaitClock(clearTs - Date.now())}`
+      });
+    }
     if (lastDilaudid) {
-      const clearTs = lastDilaudid.time + twoHours;
-      warnings.push({
-        otherMedId:'dilaudid',
-        clearTs,
-        message:`Cannot take Xanax within 2 hours of Dilaudid. Wait ${fmtWaitClock(clearTs - Date.now())}`
+      const clearTs = lastDilaudid.time + oneHour;
+      warnings.push({ otherMedId:'dilaudid', clearTs,
+        message:`Cannot take Xanax within 1 hour of Dilaudid. Wait ${fmtWaitClock(clearTs - Date.now())}`
       });
     }
   }
 
   return warnings;
-}
+}               
 
 function canTake(med) {
   const availability = getAvailability(med);
@@ -1097,6 +1147,7 @@ function renderTracker() {
     const last=getLastLog(m.id);
     if (!last || !a.ok || a.warnings.length) return false;
     const elapsed=Date.now()-last.time,iv=m.intervalHours*3600000;
+    if (iv <= 0) return false;
     return elapsed>=iv&&elapsed<iv+1800000;
   });
 
@@ -1107,49 +1158,60 @@ function renderTracker() {
     html+=`<div class="alert-card" style="margin:0 16px 16px"><div class="alert-title">⏰ Now Available</div><div class="alert-body">${available.map(m=>`<strong>${m.brand}</strong>`).join(', ')} can now be taken.</div></div>`;
   }
 
-  html+='<div style="margin:0 16px 20px"><div class="list-group">';
-  MEDS.forEach(med=>{
-    const avail=canTake(med);
-    const warnings=avail.warnings || [];
-    const last=getLastLog(med.id);
-    const pct = med.isPain ? 100 : (last ? Math.min(100,(Date.now()-last.time)/(med.intervalHours*3600000)*100) : 100);
-    const barCls=pct<50?'low':pct<80?'mid':'';
-    const readyLabel=(med.id==='dilaudid'||med.id==='xanax'||med.id==='zanaflex')?'OK to Take':'Take Now';
+  TRACKER_GROUP_ORDER.forEach(groupKey=>{
+    const meds = MEDS.filter(m => !m.isPain && Array.isArray(m.scheduleGroups) && m.scheduleGroups.includes(groupKey));
+    if (!meds.length) return;
 
-    let badge='';
-    if (med.isPain) {
-      badge = `<span class="status-pill pill-ok">Log</span>`;
-    } else if (warnings.length) {
-      badge=`<span class="status-pill pill-warn">Blocked</span>`;
-    } else if (med.isPack) {
-      const day=getMedrolPackDay();
-      if(avail.ok&&day<=6) badge=`<span class="status-pill pill-ok">Day ${day}</span>`;
-      else if(day>6) badge=`<span class="status-pill" style="background:rgba(191,90,242,0.18);color:var(--ios-purple)">Done</span>`;
-      else badge=`<span class="status-pill pill-wait">${fmtCountdown(avail.msLeft)}</span>`;
-    } else {
-      badge=avail.ok?`<span class="status-pill pill-ok">${readyLabel}</span>`:`<span class="status-pill pill-wait">${fmtCountdown(avail.msLeft)}</span>`;
-    }
+    html += `<div class="list-header" style="margin:0 16px 6px">${SCHEDULE_GROUPS[groupKey].label}</div>`;
+    html += '<div style="margin:0 16px 16px"><div class="list-group">';
 
-    let lastSub='';
-    if (med.isPain) {
-      lastSub = last ? `Last: ${fmtTime(last.time)} · ${formatPainValue(last.dose)}` : 'No pain logged';
-    } else {
-      lastSub = last ? `Last: ${fmtTime(last.time)} · ${formatDoseDisplay(med,last.dose)}` : 'No doses logged';
+    meds.forEach(med=>{
+      const avail=canTake(med);
+      const warnings=avail.warnings || [];
+      const last=getLastLog(med.id);
+      const pct = med.intervalHours > 0 && last ? Math.min(100,(Date.now()-last.time)/(med.intervalHours*3600000)*100) : 100;
+      const barCls=pct<50?'low':pct<80?'mid':'';
+      const readyLabel=(med.id==='dilaudid'||med.id==='xanax'||med.id==='zanaflex')?'OK to Take':'Take Now';
+
+      let badge='';
+      if (warnings.length) {
+        badge=`<span class="status-pill pill-warn">Blocked</span>`;
+      } else if (med.isPack) {
+        const day=getMedrolPackDay();
+        if(avail.ok&&day<=6) badge=`<span class="status-pill pill-ok">Day ${day}</span>`;
+        else if(day>6) badge=`<span class="status-pill" style="background:rgba(191,90,242,0.18);color:var(--ios-purple)">Done</span>`;
+        else badge=`<span class="status-pill pill-wait">${fmtCountdown(avail.msLeft)}</span>`;
+      } else if (!avail.ok) {
+        badge=`<span class="status-pill pill-wait">${fmtCountdown(avail.msLeft)}</span>`;
+      } else {
+        badge=`<span class="status-pill pill-ok">${readyLabel}</span>`;
+      }
+
+      let lastSub='';
+      if (last && med.intervalHours > 0) {
+        lastSub = `Last: ${fmtTime(last.time)} · ${formatDoseDisplay(med,last.dose)}`;
+      } else if (last) {
+        lastSub = `Last: ${fmtTime(last.time)} · ${formatDoseDisplay(med,last.dose)}`;
+      } else {
+        lastSub = med.note || 'No doses logged';
+      }
       if (warnings.length) lastSub += ' · overlap warning';
-    }
 
-    html+=`<div class="list-row" onclick="openSheet('${med.id}')">
-      <div class="med-icon ${med.color}">${med.emoji}</div>
-      <div class="med-text">
-        <div class="med-name">${med.brand}</div>
-        <div class="med-generic">${med.generic}</div>
-        <div class="prog-track"><div class="prog-fill ${barCls}" style="width:${pct}%"></div></div>
-        <div class="med-sub">${lastSub}</div>
-      </div>
-      <div class="med-right">${badge}<span class="chev">›</span></div>
-    </div>`;
+      html+=`<div class="list-row" onclick="openSheet('${med.id}')">
+        <div class="med-icon ${med.color}">${med.emoji}</div>
+        <div class="med-text">
+          <div class="med-name">${med.brand}</div>
+          <div class="med-generic">${med.generic}</div>
+          <div class="prog-track"><div class="prog-fill ${barCls}" style="width:${pct}%"></div></div>
+          <div class="med-sub">${lastSub}</div>
+        </div>
+        <div class="med-right">${badge}<span class="chev">›</span></div>
+      </div>`;
+    });
+
+    html += '</div></div>';
   });
-  html+='</div></div>';
+
   document.getElementById('tracker-content').innerHTML=html;
 }
 
@@ -1257,6 +1319,7 @@ function renderHistory() {
   });
 
   html+=`<button class="copy-btn" onclick="copyToNotes()">📋 Copy for Notes App</button>`;
+  html+=`<button class="copy-btn" onclick="exportCSV()" style="margin-top:-8px">📊 Export as CSV</button>`;
   document.getElementById('history-content').innerHTML=html;
 }
 
@@ -1488,6 +1551,40 @@ function copyToNotes() {
   });
 
   navigator.clipboard.writeText(text).then(()=>showToast('📋','Copied! Paste into Notes')).catch(()=>prompt('Copy and paste into Notes:',text));
+}
+
+function exportCSV() {
+  const filtered = filteredHistoryLogs().sort((a,b)=>a.time-b.time);
+  if(!filtered.length){showToast('⚠️','No history to export');return;}
+
+  const rows = [
+    ['Date','Time','Medication','Generic','Dose','Unit','Type']
+  ];
+
+  filtered.forEach(log=>{
+    const med = getMed(log.medId);
+    const d = new Date(log.time);
+    const type = log.override ? 'override' : log.past ? 'past' : 'normal';
+    rows.push([
+      d.toLocaleDateString([],{year:'numeric',month:'2-digit',day:'2-digit'}),
+      d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true}),
+      med ? med.brand : log.medId,
+      med ? med.generic : '',
+      log.dose,
+      log.unit,
+      type
+    ]);
+  });
+
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `toms-meds-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('📊','CSV downloaded');
 }
 
 // ─── RENDER ───────────────────────────────────────────────────────────────────
