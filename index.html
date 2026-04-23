@@ -95,7 +95,10 @@
   .med-text{flex:1;min-width:0}
   .med-name{font-size:17px;font-weight:700;letter-spacing:-0.02em}
   .med-generic{font-size:13px;color:var(--ios-lbl2);margin-top:1px}
-  .med-sub{font-size:12px;color:var(--ios-lbl2);margin-top:4px}
+  .med-sub{
+    font-size:12px;color:var(--ios-lbl2);margin-top:4px;line-height:1.35;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden
+  }
   .med-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
   .status-pill{font-size:13px;font-weight:700;padding:8px 13px;border-radius:999px;white-space:nowrap}
   .pill-ok{background:rgba(92,202,146,0.18);color:#3b9a6a}
@@ -603,7 +606,8 @@ function getState(medId) {
       selectedDose: med.isPain ? null : med.defaultDose,
       useCustom:false,
       customVal:'',
-      pastVal:''
+      pastVal:'',
+      pastGroupContext:null
     };
   }
   return medState[medId];
@@ -952,6 +956,25 @@ function getScheduledGroupsForMed(med) {
   return (med.scheduleGroups || []).filter(g => g !== 'prn');
 }
 
+function getPastGroupOptions(med) {
+  if (!med || med.isPain || !Array.isArray(med.scheduleGroups)) return [];
+  return med.scheduleGroups.slice();
+}
+
+function getDefaultPastGroupContext(med) {
+  const options = getPastGroupOptions(med);
+  return options.length ? options[0] : null;
+}
+
+function getPastGroupContextForMed(medId) {
+  const med = getMed(medId);
+  const state = getState(medId);
+  const options = getPastGroupOptions(med);
+  if (!options.length) return null;
+  if (!options.includes(state.pastGroupContext)) state.pastGroupContext = getDefaultPastGroupContext(med);
+  return state.pastGroupContext;
+}
+
 function getFirstPendingScheduledGroup(med, dayTs = Date.now()) {
   const scheduledGroups = getScheduledGroupsForMed(med);
   if (!scheduledGroups.length) return null;
@@ -1115,7 +1138,8 @@ async function pushEntry(entry) {
       dose:     entry.dose,
       unit:     entry.unit,
       past:     !!entry.past,
-      override: !!entry.override
+      override: !!entry.override,
+      group_context: entry.groupContext || null
     });
     setSyncStatus('ok','Saved');
     setTimeout(()=>setSyncStatus('',''),2000);
@@ -1160,7 +1184,8 @@ async function loadFromCloud() {
         dose: r.dose,
         unit: r.unit,
         past: r.past,
-        override: r.override
+        override: r.override,
+        groupContext: r.group_context || null
       }));
       saveLogs();
     }
@@ -1538,11 +1563,22 @@ function askOverride(medId, groupContext) {
 function openPastSheet(medId) {
   openMedId = medId;
   const med=getMed(medId),s=getState(medId);
+  const pastGroupOptions = getPastGroupOptions(med);
+  const showPastGroupPicker = pastGroupOptions.length > 1;
+  const selectedPastGroup = getPastGroupContextForMed(medId);
   document.getElementById('sheet-title').textContent=med.brand;
   document.getElementById('sheet-subtitle').textContent=`${med.generic} · Log a past ${med.isPain ? 'pain entry' : 'dose'}`;
 
   const doseHtml = med.isPack ? '' : buildDoseHtml(medId, true);
   const nowStr=localDTVal(Date.now()),savedVal=s.pastVal||nowStr;
+  const pastGroupHtml = showPastGroupPicker
+    ? `<div class="past-inner">
+        <div class="past-lbl">Which section was this for?</div>
+        <div class="segmented" style="display:flex;flex-wrap:wrap">
+          ${pastGroupOptions.map(groupKey => `<button class="seg-btn ${selectedPastGroup===groupKey?'active':''}" onclick="setPastGroupContext('${medId}','${groupKey}')">${SCHEDULE_GROUPS[groupKey]?.label || groupKey}</button>`).join('')}
+        </div>
+      </div>`
+    : '';
   const pastBlock=`<div class="past-inner"><div class="past-lbl">${med.isPain ? 'When was this pain level logged?' : 'When was it taken?'}</div>
     <input class="past-datetime" id="past-dt-input" type="datetime-local" max="${nowStr}" value="${savedVal}" onchange="getState('${medId}').pastVal=this.value">
   </div>`;
@@ -1551,7 +1587,7 @@ function openPastSheet(medId) {
   const ready = med.isPain ? (dose !== null && dose !== undefined && !isNaN(dose)) : true;
   const effDose = med.isPack ? `${getMedrolDayDose(getMedrolPackDay())} tabs` : (ready ? formatDoseDisplay(med,dose) : '');
 
-  document.getElementById('sheet-body').innerHTML=`${doseHtml}${pastBlock}<button class="action-btn ${ready?'btn-orange':'btn-disabled'}" id="past-log-btn" ${ready?`onclick="submitPast('${medId}')"`:''}>${med.isPain ? (ready ? `↩ Log Past Pain — ${effDose}` : '↩ Log Past Pain') : `↩ Log Past Dose — ${effDose}`}</button>`;
+  document.getElementById('sheet-body').innerHTML=`${doseHtml}${pastGroupHtml}${pastBlock}<button class="action-btn ${ready?'btn-orange':'btn-disabled'}" id="past-log-btn" ${ready?`onclick="submitPast('${medId}')"`:''}>${med.isPain ? (ready ? `↩ Log Past Pain — ${effDose}` : '↩ Log Past Pain') : `↩ Log Past Dose — ${effDose}`}</button>`;
   document.getElementById('sheet-overlay').classList.add('show');
   document.getElementById('med-sheet').classList.add('show');
   document.body.style.overflow='hidden';
@@ -1565,6 +1601,11 @@ function openPastSheet(medId) {
   } else if(s.useCustom) {
     setTimeout(()=>{const el=document.getElementById('custom-dose-input');if(el)el.focus();},80);
   }
+}
+
+function setPastGroupContext(medId, groupContext) {
+  getState(medId).pastGroupContext = groupContext || null;
+  openPastSheet(medId);
 }
 
 function selectDosePast(medId,dose) {
@@ -1613,7 +1654,7 @@ function submitPast(medId) {
   if(isNaN(ts)){showToast('⚠️','Invalid date/time');return;}
   if(ts>Date.now()){showToast('⚠️','Time cannot be in the future');return;}
   getState(medId).pastVal=inp.value;
-  logDose(medId,ts,true,false,null);
+  logDose(medId,ts,true,false,getPastGroupContextForMed(medId));
   getState(medId).pastVal='';
 }
 
@@ -1752,25 +1793,22 @@ function renderTracker() {
         badge=`<span class="status-pill pill-ok">${readyLabel}</span>`;
       }
 
-      let lastSub='';
-      if (last && med.intervalHours > 0) {
-        lastSub = `Last: ${fmtTime(last.time)} · ${formatDoseDisplay(med,last.dose)}`;
-      } else if (last) {
-        lastSub = `Last: ${fmtTime(last.time)} · ${formatDoseDisplay(med,last.dose)}`;
-      } else {
-        lastSub = med.note || 'No doses logged';
-      }
+      const lastParts = [];
+      if (last) lastParts.push(`Last: ${fmtTime(last.time)} · ${formatDoseDisplay(med,last.dose)}`);
+      else lastParts.push(med.note || 'No doses logged');
+
       if (med.id === 'xanax') {
         const rules = getXanaxRules(groupKey);
-        if (groupKey === 'prn') lastSub += ` · ${Math.max(0, 2 - getXanaxDayLogs().filter(l=>l.resolvedGroupContext==='prn').length)} PRN left today`;
-        if (groupKey === 'morning' && getXanaxDayLogs().find(l=>l.resolvedGroupContext==='morning')) lastSub += ' · completed today';
-        if (rules.note && !lastSub.includes(rules.note)) lastSub += ` · ${rules.note}`;
-      } else if (avail.reason === 'sequence' && avail.specialNote && !lastSub.includes(avail.specialNote)) {
-        lastSub += ` · ${avail.specialNote}`;
-      } else if (completedToday && !lastSub.includes('Completed today')) {
-        lastSub += ' · Completed today';
+        if (groupKey === 'prn') lastParts.push(`${Math.max(0, 2 - getXanaxDayLogs().filter(l=>l.resolvedGroupContext==='prn').length)} PRN left today`);
+        if (groupKey === 'morning' && getXanaxDayLogs().find(l=>l.resolvedGroupContext==='morning')) lastParts.push('Completed today');
+        if (rules.note && !/dose(?:s)? left today/i.test(rules.note) && !lastParts.includes(rules.note)) lastParts.push(rules.note);
+      } else if (avail.reason === 'sequence' && avail.specialNote && !lastParts.includes(avail.specialNote)) {
+        lastParts.push(avail.specialNote);
+      } else if (completedToday && !lastParts.includes('Completed today')) {
+        lastParts.push('Completed today');
       }
-      if (warnings.length) lastSub += ' · overlap warning';
+      if (warnings.length) lastParts.push('Overlap warning');
+      const lastSub = lastParts.join(' · ');
 
       html+=`<div class="list-row" onclick="openSheet('${med.id}','${groupKey}')">
         <div class="med-icon ${med.color}">${med.emoji}</div>
