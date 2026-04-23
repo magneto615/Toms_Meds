@@ -235,6 +235,83 @@
   .graph-axis-label{font-size:11px;fill:rgba(255,255,255,0.45);font-family:var(--sf)}
   .graph-grid{stroke:rgba(255,255,255,0.08);stroke-width:1}
   .graph-line{fill:none;stroke:rgba(90,200,250,0.8);stroke-width:2.5}
+
+  @media (min-width: 980px) {
+    html,body{
+      background:
+        radial-gradient(circle at top, rgba(10,132,255,0.12), transparent 34%),
+        linear-gradient(180deg, #050506, #0b0b0d 24%, #000 100%);
+    }
+    .nav-title-bar{
+      max-width:1100px;
+      margin:0 auto;
+      padding:0 24px;
+    }
+    .nav-right{right:24px}
+    .scroll-content{
+      max-width:1100px;
+      margin:0 auto;
+      padding-left:24px;
+      padding-right:24px;
+      padding-bottom:140px;
+    }
+    .page.active{
+      display:grid;
+      grid-template-columns:minmax(0, 1fr);
+    }
+    .list-group,
+    .sync-bar,
+    .insight-card{
+      box-shadow:0 18px 40px rgba(0,0,0,0.22);
+    }
+    .tab-bar{
+      left:50%;
+      right:auto;
+      bottom:18px;
+      width:min(680px, calc(100vw - 48px));
+      transform:translateX(-50%);
+      border:1px solid var(--ios-sep);
+      border-radius:22px;
+      box-shadow:0 20px 45px rgba(0,0,0,0.38);
+      padding-bottom:0;
+      overflow:hidden;
+    }
+    .tab-item{
+      min-height:60px;
+      padding:10px 8px 6px;
+    }
+    .sheet{
+      left:50%;
+      right:auto;
+      bottom:24px;
+      width:min(720px, calc(100vw - 48px));
+      max-height:min(88dvh, 900px);
+      border-radius:24px;
+      box-shadow:0 24px 60px rgba(0,0,0,0.45);
+      transform:translate(-50%, calc(100% + 24px));
+    }
+    .sheet.show{transform:translate(-50%, 0)}
+    .confirm-sheet{
+      left:50%;
+      right:auto;
+      bottom:24px;
+      width:min(520px, calc(100vw - 48px));
+      padding:0;
+      transform:translate(-50%, calc(100% + 24px));
+    }
+    .confirm-sheet.show{transform:translate(-50%, 0)}
+    .confirm-inner,
+    .confirm-cancel{
+      box-shadow:0 18px 40px rgba(0,0,0,0.34);
+    }
+    .toast{
+      left:50%;
+      right:auto;
+      width:min(520px, calc(100vw - 48px));
+      transform:translate(-50%, -20px);
+    }
+    .toast.show{transform:translate(-50%, 0)}
+  }
 </style>
 </head>
 <body>
@@ -388,7 +465,7 @@ function promptToggleBackend() {
 const MEDS = [
   {id:'pain',       brand:'Pain Level',   generic:'0–10 Scale',          emoji:'📊',color:'red',   intervalHours:0,  defaultDose:null, doseOptions:[],          hasCustom:false, doseUnit:'',      tabletMg:null, note:'Log current pain level', isPain:true},
   {id:'dilaudid',   brand:'Dilaudid',     generic:'HYDROmorphone',        emoji:'💊',color:'orange',intervalHours:4,  defaultDose:2,    doseOptions:[2,4,6],       hasCustom:true,  doseUnit:'mg',    tabletMg:2,    note:'Every 4h as needed · up to 5 days'},
-  {id:'xanax',      brand:'Xanax',        generic:'ALPRAZolam',           emoji:'💊',color:'orange',intervalHours:0,  defaultDose:0.5,  doseOptions:[0.5],         hasCustom:false, doseUnit:'mg',    tabletMg:0.5,  note:'1 every morning + up to 2 as needed through the day'},
+  {id:'xanax',      brand:'Xanax',        generic:'ALPRAZolam',           emoji:'💊',color:'orange',intervalHours:0,  defaultDose:0.5,  doseOptions:[0.5],         hasCustom:false, doseUnit:'mg',    tabletMg:0.5,  note:'1 every mornings + up to 2 as needed through the day'},
   {id:'zanaflex',   brand:'Zanaflex',     generic:'tiZANidine',           emoji:'💊',color:'orange',intervalHours:8,  defaultDose:4,    doseOptions:[4],           hasCustom:false, doseUnit:'mg',    tabletMg:4,    note:'Every 8h as needed for muscle spasms'},
   {id:'tylenol',    brand:'Tylenol',      generic:'Acetaminophen',        emoji:'💊',color:'green', intervalHours:6,  defaultDose:1000, doseOptions:[500,1000],    hasCustom:false, doseUnit:'mg',    tabletMg:500,  note:'Every 6h as needed · up to 10 days'},
   {id:'miralax',    brand:'MiraLAX',      generic:'Polyethylene Glycol',  emoji:'🟤',color:'teal',  intervalHours:24, defaultDose:17,   doseOptions:[17],          hasCustom:false, doseUnit:'g',     tabletMg:null, note:'Once daily · mix in 4–8 oz beverage'},
@@ -406,20 +483,20 @@ const MEDS = [
 
 const SCHEDULE_GROUPS = {
   prn: {label:'As Needed'},
-  morning_empty: {label:'Morning (Empty Stomach)'},
-  breakfast: {label:'Breakfast'},
+  mornings_empty: {label:'mornings (Empty Stomach)'},
+  morning: {label:'morning'},
   midday: {label:'Midday'},
   evening: {label:'Evening'},
   night: {label:'Night'}
 };
 
-const TRACKER_GROUP_ORDER = ['prn','morning_empty','breakfast','midday','evening','night'];
+const TRACKER_GROUP_ORDER = ['prn','mornings_empty','morning','midday','evening','night'];
 
 MEDS.forEach(m=>{
   if (m.scheduleGroups) return;
   switch(m.id){
-    case 'journavx':      m.scheduleGroups=['breakfast']; break;
-    case 'xanax':         m.scheduleGroups=['breakfast','prn']; break;
+    case 'journavx':      m.scheduleGroups=['morning']; break;
+    case 'xanax':         m.scheduleGroups=['morning','prn']; break;
     case 'zoloft':
     case 'lyrica':
     case 'gabapentin':
@@ -427,7 +504,7 @@ MEDS.forEach(m=>{
     case 'vitamind':
     case 'multivit':
     case 'vitamine':
-    case 'zinc':          m.scheduleGroups=['breakfast']; break;
+    case 'zinc':          m.scheduleGroups=['morning']; break;
     case 'miralax':       m.scheduleGroups=['night']; break;
     case 'dilaudid':
     case 'zanaflex':
@@ -612,50 +689,50 @@ function getXanaxWindow(dayTs = Date.now()) {
 function getXanaxDayLogs(dayTs = Date.now()) {
   const { dayStart, dayEnd } = getXanaxWindow(dayTs);
   const dayLogs = logs.filter(l => l.medId === 'xanax' && l.time >= dayStart && l.time < dayEnd).sort((a,b)=>a.time-b.time);
-  let breakfastAssigned = false;
+  let morningAssigned = false;
   return dayLogs.map(l => {
     let ctx = l.groupContext;
-    if (!ctx) ctx = breakfastAssigned ? 'prn' : 'breakfast';
-    if (ctx === 'breakfast') breakfastAssigned = true;
+    if (!ctx) ctx = morningAssigned ? 'prn' : 'morning';
+    if (ctx === 'morning') morningAssigned = true;
     return {...l, resolvedGroupContext: ctx};
   });
 }
 
 function getXanaxRules(groupContext = openGroupContext || 'prn') {
   const dayLogs = getXanaxDayLogs();
-  const breakfastLog = dayLogs.find(l => l.resolvedGroupContext === 'breakfast') || null;
+  const morningLog = dayLogs.find(l => l.resolvedGroupContext === 'morning') || null;
   const prnLogs = dayLogs.filter(l => l.resolvedGroupContext === 'prn');
   const lastAny = dayLogs.length ? dayLogs[dayLogs.length - 1] : null;
   const now = Date.now();
   const { dayEnd, windowStart, windowEnd } = getXanaxWindow(now);
 
-  if (groupContext === 'breakfast') {
-    if (breakfastLog) {
+  if (groupContext === 'morning') {
+    if (morningLog) {
       const nextTs = dayEnd;
       const msLeft = Math.max(0, nextTs - now);
-      return { ok: msLeft <= 0, msLeft, nextTs, note: 'Breakfast dose logged', blockLabel: 'Logged' };
+      return { ok: msLeft <= 0, msLeft, nextTs, note: 'morning dose logged', blockLabel: 'Logged' };
     }
-    return { ok: true, msLeft: 0, nextTs: null, note: 'Breakfast dose still needed', blockLabel: '' };
+    return { ok: true, msLeft: 0, nextTs: null, note: 'morning dose still needed', blockLabel: '' };
   }
 
   let nextTs = null;
   let note = `${Math.max(0, XANAX_PRN_WINDOW.maxPrnPerDay - prnLogs.length)} dose${Math.max(0, XANAX_PRN_WINDOW.maxPrnPerDay - prnLogs.length) === 1 ? '' : 's'} left today`;
   let blockLabel = '';
 
-  if (!breakfastLog) {
-    note = 'Log breakfast dose first for today';
-    blockLabel = 'Breakfast first';
+  if (!morningLog) {
+    note = 'Log morning dose first for today';
+    blockLabel = 'morning first';
   }
   if (now < windowStart) {
     nextTs = windowStart;
-    if (breakfastLog) {
+    if (morningLog) {
       note = 'PRN window opens at 8:00 AM';
       blockLabel = '8:00 AM';
     }
   }
   if (now >= windowEnd) {
     nextTs = getXanaxWindow(now + 24*3600000).windowStart;
-    if (breakfastLog) {
+    if (morningLog) {
       note = 'PRN window is closed until 8:00 AM';
       blockLabel = 'Window closed';
     }
@@ -671,11 +748,11 @@ function getXanaxRules(groupContext = openGroupContext || 'prn') {
     if (spacingTs > now && !blockLabel) note = `Wait ${fmtWaitClock(spacingTs - now)} between Xanax doses`;
   }
   const msLeft = nextTs ? Math.max(0, nextTs - now) : 0;
-  const breakfastBlocked = !breakfastLog;
+  const morningBlocked = !morningLog;
   const windowBlocked = now < windowStart || now >= windowEnd;
   const maxBlocked = prnLogs.length >= XANAX_PRN_WINDOW.maxPrnPerDay;
   const spacingBlocked = !!(nextTs && nextTs > now);
-  const ok = !breakfastBlocked && !windowBlocked && !maxBlocked && !spacingBlocked;
+  const ok = !morningBlocked && !windowBlocked && !maxBlocked && !spacingBlocked;
   if (!ok && !blockLabel && spacingBlocked) blockLabel = fmtCountdown(msLeft);
   return { ok, msLeft, nextTs, note, blockLabel };
 }
@@ -692,7 +769,7 @@ function canTake(med, groupContext = openGroupContext) {
 function getNextAvailableTs(med, groupContext = openGroupContext) {
   if (med.isPain) return null;
   if (med.id === 'xanax') {
-    if (groupContext === 'prn' && !getXanaxDayLogs().some(l => l.resolvedGroupContext === 'breakfast')) return null;
+    if (groupContext === 'prn' && !getXanaxDayLogs().some(l => l.resolvedGroupContext === 'morning')) return null;
     const rules = getXanaxRules(groupContext);
     const warningTs = getConflictWarnings(med).reduce((max, w) => Math.max(max, w.clearTs), 0);
     const nextTs = Math.max(rules.nextTs || 0, warningTs || 0);
@@ -748,7 +825,7 @@ function allFiltersSelected() {
 }
 
 function getMedDailyFrequency(med, groupKey = null) {
-  if (med.id === 'xanax') return groupKey === 'breakfast' ? 1 : 3;
+  if (med.id === 'xanax') return groupKey === 'morning' ? 1 : 3;
   if (med.isPack) return 1;
   if (!med.intervalHours || med.intervalHours <= 0) return 1;
   return Math.max(1, Math.round(24 / med.intervalHours));
@@ -796,8 +873,8 @@ function isTrackerRowNewlyAvailable(med, groupKey) {
   if (med.id === 'xanax') {
     const relevantLast = groupKey === 'prn'
       ? getXanaxDayLogs().filter(l => l.resolvedGroupContext === 'prn').slice(-1)[0] || null
-      : getXanaxDayLogs().find(l => l.resolvedGroupContext === 'breakfast') || null;
-    if (!relevantLast) return groupKey === 'breakfast';
+      : getXanaxDayLogs().find(l => l.resolvedGroupContext === 'morning') || null;
+    if (!relevantLast) return groupKey === 'morning';
     const elapsed = Date.now() - relevantLast.time;
     const iv = (groupKey === 'prn' ? XANAX_PRN_WINDOW.spacingHours : 24) * 3600000;
     return elapsed >= iv && elapsed < iv + 1800000;
@@ -812,23 +889,23 @@ function isTrackerRowNewlyAvailable(med, groupKey) {
 
 function getXanaxStatusCard(groupContext) {
   const dayLogs = getXanaxDayLogs();
-  const breakfastLogged = dayLogs.some(l => l.resolvedGroupContext === 'breakfast');
+  const morningLogged = dayLogs.some(l => l.resolvedGroupContext === 'morning');
   const prnCount = dayLogs.filter(l => l.resolvedGroupContext === 'prn').length;
 
-  if (groupContext === 'breakfast') {
+  if (groupContext === 'morning') {
     return {
-      label: 'Breakfast dose',
+      label: 'morning dose',
       meta: 'Must be logged before PRN doses are available',
-      value: breakfastLogged ? 'Logged' : 'Needed',
-      valueClass: breakfastLogged ? 'ok' : 'warn'
+      value: morningLogged ? 'Logged' : 'Needed',
+      valueClass: morningLogged ? 'ok' : 'warn'
     };
   }
 
   return {
     label: 'PRN doses left today',
-    meta: breakfastLogged ? 'Window: 8:00 AM-4:00 AM' : 'Breakfast dose must be logged first',
+    meta: morningLogged ? 'Window: 8:00 AM-4:00 AM' : 'morning dose must be logged first',
     value: `${Math.max(0, XANAX_PRN_WINDOW.maxPrnPerDay - prnCount)} left`,
-    valueClass: breakfastLogged ? (prnCount >= XANAX_PRN_WINDOW.maxPrnPerDay ? 'block' : 'warn') : 'block'
+    valueClass: morningLogged ? (prnCount >= XANAX_PRN_WINDOW.maxPrnPerDay ? 'block' : 'warn') : 'block'
   };
 }
 
@@ -1141,7 +1218,7 @@ function renderSheet(medId, groupContext) {
   const nextSafeTs=getNextAvailableTs(med, groupContext);
 
   document.getElementById('sheet-title').textContent=med.brand;
-  document.getElementById('sheet-subtitle').textContent=`${med.generic} · ${med.note}${med.id==='xanax' && groupContext ? ' · ' + (groupContext==='breakfast' ? 'Breakfast dose' : 'PRN dose') : ''}`;
+  document.getElementById('sheet-subtitle').textContent=`${med.generic} · ${med.note}${med.id==='xanax' && groupContext ? ' · ' + (groupContext==='morning' ? 'morning dose' : 'PRN dose') : ''}`;
 
   const lastHtml=last
     ?`<div class="last-block"><div class="last-lbl">${med.isPain ? 'Last Logged' : 'Last Taken'}</div>
@@ -1487,7 +1564,7 @@ function renderTracker() {
       if (med.id === 'xanax') {
         const rules = getXanaxRules(groupKey);
         if (groupKey === 'prn') lastSub += ` · ${Math.max(0, 2 - getXanaxDayLogs().filter(l=>l.resolvedGroupContext==='prn').length)} PRN left today`;
-        if (groupKey === 'breakfast' && getXanaxDayLogs().find(l=>l.resolvedGroupContext==='breakfast')) lastSub += ' · completed today';
+        if (groupKey === 'morning' && getXanaxDayLogs().find(l=>l.resolvedGroupContext==='morning')) lastSub += ' · completed today';
         if (rules.note && !lastSub.includes(rules.note)) lastSub += ` · ${rules.note}`;
       } else if (completedToday && !lastSub.includes('Completed today')) {
         lastSub += ' · Completed today';
