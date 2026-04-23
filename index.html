@@ -430,55 +430,61 @@ function fmtWaitClock(ms) {
 function getConflictWarnings(med) {
   if (!med || med.isPain) return [];
   const twoHours = 2 * 3600000;
+  const oneHour = 3600000;
   const warnings = [];
 
   if (med.id === 'zanaflex') {
     const lastDilaudid = getLastWithinMs('dilaudid', twoHours);
     const lastXanax = getLastWithinMs('xanax', twoHours);
-
     if (lastDilaudid) {
       const clearTs = lastDilaudid.time + twoHours;
-      warnings.push({
-        otherMedId:'dilaudid',
-        clearTs,
+      warnings.push({ otherMedId:'dilaudid', clearTs,
         message:`Cannot take Zanaflex within 2 hours of Dilaudid. Wait ${fmtWaitClock(clearTs - Date.now())}`
       });
     }
     if (lastXanax) {
       const clearTs = lastXanax.time + twoHours;
-      warnings.push({
-        otherMedId:'xanax',
-        clearTs,
+      warnings.push({ otherMedId:'xanax', clearTs,
         message:`Cannot take Zanaflex within 2 hours of Xanax. Wait ${fmtWaitClock(clearTs - Date.now())}`
       });
     }
   }
 
   if (med.id === 'dilaudid') {
-    const lastXanax = getLastWithinMs('xanax', 3600000);
+    const lastZanaflex = getLastWithinMs('zanaflex', twoHours);
+    const lastXanax = getLastWithinMs('xanax', oneHour);
+    if (lastZanaflex) {
+      const clearTs = lastZanaflex.time + twoHours;
+      warnings.push({ otherMedId:'zanaflex', clearTs,
+        message:`Cannot take Dilaudid within 2 hours of Zanaflex. Wait ${fmtWaitClock(clearTs - Date.now())}`
+      });
+    }
     if (lastXanax) {
-      const clearTs = lastXanax.time + 3600000;
-      warnings.push({
-        otherMedId:'xanax',
-        clearTs,
+      const clearTs = lastXanax.time + oneHour;
+      warnings.push({ otherMedId:'xanax', clearTs,
         message:`Cannot take Dilaudid within 1 hour of Xanax. Wait ${fmtWaitClock(clearTs - Date.now())}`
       });
     }
   }
 
   if (med.id === 'xanax') {
-    const lastDilaudid = getLastWithinMs('dilaudid', 3600000);
+    const lastZanaflex = getLastWithinMs('zanaflex', twoHours);
+    const lastDilaudid = getLastWithinMs('dilaudid', oneHour);
+    if (lastZanaflex) {
+      const clearTs = lastZanaflex.time + twoHours;
+      warnings.push({ otherMedId:'zanaflex', clearTs,
+        message:`Cannot take Xanax within 2 hours of Zanaflex. Wait ${fmtWaitClock(clearTs - Date.now())}`
+      });
+    }
     if (lastDilaudid) {
-      const clearTs = lastDilaudid.time + 3600000;
-      warnings.push({
-        otherMedId:'dilaudid',
-        clearTs,
+      const clearTs = lastDilaudid.time + oneHour;
+      warnings.push({ otherMedId:'dilaudid', clearTs,
         message:`Cannot take Xanax within 1 hour of Dilaudid. Wait ${fmtWaitClock(clearTs - Date.now())}`
       });
     }
   }
 
-    return warnings; 
+  return warnings;
 }               
 
 function canTake(med) {
