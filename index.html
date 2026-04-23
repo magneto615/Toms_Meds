@@ -455,31 +455,28 @@ function getConflictWarnings(med) {
   }
 
   if (med.id === 'dilaudid') {
-    const lastXanax = getLastWithinMs('xanax', twoHours);
+    const lastXanax = getLastWithinMs('xanax', 3600000);
     if (lastXanax) {
-      const clearTs = lastXanax.time + twoHours;
+      const clearTs = lastXanax.time + 3600000;
       warnings.push({
         otherMedId:'xanax',
         clearTs,
-        message:`Cannot take Dilaudid within 2 hours of Xanax. Wait ${fmtWaitClock(clearTs - Date.now())}`
+        message:`Cannot take Dilaudid within 1 hour of Xanax. Wait ${fmtWaitClock(clearTs - Date.now())}`
       });
     }
   }
 
   if (med.id === 'xanax') {
-    const lastDilaudid = getLastWithinMs('dilaudid', twoHours);
+    const lastDilaudid = getLastWithinMs('dilaudid', 3600000);
     if (lastDilaudid) {
-      const clearTs = lastDilaudid.time + twoHours;
+      const clearTs = lastDilaudid.time + 3600000;
       warnings.push({
         otherMedId:'dilaudid',
         clearTs,
-        message:`Cannot take Xanax within 2 hours of Dilaudid. Wait ${fmtWaitClock(clearTs - Date.now())}`
+        message:`Cannot take Xanax within 1 hour of Dilaudid. Wait ${fmtWaitClock(clearTs - Date.now())}`
       });
     }
   }
-
-  return warnings;
-}
 
 function canTake(med) {
   const availability = getAvailability(med);
