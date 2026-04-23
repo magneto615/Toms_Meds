@@ -23,7 +23,7 @@
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   html,body{background:linear-gradient(180deg,#fbfcff 0%,#f3f5ff 32%,#eef2ff 100%);color:var(--ios-lbl);font-family:var(--sf);font-size:17px;line-height:1.3;min-height:100dvh;-webkit-font-smoothing:antialiased}
 
-  .nav-bar{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(250,252,255,0.80);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border-bottom:0.5px solid rgba(70,86,140,0.08);padding-top:env(safe-area-inset-top,44px)}
+  .nav-bar{display:none}
   .nav-title-bar{display:flex;align-items:center;justify-content:center;height:44px;position:relative;padding:0 16px}
   .nav-title{font-size:18px;font-weight:700;letter-spacing:-0.5px}
   .nav-right{position:absolute;right:16px;top:50%;transform:translateY(-50%)}
@@ -37,10 +37,17 @@
   .tab-icon{font-size:22px;line-height:1;margin-bottom:2px}
   .tab-label{font-size:10px;font-weight:500;letter-spacing:0.1px}
 
-  .scroll-content{padding-top:calc(env(safe-area-inset-top,44px) + 44px);padding-bottom:calc(env(safe-area-inset-bottom,20px) + var(--tab-h) + 26px);min-height:100dvh}
+  .scroll-content{padding-top:18px;padding-bottom:calc(env(safe-area-inset-bottom,20px) + var(--tab-h) + 26px);min-height:100dvh}
   .page{display:none}.page.active{display:block}
 
   .list-header{font-size:14px;font-weight:700;color:var(--ios-lbl);letter-spacing:-0.02em;padding:0 16px 8px}
+  .section-toggle{width:calc(100% - 32px);margin:0 16px 8px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:none;border:none;color:var(--ios-lbl);font-family:var(--sf);cursor:pointer;padding:0;text-align:left}
+  .section-toggle-left{display:flex;align-items:center;gap:8px;min-width:0}
+  .section-toggle-title{font-size:16px;font-weight:800;letter-spacing:-0.03em}
+  .section-toggle.complete .section-toggle-title{color:var(--ios-lbl2)}
+  .section-toggle-meta{font-size:12px;color:var(--ios-lbl2);font-weight:600}
+  .section-toggle-icon{font-size:14px;color:var(--ios-lbl3);min-width:14px;text-align:center}
+  .section-body.collapsed{display:none}
   .list-group{background:var(--ios-bg2);border-radius:24px;overflow:hidden;box-shadow:0 16px 40px rgba(113,126,181,0.12);border:1px solid rgba(96,118,179,0.08)}
   .list-row{display:flex;align-items:center;padding:15px 16px;gap:14px;position:relative;cursor:pointer}
   .list-row:not(:last-child)::after{content:'';position:absolute;bottom:0;left:16px;right:0;height:0.5px;background:var(--ios-sep)}
@@ -161,7 +168,6 @@
   .dose-status-value.warn{color:var(--ios-orange)}
   .dose-status-value.block{color:var(--ios-red)}
   .hero-card{margin:0 16px 16px;padding:16px;background:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);border-radius:28px;border:1px solid rgba(96,118,179,0.10);box-shadow:0 18px 40px rgba(113,126,181,0.13)}
-  .hero-title{font-size:14px;color:var(--ios-lbl2);margin-bottom:6px}
   .hero-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
   .hero-name{font-size:22px;font-weight:800;letter-spacing:-0.04em;color:var(--ios-lbl)}
   .hero-progress{font-size:14px;font-weight:700;color:var(--ios-lbl2)}
@@ -507,17 +513,18 @@ const TRACKER_GROUP_ORDER = ['prn','mornings_empty','morning','midday','evening'
 MEDS.forEach(m=>{
   if (m.scheduleGroups) return;
   switch(m.id){
-    case 'journavx':      m.scheduleGroups=['morning']; break;
+    case 'journavx':      m.scheduleGroups=['morning','evening']; break;
     case 'xanax':         m.scheduleGroups=['morning','prn']; break;
     case 'zoloft':
-    case 'lyrica':
-    case 'gabapentin':
-    case 'vitaminc':
-    case 'vitamind':
     case 'multivit':
     case 'vitamine':
     case 'zinc':          m.scheduleGroups=['morning']; break;
+    case 'lyrica':
+    case 'vitaminc':
+    case 'vitamind':      m.scheduleGroups=['morning','evening']; break;
+    case 'gabapentin':    m.scheduleGroups=['morning','midday','evening']; break;
     case 'miralax':       m.scheduleGroups=['night']; break;
+    case 'medrol':        m.scheduleGroups=['midday']; break;
     case 'dilaudid':
     case 'zanaflex':
     case 'tylenol':       m.scheduleGroups=['prn']; break;
@@ -544,6 +551,7 @@ let insightsRange = '24h';
 // FIX 4: In-flight guard prevents overlapping cloud fetches
 let cloudFetchInFlight = false;
 const medState = {};
+const trackerSectionExpanded = {};
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 function getMed(medId) { return MEDS.find(m=>m.id===medId); }
@@ -774,6 +782,16 @@ function canTake(med, groupContext = openGroupContext) {
     const rules = getXanaxRules(groupContext);
     return { ok: rules.ok, msLeft: rules.msLeft, reason: rules.ok ? 'none' : 'interval', warnings: getConflictWarnings(med), nextTs: rules.nextTs, specialNote: rules.note, blockLabel: rules.blockLabel };
   }
+  if (groupContext && groupContext !== 'prn' && Array.isArray(med.scheduleGroups) && med.scheduleGroups.includes(groupContext) && hasCompletedScheduledDoseToday(med, groupContext)) {
+    return {
+      ok:false,
+      msLeft:0,
+      reason:'section-complete',
+      warnings:getConflictWarnings(med),
+      specialNote:`Already logged for ${SCHEDULE_GROUPS[groupContext].label.toLowerCase()}`,
+      blockLabel:'Logged'
+    };
+  }
   const availability = getAvailability(med);
   return { ...availability, warnings: getConflictWarnings(med) };
 }
@@ -787,6 +805,9 @@ function getNextAvailableTs(med, groupContext = openGroupContext) {
     const nextTs = Math.max(rules.nextTs || 0, warningTs || 0);
     if (!rules.ok && !nextTs) return null;
     return nextTs > Date.now() ? nextTs : null;
+  }
+  if (groupContext && groupContext !== 'prn' && Array.isArray(med.scheduleGroups) && med.scheduleGroups.includes(groupContext) && hasCompletedScheduledDoseToday(med, groupContext)) {
+    return null;
   }
   const avail = getAvailability(med);
   const intervalTs = avail.ok ? Date.now() : Date.now() + avail.msLeft;
@@ -837,7 +858,10 @@ function allFiltersSelected() {
 }
 
 function getMedDailyFrequency(med, groupKey = null) {
-  if (med.id === 'xanax') return groupKey === 'morning' ? 1 : 3;
+  if (Array.isArray(med.scheduleGroups) && med.scheduleGroups.length) {
+    const scheduled = med.scheduleGroups.filter(g => g !== 'prn');
+    if (scheduled.length) return scheduled.length;
+  }
   if (med.isPack) return 1;
   if (!med.intervalHours || med.intervalHours <= 0) return 1;
   return Math.max(1, Math.round(24 / med.intervalHours));
@@ -851,18 +875,28 @@ function sortMedsForGroup(meds, groupKey) {
   });
 }
 
+function getResolvedDayLogsForMed(med, dayTs = Date.now()) {
+  if (med.id === 'xanax') return getXanaxDayLogs(dayTs);
+  const scheduledGroups = (med.scheduleGroups || []).filter(g => g !== 'prn');
+  const start = startOfDay(dayTs);
+  const end = start + 24*3600000;
+  const dayLogs = logs.filter(l => l.medId === med.id && l.time >= start && l.time < end).sort((a,b)=>a.time-b.time);
+  const expected = scheduledGroups.slice();
+  return dayLogs.map(l => {
+    let ctx = l.groupContext;
+    if (!scheduledGroups.includes(ctx)) {
+      ctx = expected.shift() || scheduledGroups[scheduledGroups.length - 1] || null;
+    } else {
+      const idx = expected.indexOf(ctx);
+      if (idx !== -1) expected.splice(idx, 1);
+    }
+    return {...l, resolvedGroupContext: ctx};
+  });
+}
+
 function hasCompletedScheduledDoseToday(med, groupKey) {
   if (groupKey === 'prn' || med.isPain) return false;
-  if (med.id === 'xanax') {
-    return getXanaxDayLogs().some(l => l.resolvedGroupContext === groupKey);
-  }
-  const start = startOfDay(Date.now());
-  const end = start + 24*3600000;
-  const dayLogs = logs
-    .filter(l => l.medId === med.id && l.time >= start && l.time < end)
-    .sort((a,b)=>a.time-b.time);
-  if (!dayLogs.length) return false;
-  return dayLogs.length >= getMedDailyFrequency(med, groupKey);
+  return getResolvedDayLogsForMed(med).some(l => l.resolvedGroupContext === groupKey);
 }
 
 function getTrackerProgress(med, groupKey) {
@@ -899,28 +933,38 @@ function isTrackerRowNewlyAvailable(med, groupKey) {
   return elapsed >= iv && elapsed < iv + 1800000;
 }
 
-function getTrackerSummaryStats() {
-  const scheduledRows = [];
-  TRACKER_GROUP_ORDER.filter(groupKey => groupKey !== 'prn').forEach(groupKey => {
-    MEDS.filter(m => !m.isPain && Array.isArray(m.scheduleGroups) && m.scheduleGroups.includes(groupKey))
-      .forEach(med => scheduledRows.push({ med, groupKey }));
-  });
+function getSectionRows(groupKey) {
+  return sortMedsForGroup(
+    MEDS.filter(m => !m.isPain && Array.isArray(m.scheduleGroups) && m.scheduleGroups.includes(groupKey)),
+    groupKey
+  );
+}
 
-  const completed = scheduledRows.filter(row => hasCompletedScheduledDoseToday(row.med, row.groupKey)).length;
-  const total = scheduledRows.length;
+function getSectionStatus(groupKey) {
+  const rows = getSectionRows(groupKey);
+  const completed = rows.filter(med => hasCompletedScheduledDoseToday(med, groupKey)).length;
+  return { rows, total: rows.length, completed, isComplete: rows.length > 0 && completed === rows.length };
+}
+
+function isTrackerSectionExpanded(groupKey, isComplete) {
+  if (Object.prototype.hasOwnProperty.call(trackerSectionExpanded, groupKey)) return !!trackerSectionExpanded[groupKey];
+  return !isComplete;
+}
+
+function toggleTrackerSection(groupKey) {
+  const status = getSectionStatus(groupKey);
+  trackerSectionExpanded[groupKey] = !isTrackerSectionExpanded(groupKey, status.isComplete);
+  renderTracker();
+}
+
+function getTrackerSummaryStats() {
   const groups = TRACKER_GROUP_ORDER
     .filter(groupKey => groupKey !== 'prn')
-    .map(groupKey => {
-      const rows = scheduledRows.filter(row => row.groupKey === groupKey);
-      return {
-        groupKey,
-        label: SCHEDULE_GROUPS[groupKey].label,
-        total: rows.length,
-        completed: rows.filter(row => hasCompletedScheduledDoseToday(row.med, row.groupKey)).length
-      };
-    })
+    .map(groupKey => ({ groupKey, label: SCHEDULE_GROUPS[groupKey].label, ...getSectionStatus(groupKey) }))
     .filter(group => group.total > 0);
 
+  const completed = groups.reduce((sum, group) => sum + group.completed, 0);
+  const total = groups.reduce((sum, group) => sum + group.total, 0);
   return { completed, total, groups };
 }
 
@@ -1112,7 +1156,7 @@ function logDose(medId, overrideTime, isPast, isOverride, groupContext) {
   const dose=getEffectiveDose(medId);
   const time=overrideTime||Date.now();
   const resolvedContext = groupContext || null;
-  const entry={id:String(Date.now()+Math.random()),medId,time,dose,unit:med.doseUnit,past:!!isPast,override:!!isOverride,groupContext: medId==='xanax' ? resolvedContext : null};
+  const entry={id:String(Date.now()+Math.random()),medId,time,dose,unit:med.doseUnit,past:!!isPast,override:!!isOverride,groupContext: resolvedContext};
 
   logs.push(entry);
   saveLogs();
@@ -1552,7 +1596,6 @@ function renderTracker() {
   let html='<div style="height:8px"></div>';
   html += `
     <div class="hero-card">
-      <div class="hero-title">Medication tracker</div>
       <div class="hero-head">
         <div class="hero-name">Today's Meds</div>
         <div class="hero-progress">${summary.completed} of ${summary.total} done</div>
@@ -1575,11 +1618,21 @@ function renderTracker() {
   }
 
   TRACKER_GROUP_ORDER.forEach(groupKey=>{
-    const meds = sortMedsForGroup(MEDS.filter(m => !m.isPain && Array.isArray(m.scheduleGroups) && m.scheduleGroups.includes(groupKey)), groupKey);
+    const section = getSectionStatus(groupKey);
+    const meds = section.rows;
     if (!meds.length) return;
+    const sectionExpanded = isTrackerSectionExpanded(groupKey, section.isComplete);
+    const sectionLabel = section.isComplete ? `${SCHEDULE_GROUPS[groupKey].label} - Complete` : SCHEDULE_GROUPS[groupKey].label;
 
-    html += `<div class="list-header" style="margin:0 16px 6px">${SCHEDULE_GROUPS[groupKey].label}</div>`;
-    html += '<div style="margin:0 16px 16px"><div class="list-group">';
+    html += `
+      <button class="section-toggle ${section.isComplete ? 'complete' : ''}" onclick="toggleTrackerSection('${groupKey}')">
+        <div class="section-toggle-left">
+          <div class="section-toggle-title">${sectionLabel}</div>
+          <div class="section-toggle-meta">${section.completed}/${section.total}</div>
+        </div>
+        <div class="section-toggle-icon">${sectionExpanded ? '⌄' : '›'}</div>
+      </button>`;
+    html += `<div class="section-body ${sectionExpanded ? '' : 'collapsed'}"><div style="margin:0 16px 16px"><div class="list-group">`;
 
     meds.forEach(med=>{
       // FIX 1: was canTake(med, groupContext) — groupContext was undefined in this scope.
@@ -1640,7 +1693,7 @@ function renderTracker() {
       </div>`;
     });
 
-    html += '</div></div>';
+    html += '</div></div></div>';
   });
 
   document.getElementById('tracker-content').innerHTML=html;
