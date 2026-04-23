@@ -518,6 +518,7 @@ const MEDS = [
   {id:'journavx',   brand:'Journavx',     generic:'Suzetrigine',          emoji:'💊',color:'blue',  intervalHours:12, defaultDose:50,   doseOptions:[50],          hasCustom:false, doseUnit:'mg',    tabletMg:50,   note:'Every 12h'},
   {id:'lyrica',     brand:'Lyrica',       generic:'Pregabalin',           emoji:'🔵',color:'blue',  intervalHours:12, defaultDose:100,  doseOptions:[100],         hasCustom:false, doseUnit:'mg',    tabletMg:100,  note:'Twice daily'},
   {id:'gabapentin', brand:'Gabapentin',   generic:'Neurontin',            emoji:'💊',color:'blue',  intervalHours:8,  defaultDose:300,  doseOptions:[300],         hasCustom:false, doseUnit:'mg',    tabletMg:300,  note:'Every 8h'},
+  {id:'wellbutrin', brand:'Wellbutrin',   generic:'Bupropion',            emoji:'💊',color:'blue',  intervalHours:24, defaultDose:150,  doseOptions:[150],         hasCustom:false, doseUnit:'mg',    tabletMg:150,  note:'Once daily'},
   {id:'zoloft',     brand:'Zoloft',       generic:'Sertraline',           emoji:'💊',color:'blue',  intervalHours:24, defaultDose:100,  doseOptions:[100],         hasCustom:false, doseUnit:'mg',    tabletMg:100,  note:'Once daily'},
   {id:'vitaminc',   brand:'Vitamin C',    generic:'Ascorbic Acid',        emoji:'🟡',color:'yellow',intervalHours:12, defaultDose:500,  doseOptions:[500],         hasCustom:false, doseUnit:'mg',    tabletMg:500,  note:'Twice daily'},
   {id:'vitamind',   brand:'Vitamin D3',   generic:'Cholecalciferol',      emoji:'🟡',color:'yellow',intervalHours:12, defaultDose:2000, doseOptions:[2000],        hasCustom:false, doseUnit:'units', tabletMg:null, note:'Twice daily'},
@@ -544,6 +545,7 @@ MEDS.forEach(m=>{
     case 'journavx':      m.scheduleGroups=['morning','evening']; break;
     case 'xanax':         m.scheduleGroups=['morning','prn']; break;
     case 'zoloft':
+    case 'wellbutrin':
     case 'multivit':
     case 'vitamine':
     case 'zinc':          m.scheduleGroups=['morning']; break;
