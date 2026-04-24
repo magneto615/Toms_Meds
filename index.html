@@ -510,12 +510,11 @@ async function supaFetch(method, path, body) {
 // ─── MEDS ─────────────────────────────────────────────────────────────────────
 const MEDS = [
   {id:'pain',       brand:'Pain Level',   generic:'0–10 Scale',          emoji:'📊',color:'red',   intervalHours:0,  defaultDose:null, doseOptions:[],          hasCustom:false, doseUnit:'',      tabletMg:null, note:'Log current pain level', isPain:true},
-  {id:'dilaudid',   brand:'Dilaudid',     generic:'HYDROmorphone',        emoji:'💊',color:'orange',intervalHours:4,  defaultDose:2,    doseOptions:[2,4,6],       hasCustom:true,  doseUnit:'mg',    tabletMg:2,    note:'Every 4h as needed · up to 5 days'},
+  {id:'dilaudid',   brand:'Dilaudid',     generic:'HYDROmorphone',        emoji:'💊',color:'orange',intervalHours:4,  defaultDose:2,    doseOptions:[1,2,4,6],     hasCustom:true,  doseUnit:'mg',    tabletMg:2,    note:'Every 4h as needed · up to 5 days'},
   {id:'xanax',      brand:'Xanax',        generic:'ALPRAZolam',           emoji:'💊',color:'orange',intervalHours:0,  defaultDose:0.5,  doseOptions:[0.5],         hasCustom:false, doseUnit:'mg',    tabletMg:0.5,  note:'1 every mornings + up to 2 as needed through the day'},
   {id:'zanaflex',   brand:'Zanaflex',     generic:'tiZANidine',           emoji:'💊',color:'orange',intervalHours:8,  defaultDose:4,    doseOptions:[4],           hasCustom:false, doseUnit:'mg',    tabletMg:4,    note:'Every 8h as needed for muscle spasms'},
   {id:'tylenol',    brand:'Tylenol',      generic:'Acetaminophen',        emoji:'💊',color:'green', intervalHours:6,  defaultDose:1000, doseOptions:[500,1000],    hasCustom:false, doseUnit:'mg',    tabletMg:500,  note:'Every 6h as needed · up to 10 days'},
   {id:'miralax',    brand:'MiraLAX',      generic:'Polyethylene Glycol',  emoji:'🟤',color:'teal',  intervalHours:24, defaultDose:17,   doseOptions:[17],          hasCustom:false, doseUnit:'g',     tabletMg:null, note:'Once daily · mix in 4–8 oz beverage'},
-  {id:'journavx',   brand:'Journavx',     generic:'Suzetrigine',          emoji:'💊',color:'blue',  intervalHours:12, defaultDose:50,   doseOptions:[50],          hasCustom:false, doseUnit:'mg',    tabletMg:50,   note:'Every 12h'},
   {id:'lyrica',     brand:'Lyrica',       generic:'Pregabalin',           emoji:'🔵',color:'blue',  intervalHours:12, defaultDose:100,  doseOptions:[100],         hasCustom:false, doseUnit:'mg',    tabletMg:100,  note:'Twice daily'},
   {id:'gabapentin', brand:'Gabapentin',   generic:'Neurontin',            emoji:'💊',color:'blue',  intervalHours:8,  defaultDose:300,  doseOptions:[300],         hasCustom:false, doseUnit:'mg',    tabletMg:300,  note:'Every 8h'},
   {id:'wellbutrin', brand:'Wellbutrin',   generic:'Bupropion',            emoji:'💊',color:'blue',  intervalHours:24, defaultDose:150,  doseOptions:[150],         hasCustom:false, doseUnit:'mg',    tabletMg:150,  note:'Once daily'},
@@ -525,7 +524,6 @@ const MEDS = [
   {id:'multivit',   brand:'Multivitamin', generic:'Theragran',            emoji:'🟡',color:'yellow',intervalHours:24, defaultDose:1,    doseOptions:[1],           hasCustom:false, doseUnit:'tablet',tabletMg:null, note:'Once daily'},
   {id:'vitamine',   brand:'Vitamin E',    generic:'400 units',            emoji:'🟡',color:'yellow',intervalHours:24, defaultDose:400,  doseOptions:[400],         hasCustom:false, doseUnit:'units', tabletMg:null, note:'Once daily'},
   {id:'zinc',       brand:'Zincate',      generic:'Zinc Sulfate',         emoji:'🟡',color:'yellow',intervalHours:24, defaultDose:220,  doseOptions:[220],         hasCustom:false, doseUnit:'mg',    tabletMg:220,  note:'Once daily'},
-  {id:'medrol',     brand:'Medrol',       generic:'Methylprednisolone',   emoji:'💜',color:'purple',intervalHours:24, defaultDose:6,    doseOptions:[6,5,4,3,2,1], hasCustom:false, doseUnit:'tabs',  tabletMg:4,    note:'6-day taper pack · take with food', isPack:true, packSchedule:[6,5,4,3,2,1]},
 ];
 
 const SCHEDULE_GROUPS = {
