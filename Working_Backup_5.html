@@ -1,0 +1,2227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tom's Meds">
+<meta name="theme-color" content="#0d0d0f">
+<link rel="apple-touch-icon" href="icon.png">
+<title>Tom's Meds</title>
+<style>
+  :root {
+    --ios-bg:#f4f6ff;--ios-bg2:#ffffff;--ios-bg3:#eef2ff;--ios-bg4:#dfe6fb;
+    --ios-sep:rgba(70,86,140,0.10);
+    --ios-lbl:#2d396b;--ios-lbl2:rgba(45,57,107,0.70);--ios-lbl3:rgba(45,57,107,0.42);
+    --ios-blue:#59b9f8;--ios-green:#5cca92;--ios-red:#ef7d74;--ios-orange:#f4b163;
+    --ios-purple:#8a8df2;--ios-teal:#67cdd9;--ios-yellow:#f4d26b;
+    --ios-fill:rgba(89,185,248,0.08);--ios-fill2:rgba(89,185,248,0.14);
+    --app-bg:linear-gradient(180deg,#fbfcff 0%,#f3f5ff 32%,#eef2ff 100%);
+    --dock-bg:rgba(255,255,255,0.88);
+    --surface-strong:linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);
+    --surface-shadow:0 18px 40px rgba(113,126,181,0.13);
+    --section-bg:rgba(255,255,255,0.72);
+    --section-border:rgba(96,118,179,0.10);
+    --section-shadow:0 10px 24px rgba(113,126,181,0.08);
+    --overlay-surface:rgba(255,255,255,0.96);
+    --theme-btn-bg:rgba(89,185,248,0.12);
+    --theme-btn-color:#3f88c8;
+    --theme-meta:#0d0d0f;
+    --r-lg:16px;--r-md:12px;--r-sm:10px;--tab-h:83px;
+    --sf:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Helvetica Neue',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body[data-theme="dark"]{
+    --ios-bg:#111827;--ios-bg2:#1a2436;--ios-bg3:#223048;--ios-bg4:#2d3e5a;
+    --ios-sep:rgba(182,198,239,0.12);
+    --ios-lbl:#edf3ff;--ios-lbl2:rgba(237,243,255,0.72);--ios-lbl3:rgba(237,243,255,0.44);
+    --ios-fill:rgba(89,185,248,0.14);--ios-fill2:rgba(89,185,248,0.24);
+    --app-bg:linear-gradient(180deg,#09111d 0%,#0d1624 42%,#111c2d 100%);
+    --dock-bg:rgba(17,24,39,0.78);
+    --surface-strong:linear-gradient(180deg,#1c2740 0%,#162033 100%);
+    --surface-shadow:0 18px 44px rgba(0,0,0,0.38);
+    --section-bg:rgba(33,46,69,0.92);
+    --section-border:rgba(182,198,239,0.12);
+    --section-shadow:0 12px 26px rgba(0,0,0,0.22);
+    --overlay-surface:rgba(26,36,54,0.96);
+    --theme-btn-bg:rgba(244,210,107,0.14);
+    --theme-btn-color:#f4d26b;
+    --theme-meta:#0b111a;
+  }
+  html,body{background:var(--app-bg);background-color:var(--theme-meta);color:var(--ios-lbl);font-family:var(--sf);font-size:17px;line-height:1.3;min-height:100dvh;-webkit-font-smoothing:antialiased}
+
+  .nav-bar{display:none}
+  .nav-title-bar{display:flex;align-items:center;justify-content:center;height:44px;position:relative;padding:0 16px}
+  .nav-title{font-size:18px;font-weight:700;letter-spacing:-0.5px}
+  .nav-right{position:absolute;right:16px;top:50%;transform:translateY(-50%)}
+  .sync-indicator{font-size:12px;color:var(--ios-lbl3);display:flex;align-items:center;gap:5px}
+  .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--ios-lbl3);flex-shrink:0;transition:background 0.3s}
+  .sync-dot.green{background:var(--ios-green)}.sync-dot.orange{background:var(--ios-orange)}.sync-dot.red{background:var(--ios-red)}
+
+  .tab-bar{position:fixed;bottom:calc(env(safe-area-inset-bottom,20px) + 4px);left:22px;right:22px;z-index:200;background:var(--dock-bg);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);border:1px solid var(--section-border);border-radius:24px;box-shadow:0 18px 38px rgba(116,127,178,0.20);display:flex;overflow:hidden}
+  .tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 6px;cursor:pointer;border:none;background:none;color:var(--ios-lbl3);font-family:var(--sf);transition:color 0.15s;min-height:58px}
+  .tab-item.active{color:var(--ios-blue)}
+  .tab-icon{font-size:22px;line-height:1;margin-bottom:2px}
+  .tab-label{font-size:10px;font-weight:500;letter-spacing:0.1px}
+
+  .scroll-content{padding-top:calc(env(safe-area-inset-top,44px) + 18px);padding-bottom:calc(env(safe-area-inset-bottom,20px) + var(--tab-h) + 26px);min-height:100dvh}
+  .page{display:none;background:transparent}.page.active{display:block;background:transparent}
+
+  .list-header{font-size:14px;font-weight:700;color:var(--ios-lbl);letter-spacing:-0.02em;padding:0 16px 8px}
+  .tracker-section{margin:0 16px 16px}
+  .section-toggle{width:100%;margin:0;display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--section-bg);border:1px solid var(--section-border);border-radius:18px;color:var(--ios-lbl);font-family:var(--sf);cursor:pointer;padding:12px 14px;text-align:left;box-shadow:var(--section-shadow);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);position:relative;z-index:1}
+  .section-toggle-left{display:flex;align-items:center;gap:8px;min-width:0}
+  .section-toggle-title{font-size:16px;font-weight:800;letter-spacing:-0.03em}
+  .section-toggle.complete .section-toggle-title{color:var(--ios-lbl2)}
+  .section-toggle-meta{font-size:12px;color:var(--ios-lbl2);font-weight:500}
+  .section-toggle-icon{font-size:14px;color:var(--ios-lbl3);min-width:14px;text-align:center}
+  .section-body.collapsed{display:none}
+  .tracker-section.expanded{background:var(--ios-bg2);border:1px solid rgba(96,118,179,0.08);border-radius:24px;overflow:hidden;box-shadow:0 16px 40px rgba(113,126,181,0.12)}
+  .tracker-section.expanded .section-toggle{background:transparent;border:none;border-radius:0;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;padding:14px 16px 10px}
+  .tracker-section.expanded .section-body{margin-top:0}
+  .tracker-section.expanded .list-group{background:transparent;border:none;box-shadow:none;border-radius:0}
+  .list-group{background:var(--ios-bg2);border-radius:24px;overflow:hidden;box-shadow:0 16px 40px rgba(113,126,181,0.12);border:1px solid rgba(96,118,179,0.08)}
+  .list-row{display:flex;align-items:center;padding:15px 16px;gap:14px;position:relative;cursor:pointer}
+  .list-row:not(:last-child)::after{content:'';position:absolute;bottom:0;left:16px;right:0;height:0.5px;background:var(--ios-sep)}
+  .list-row:active{background:var(--ios-fill)}
+
+  .med-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,0.75),0 8px 18px rgba(113,126,181,0.12)}
+  .med-icon.orange{background:linear-gradient(180deg,#fff1df,#ffe6c7)}.med-icon.green{background:linear-gradient(180deg,#e6faef,#d6f4e4)}
+  .med-icon.blue{background:linear-gradient(180deg,#e6f5ff,#d9ecff)}.med-icon.yellow{background:linear-gradient(180deg,#fff8dc,#ffefbf)}
+  .med-icon.purple{background:linear-gradient(180deg,#f0ecff,#e2dcff)}.med-icon.teal{background:linear-gradient(180deg,#e9fcff,#d7f5f8)}
+  .med-icon.red{background:linear-gradient(180deg,#ffe9e7,#ffd8d3)}
+
+  .med-text{flex:1;min-width:0}
+  .med-name{font-size:17px;font-weight:700;letter-spacing:-0.02em}
+  .med-generic{font-size:13px;color:var(--ios-lbl2);margin-top:1px}
+  .med-sub{
+    font-size:12px;color:var(--ios-lbl2);margin-top:4px;line-height:1.35;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden
+  }
+  .med-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+  .status-pill{font-size:13px;font-weight:700;padding:8px 13px;border-radius:999px;white-space:nowrap}
+  .pill-ok{background:rgba(92,202,146,0.18);color:#3b9a6a}
+  .pill-wait{background:rgba(89,185,248,0.16);color:#4397d1}
+  .pill-warn{background:rgba(244,177,99,0.28);color:#a75f18}
+  .pill-done{background:rgba(239,125,116,0.18);color:#d46d65}
+  .chev{color:var(--ios-lbl3);font-size:14px}
+
+  .prog-track{height:6px;background:#e9eefb;border-radius:999px;margin-top:7px;overflow:hidden}
+  .prog-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#66c6d2,#74d7a0);transition:width 1s linear}
+  .prog-fill.mid{background:linear-gradient(90deg,#79bdf6,#8ea8f5)}.prog-fill.low{background:linear-gradient(90deg,#f2b26f,#ee867b)}
+
+  .sheet-overlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.5)}
+  .sheet-overlay.show{display:block}
+  .sheet{position:fixed;bottom:0;left:0;right:0;z-index:301;background:var(--overlay-surface);border-radius:28px 28px 0 0;padding-bottom:env(safe-area-inset-bottom,20px);transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);max-height:92dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 -24px 50px rgba(113,126,181,0.18)}
+  .sheet.show{transform:translateY(0)}
+  .sheet-handle{width:42px;height:5px;border-radius:3px;background:rgba(91,108,166,0.18);margin:10px auto 0}
+  .sheet-header{padding:14px 20px 0;display:flex;align-items:flex-start;justify-content:space-between}
+  .sheet-title{font-size:20px;font-weight:700;letter-spacing:-0.4px}
+  .sheet-subtitle{font-size:14px;color:var(--ios-lbl2);margin-top:2px}
+  .sheet-close{width:30px;height:30px;border-radius:50%;background:var(--ios-fill2);border:none;color:var(--ios-lbl2);font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+  .sheet-body{padding:16px 20px}
+
+  .last-block{background:var(--ios-bg3);border-radius:18px;padding:13px 14px;margin-bottom:14px}
+  .last-lbl{font-size:12px;color:var(--ios-lbl2);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px}
+  .last-val{font-size:15px;font-weight:500}
+  .last-sub{font-size:13px;color:var(--ios-lbl2);margin-top:2px}
+
+  .dose-lbl{font-size:13px;color:var(--ios-lbl2);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
+  .dose-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .dose-chip{padding:8px 18px;border-radius:20px;border:1.5px solid var(--ios-bg4);background:var(--ios-bg3);color:var(--ios-lbl2);font-family:var(--sf);font-size:15px;font-weight:500;cursor:pointer;transition:all 0.15s}
+  .dose-chip.sel{background:var(--ios-blue);border-color:var(--ios-blue);color:#fff}
+  .dose-chip.custom-chip{border-style:dashed}
+  .dose-chip.custom-chip.sel{background:var(--ios-purple);border-color:var(--ios-purple)}
+  .custom-row{display:flex;gap:10px;align-items:center;margin-bottom:14px}
+  .custom-input{flex:1;background:var(--ios-bg3);border:1.5px solid var(--ios-bg4);border-radius:var(--r-sm);color:var(--ios-lbl);font-family:var(--sf);font-size:17px;padding:10px 14px}
+  .custom-input:focus{outline:none;border-color:var(--ios-blue)}
+  .custom-unit{font-size:15px;color:var(--ios-lbl2)}
+
+  .action-btn{width:100%;padding:15px;border-radius:var(--r-md);border:none;font-family:var(--sf);font-size:17px;font-weight:600;cursor:pointer;transition:opacity 0.15s,transform 0.1s;margin-bottom:10px;letter-spacing:-0.2px}
+  .action-btn:active{opacity:0.8;transform:scale(0.98)}
+  .btn-green{background:var(--ios-green);color:#000}
+  .btn-disabled{background:var(--ios-bg3);color:var(--ios-lbl3);cursor:not-allowed}
+  .btn-red{background:rgba(255,69,58,0.15);color:var(--ios-red);border:1.5px solid rgba(255,69,58,0.3)}
+  .btn-orange{background:var(--ios-orange);color:#000}
+  .btn-teal{background:rgba(90,200,250,0.18);color:var(--ios-teal);border:1.5px solid rgba(90,200,250,0.3)}
+
+  .past-inner{background:var(--ios-bg3);border-radius:var(--r-md);padding:14px;margin-bottom:12px}
+  .past-lbl{font-size:13px;color:var(--ios-lbl2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.06em}
+  .past-datetime{width:100%;background:var(--ios-bg4);border:none;border-radius:var(--r-sm);color:var(--ios-lbl);font-family:var(--sf);font-size:15px;padding:10px 12px}
+  .past-datetime:focus{outline:none}
+
+  .alert-card{margin:0 0 14px;background:linear-gradient(180deg,#ffffff,#f8fbff);border:1px solid rgba(96,118,179,0.10);border-radius:24px;padding:14px 16px;box-shadow:0 14px 30px rgba(113,126,181,0.10)}
+  .alert-title{font-size:14px;font-weight:700;color:var(--ios-lbl);margin-bottom:4px}
+  .alert-body{font-size:13px;color:var(--ios-lbl2);line-height:1.45;white-space:pre-line}
+
+  .hist-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+  .hist-del{background:none;border:none;color:var(--ios-lbl3);font-size:18px;cursor:pointer;padding:2px 4px;flex-shrink:0;line-height:1;transition:color 0.15s}
+  .hist-del:active{color:var(--ios-red)}
+
+  .sync-bar{margin:0 16px 16px;background:var(--ios-bg2);border-radius:24px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 14px 30px rgba(113,126,181,0.10);border:1px solid rgba(96,118,179,0.08)}
+  .sync-bar-label{font-size:14px;color:var(--ios-lbl2)}
+  .sync-bar-result{font-size:13px;color:var(--ios-lbl3)}
+
+  .empty{text-align:center;padding:60px 30px;color:var(--ios-lbl2);font-size:15px;line-height:1.5}
+  .empty-icon{font-size:48px;margin-bottom:14px}
+  .empty-title{font-size:20px;font-weight:600;color:var(--ios-lbl);margin-bottom:8px}
+
+  .copy-btn{display:block;width:calc(100% - 32px);margin:0 16px 20px;padding:15px;border-radius:18px;border:none;background:rgba(89,185,248,0.12);color:#4fa7e4;font-family:var(--sf);font-size:17px;font-weight:700;cursor:pointer;text-align:center;transition:opacity 0.15s}
+  .copy-btn:active{opacity:0.7}
+
+  .confirm-overlay{display:none;position:fixed;inset:0;z-index:399;background:rgba(0,0,0,0.5)}
+  .confirm-overlay.show{display:block}
+  .confirm-sheet{position:fixed;bottom:0;left:0;right:0;z-index:400;padding:0 8px calc(env(safe-area-inset-bottom,20px) + 8px);transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1)}
+  .confirm-sheet.show{transform:translateY(0)}
+  .confirm-inner{background:var(--ios-bg2);border-radius:var(--r-lg);overflow:hidden;margin-bottom:8px}
+  .confirm-title-row{padding:14px 16px 10px;text-align:center}
+  .confirm-title{font-size:13px;font-weight:600}
+  .confirm-msg{font-size:13px;color:var(--ios-lbl2);margin-top:4px;line-height:1.4;white-space:pre-line}
+  .confirm-divider{height:0.5px;background:var(--ios-sep)}
+  .confirm-act{width:100%;padding:14px;border:none;background:none;font-family:var(--sf);font-size:17px;cursor:pointer;text-align:center;transition:background 0.1s}
+  .confirm-act:active{background:var(--ios-fill)}
+  .confirm-act.destr{color:var(--ios-red)}.confirm-act.prim{color:var(--ios-blue);font-weight:600}
+  .confirm-cancel{width:100%;padding:14px;border:none;background:var(--ios-bg2);border-radius:var(--r-lg);font-family:var(--sf);font-size:17px;font-weight:600;color:var(--ios-blue);cursor:pointer}
+  .confirm-cancel:active{background:var(--ios-bg3)}
+
+  .toast{position:fixed;z-index:500;top:calc(env(safe-area-inset-top,44px) + 60px);left:16px;right:16px;background:var(--overlay-surface);color:var(--ios-lbl);border-radius:18px;padding:13px 16px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:10px;backdrop-filter:blur(20px);box-shadow:0 10px 30px rgba(113,126,181,0.18);transform:translateY(-20px);opacity:0;transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none}
+  .toast.show{transform:translateY(0);opacity:1}
+  .toast-icon{font-size:20px;flex-shrink:0}
+
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
+
+  .pack-day-block{background:var(--ios-bg3);border-radius:var(--r-md);padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+  .pack-day-label{font-size:13px;color:var(--ios-lbl2)}
+  .pack-day-value{font-size:20px;font-weight:700;color:var(--ios-purple)}
+  .dose-status-card{background:var(--ios-bg3);border-radius:var(--r-md);padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+  .dose-status-copy{min-width:0}
+  .dose-status-label{font-size:13px;color:var(--ios-lbl2)}
+  .dose-status-meta{font-size:12px;color:var(--ios-lbl3);margin-top:3px}
+  .dose-status-value{font-size:22px;font-weight:700;letter-spacing:-0.03em;text-align:right;flex-shrink:0}
+  .dose-status-value.ok{color:var(--ios-green)}
+  .dose-status-value.warn{color:var(--ios-orange)}
+  .dose-status-value.block{color:var(--ios-red)}
+  .hero-card{margin:0 16px 16px;padding:16px;background:var(--surface-strong);border-radius:28px;border:1px solid var(--section-border);box-shadow:var(--surface-shadow)}
+  .hero-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .hero-name{font-size:22px;font-weight:800;letter-spacing:-0.04em;color:var(--ios-lbl)}
+  .hero-progress{font-size:14px;font-weight:600;color:var(--ios-lbl2)}
+  .hero-meter{height:14px;border-radius:999px;background:#e7ecfb;overflow:hidden;margin:14px 0 12px}
+  .hero-meter-fill{height:100%;background:linear-gradient(90deg,#76d39d,#6ec7f6);border-radius:999px}
+  .hero-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+  .hero-chip{background:var(--ios-bg3);border-radius:18px;padding:12px 10px;text-align:center}
+  .hero-chip-val{font-size:19px;font-weight:650;letter-spacing:-0.02em;color:var(--ios-lbl)}
+  .hero-chip-lbl{font-size:11px;color:var(--ios-lbl2);margin-top:4px;text-transform:uppercase;letter-spacing:0.06em}
+  .hero-chip-sub{font-size:11px;color:var(--ios-lbl3);margin-top:2px}
+  .hero-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+  .theme-toggle{border:none;background:var(--theme-btn-bg);color:var(--theme-btn-color);width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-family:var(--sf);cursor:pointer;box-shadow:0 10px 24px rgba(113,126,181,0.12)}
+  .theme-toggle:active{transform:scale(0.97)}
+
+  .pain-picker-wrap{margin-bottom:14px}
+  .pain-picker{
+    width:100%;
+    height:48px;
+    background:var(--ios-bg3);
+    border:1.5px solid var(--ios-bg4);
+    border-radius:var(--r-md);
+    color:var(--ios-lbl);
+    font-family:var(--sf);
+    font-size:16px;
+    padding:0 12px;
+  }
+  .pain-picker:focus{outline:none;border-color:var(--ios-blue)}
+  .pain-picker.placeholder{color:var(--ios-lbl3)}
+
+  .filter-bar{position:relative;margin:0 16px 16px}
+  .filter-button{
+    width:100%;display:flex;align-items:center;justify-content:space-between;
+    background:var(--ios-bg2);border:1px solid var(--ios-sep);border-radius:var(--r-lg);
+    padding:14px 16px;color:var(--ios-lbl);font-family:var(--sf);font-size:16px;cursor:pointer
+  }
+  .filter-button-label{font-weight:500}
+  .filter-button-sub{font-size:13px;color:var(--ios-lbl2)}
+  .filter-menu{
+    display:none;position:absolute;top:calc(100% + 8px);left:50%;right:auto;width:min(66vw,420px);min-width:240px;max-width:calc(100vw - 32px);max-height:min(70vh,520px);transform:translateX(-50%);z-index:210;
+    background:var(--overlay-surface);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+    border:1px solid var(--ios-sep);border-radius:var(--r-lg);overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.35)
+  }
+  .filter-menu.show{display:block}
+  .filter-menu-head{padding:12px 16px;border-bottom:0.5px solid var(--ios-sep);display:flex;align-items:center;justify-content:space-between}
+  .filter-menu-title{font-size:13px;color:var(--ios-lbl2);text-transform:uppercase;letter-spacing:0.06em}
+  .filter-clear-btn{background:none;border:none;color:var(--ios-blue);font-family:var(--sf);font-size:14px;cursor:pointer}
+  .filter-list{max-height:min(58vh,420px);overflow-y:auto}
+  .filter-item{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;cursor:pointer;position:relative}
+  .filter-item:not(:last-child)::after{content:'';position:absolute;left:16px;right:0;bottom:0;height:0.5px;background:var(--ios-sep)}
+  .filter-item:active{background:var(--ios-fill)}
+  .filter-item-left{display:flex;align-items:center;gap:10px;min-width:0}
+  .filter-item-label{font-size:16px}
+  .checkmark{font-size:16px;color:var(--ios-blue);min-width:16px;text-align:center}
+  .filter-backdrop{display:none;position:fixed;inset:0;z-index:205}
+  .filter-backdrop.show{display:block}
+
+  .segmented{display:inline-flex;background:var(--ios-bg3);border-radius:10px;padding:2px}
+  .seg-btn{
+    min-width:60px;padding:8px 12px;border:none;background:transparent;color:var(--ios-lbl2);
+    font-family:var(--sf);font-size:14px;font-weight:600;border-radius:8px;cursor:pointer
+  }
+  .seg-btn.active{background:var(--ios-fill2);color:var(--ios-lbl)}
+
+  .insight-wrap{margin:0 16px 20px}
+  .insight-card{
+    background:var(--ios-bg2);border-radius:var(--r-lg);padding:16px;margin-bottom:16px
+  }
+  .insight-title{font-size:18px;font-weight:700;letter-spacing:-0.3px}
+  .insight-sub{font-size:13px;color:var(--ios-lbl2);margin-top:4px}
+  .insight-grid{
+    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px
+  }
+  .metric{
+    background:var(--ios-bg3);border-radius:12px;padding:12px
+  }
+  .metric-lbl{font-size:12px;color:var(--ios-lbl2);text-transform:uppercase;letter-spacing:0.05em}
+  .metric-val{font-size:20px;font-weight:700;margin-top:5px}
+  .metric-sub{font-size:12px;color:var(--ios-lbl2);margin-top:4px}
+  .trend-good{color:var(--ios-green)} .trend-mid{color:var(--ios-yellow)} .trend-bad{color:var(--ios-red)}
+
+  .graph-wrap{margin-top:14px}
+  .graph-svg{
+    width:100%;height:auto;display:block;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:12px;border:1px solid var(--ios-sep)
+  }
+  .graph-axis-label{font-size:11px;fill:rgba(255,255,255,0.45);font-family:var(--sf)}
+  .graph-grid{stroke:rgba(255,255,255,0.08);stroke-width:1}
+  .graph-line{fill:none;stroke:rgba(90,200,250,0.8);stroke-width:2.5}
+
+  @media (min-width: 980px) {
+    html,body{
+      background:var(--app-bg);
+    }
+    .nav-title-bar{
+      max-width:1100px;
+      margin:0 auto;
+      padding:0 24px;
+    }
+    .nav-right{right:24px}
+    .scroll-content{
+      max-width:1100px;
+      margin:0 auto;
+      padding-top:calc(env(safe-area-inset-top,44px) + 18px);
+      padding-left:24px;
+      padding-right:24px;
+      padding-bottom:140px;
+    }
+    .page.active{
+      display:grid;
+      grid-template-columns:minmax(0, 1fr);
+    }
+    .list-group,
+    .sync-bar,
+    .insight-card{
+      box-shadow:0 18px 40px rgba(0,0,0,0.22);
+    }
+    .tab-bar{
+      left:50%;
+      right:auto;
+      bottom:18px;
+      width:min(680px, calc(100vw - 48px));
+      transform:translateX(-50%);
+      border:1px solid var(--ios-sep);
+      border-radius:22px;
+      box-shadow:0 20px 45px rgba(0,0,0,0.38);
+      padding-bottom:0;
+      overflow:hidden;
+    }
+    .tab-item{
+      min-height:60px;
+      padding:10px 8px 6px;
+    }
+    .sheet{
+      left:50%;
+      right:auto;
+      bottom:24px;
+      width:min(720px, calc(100vw - 48px));
+      max-height:min(88dvh, 900px);
+      border-radius:24px;
+      box-shadow:0 24px 60px rgba(0,0,0,0.45);
+      transform:translate(-50%, calc(100% + 24px));
+    }
+    .sheet.show{transform:translate(-50%, 0)}
+    .confirm-sheet{
+      left:50%;
+      right:auto;
+      bottom:24px;
+      width:min(520px, calc(100vw - 48px));
+      padding:0;
+      transform:translate(-50%, calc(100% + 24px));
+    }
+    .confirm-sheet.show{transform:translate(-50%, 0)}
+    .confirm-inner,
+    .confirm-cancel{
+      box-shadow:0 18px 40px rgba(0,0,0,0.34);
+    }
+    .toast{
+      left:50%;
+      right:auto;
+      width:min(520px, calc(100vw - 48px));
+      transform:translate(-50%, -20px);
+    }
+    .toast.show{transform:translate(-50%, 0)}
+  }
+
+  body[data-theme="dark"] .hero-meter{background:#2b3b58}
+  body[data-theme="dark"] .prog-track{background:#30415e}
+  body[data-theme="dark"] .prog-fill{background:linear-gradient(90deg,#6eb8cb,#6fd2a6)}
+  body[data-theme="dark"] .prog-fill.mid{background:linear-gradient(90deg,#7ca7ea,#8e96e3)}
+  body[data-theme="dark"] .prog-fill.low{background:linear-gradient(90deg,#df9c6d,#d77d79)}
+  body[data-theme="dark"] .pill-ok{background:rgba(98,196,147,0.30);color:#e1ffed}
+  body[data-theme="dark"] .pill-wait{background:rgba(110,164,242,0.28);color:#edf5ff}
+  body[data-theme="dark"] .pill-warn{background:rgba(232,154,88,0.34);color:#fff4e9}
+  body[data-theme="dark"] .pill-done{background:rgba(214,112,112,0.26);color:#ffe8e8}
+  body[data-theme="dark"] .med-icon{box-shadow:inset 0 1px 0 rgba(255,255,255,0.06),0 10px 22px rgba(0,0,0,0.22)}
+  body[data-theme="dark"] .med-icon.orange{background:linear-gradient(180deg,#5b4534,#473528)}
+  body[data-theme="dark"] .med-icon.green{background:linear-gradient(180deg,#345144,#293e35)}
+  body[data-theme="dark"] .med-icon.blue{background:linear-gradient(180deg,#334a5d,#283948)}
+  body[data-theme="dark"] .med-icon.yellow{background:linear-gradient(180deg,#645739,#4f452d)}
+  body[data-theme="dark"] .med-icon.purple{background:linear-gradient(180deg,#4a435f,#39344c)}
+  body[data-theme="dark"] .med-icon.teal{background:linear-gradient(180deg,#35535a,#294046)}
+  body[data-theme="dark"] .med-icon.red{background:linear-gradient(180deg,#613d3d,#4b3030)}
+  body[data-theme="dark"] .tracker-section.expanded{background:var(--ios-bg2);border-color:rgba(182,198,239,0.11);box-shadow:0 18px 40px rgba(0,0,0,0.26)}
+  body[data-theme="dark"] .list-group{border-color:rgba(182,198,239,0.10);box-shadow:0 18px 40px rgba(0,0,0,0.24)}
+  body[data-theme="dark"] .alert-card{background:linear-gradient(180deg,#182133,#131b2b);border-color:rgba(182,198,239,0.10);box-shadow:0 14px 30px rgba(0,0,0,0.24)}
+  body[data-theme="dark"] .sync-bar{background:var(--ios-bg2);border-color:rgba(182,198,239,0.10);box-shadow:0 14px 30px rgba(0,0,0,0.22)}
+  body[data-theme="dark"] .toast{box-shadow:0 16px 34px rgba(0,0,0,0.34)}
+  body[data-theme="dark"] .graph-svg{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00))}
+  body[data-theme="dark"] .graph-axis-label{fill:rgba(237,243,255,0.45)}
+  body[data-theme="dark"] .graph-grid{stroke:rgba(237,243,255,0.09)}
+</style>
+</head>
+<body>
+
+<div class="nav-bar">
+  <div class="nav-title-bar">
+    <div class="nav-title">Tom's Medications</div>
+    <div style="position:absolute;left:16px;top:50%;transform:translateY(-50%)">
+      <button onclick="manualRefresh()" style="background:none;border:none;color:var(--ios-blue);font-family:var(--sf);font-size:15px;font-weight:500;cursor:pointer;padding:4px 0">Refresh</button>
+    </div>
+    <div class="nav-right">
+      <div class="sync-indicator">
+        <div class="sync-dot" id="sync-dot"></div>
+        <span id="sync-label"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="scroll-content">
+  <div class="page active" id="page-tracker"><div id="tracker-content"></div></div>
+  <div class="page" id="page-past"><div id="past-content"></div></div>
+  <div class="page" id="page-history"><div id="history-content"></div></div>
+  <div class="page" id="page-insights"><div id="insights-content"></div></div>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-item active" onclick="switchTab('tracker')" id="tab-tracker">
+    <div class="tab-icon">💊</div><div class="tab-label">Tracker</div>
+  </button>
+  <button class="tab-item" onclick="switchTab('past')" id="tab-past">
+    <div class="tab-icon">🕐</div><div class="tab-label">Log Past</div>
+  </button>
+  <button class="tab-item" onclick="switchTab('history')" id="tab-history">
+    <div class="tab-icon">📋</div><div class="tab-label">History</div>
+  </button>
+  <button class="tab-item" onclick="switchTab('insights')" id="tab-insights">
+    <div class="tab-icon">📈</div><div class="tab-label">Insights</div>
+  </button>
+</div>
+
+<div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet()"></div>
+<div class="sheet" id="med-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div>
+      <div class="sheet-title" id="sheet-title"></div>
+      <div class="sheet-subtitle" id="sheet-subtitle"></div>
+    </div>
+    <button class="sheet-close" onclick="closeSheet()">✕</button>
+  </div>
+  <div class="sheet-body" id="sheet-body"></div>
+</div>
+
+<div class="confirm-overlay" id="confirm-overlay" onclick="closeConfirm()"></div>
+<div class="confirm-sheet" id="confirm-sheet">
+  <div class="confirm-inner">
+    <div class="confirm-title-row">
+      <div class="confirm-title" id="confirm-title"></div>
+      <div class="confirm-msg" id="confirm-msg"></div>
+    </div>
+    <div class="confirm-divider"></div>
+    <button class="confirm-act destr" id="confirm-act-btn" onclick="runConfirm()"></button>
+  </div>
+  <button class="confirm-cancel" onclick="closeConfirm()">Cancel</button>
+</div>
+
+<div class="filter-backdrop" id="filter-backdrop" onclick="closeFilterMenu()"></div>
+
+<div class="toast" id="toast">
+  <div class="toast-icon" id="toast-icon"></div>
+  <div id="toast-text"></div>
+</div>
+
+<script>
+// ─── SUPABASE ─────────────────────────────────────────────────────────────────
+const SUPA_URL = 'https://twnnqelxvjjtgqlbczrc.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3bm5xZWx4dmpqdGdxbGJjenJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NjE5MTUsImV4cCI6MjA5MjAzNzkxNX0.5GSiZJBX5ZUZIeMm52PQ_UJRDyK1OZlDqRLE1j0tef4';
+const TABLE = 'doses';
+const ACTIVE_BACKEND = { label:'LIVE', table:TABLE, url:SUPA_URL, key:SUPA_KEY };
+
+function getLogsStorageKey() { return 'tomMedLogs_v2'; }
+function backendConfigured() { return true; }
+function getActiveBackend() { return ACTIVE_BACKEND; }
+
+async function manualRefresh() {
+  if (!backendConfigured()) {
+    const cfg = getActiveBackend();
+    showToast('🧪', `${cfg.label} backend is not configured yet`);
+    setSyncStatus('error', `${cfg.label} local only`);
+    return;
+  }
+  showToast('🔄', 'Refreshing…');
+  await loadFromCloud();
+}
+
+async function supaFetch(method, path, body) {
+  const cfg = getActiveBackend();
+  if (!backendConfigured()) throw new Error(`${cfg.label} backend is not configured`);
+  const res = await fetch(`${cfg.url}/rest/v1/${path}`, {
+    method,
+    headers: {
+      'apikey': cfg.key,
+      'Authorization': `Bearer ${cfg.key}`,
+      'Content-Type': 'application/json',
+      'Prefer': method==='POST' ? 'return=representation' : ''
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+  return method==='DELETE' ? null : res.json();
+}
+
+// ─── MEDS ─────────────────────────────────────────────────────────────────────
+const MEDS = [
+  {id:'pain',       brand:'Pain Level',   generic:'0–10 Scale',          emoji:'📊',color:'red',   intervalHours:0,  defaultDose:null, doseOptions:[],          hasCustom:false, doseUnit:'',      tabletMg:null, note:'Log current pain level', isPain:true},
+  {id:'dilaudid',   brand:'Dilaudid',     generic:'HYDROmorphone',        emoji:'💊',color:'orange',intervalHours:4,  defaultDose:2,    doseOptions:[1,2,4,6],     hasCustom:true,  doseUnit:'mg',    tabletMg:2,    note:'Every 4h as needed · up to 5 days'},
+  {id:'xanax',      brand:'Xanax',        generic:'ALPRAZolam',           emoji:'💊',color:'orange',intervalHours:0,  defaultDose:0.5,  doseOptions:[0.5],         hasCustom:false, doseUnit:'mg',    tabletMg:0.5,  note:'1 every mornings + up to 2 as needed through the day'},
+  {id:'zanaflex',   brand:'Zanaflex',     generic:'tiZANidine',           emoji:'💊',color:'orange',intervalHours:8,  defaultDose:4,    doseOptions:[4],           hasCustom:false, doseUnit:'mg',    tabletMg:4,    note:'Every 8h as needed for muscle spasms'},
+  {id:'tylenol',    brand:'Tylenol',      generic:'Acetaminophen',        emoji:'💊',color:'green', intervalHours:6,  defaultDose:1000, doseOptions:[500,1000],    hasCustom:false, doseUnit:'mg',    tabletMg:500,  note:'Every 6h as needed · up to 10 days'},
+  {id:'miralax',    brand:'MiraLAX',      generic:'Polyethylene Glycol',  emoji:'🟤',color:'teal',  intervalHours:24, defaultDose:17,   doseOptions:[17],          hasCustom:false, doseUnit:'g',     tabletMg:null, note:'Once daily · mix in 4–8 oz beverage'},
+  {id:'lyrica',     brand:'Lyrica',       generic:'Pregabalin',           emoji:'🔵',color:'blue',  intervalHours:12, defaultDose:100,  doseOptions:[100],         hasCustom:false, doseUnit:'mg',    tabletMg:100,  note:'Twice daily'},
+  {id:'gabapentin', brand:'Gabapentin',   generic:'Neurontin',            emoji:'💊',color:'blue',  intervalHours:8,  defaultDose:300,  doseOptions:[300],         hasCustom:false, doseUnit:'mg',    tabletMg:300,  note:'Every 8h'},
+  {id:'wellbutrin', brand:'Wellbutrin',   generic:'Bupropion',            emoji:'💊',color:'blue',  intervalHours:24, defaultDose:150,  doseOptions:[150],         hasCustom:false, doseUnit:'mg',    tabletMg:150,  note:'Once daily'},
+  {id:'zoloft',     brand:'Zoloft',       generic:'Sertraline',           emoji:'💊',color:'blue',  intervalHours:24, defaultDose:100,  doseOptions:[100],         hasCustom:false, doseUnit:'mg',    tabletMg:100,  note:'Once daily'},
+  {id:'vitaminc',   brand:'Vitamin C',    generic:'Ascorbic Acid',        emoji:'🟡',color:'yellow',intervalHours:12, defaultDose:500,  doseOptions:[500],         hasCustom:false, doseUnit:'mg',    tabletMg:500,  note:'Twice daily'},
+  {id:'vitamind',   brand:'Vitamin D3',   generic:'Cholecalciferol',      emoji:'🟡',color:'yellow',intervalHours:12, defaultDose:2000, doseOptions:[2000],        hasCustom:false, doseUnit:'units', tabletMg:null, note:'Twice daily'},
+  {id:'multivit',   brand:'Multivitamin', generic:'Theragran',            emoji:'🟡',color:'yellow',intervalHours:24, defaultDose:1,    doseOptions:[1],           hasCustom:false, doseUnit:'tablet',tabletMg:null, note:'Once daily'},
+  {id:'vitamine',   brand:'Vitamin E',    generic:'400 units',            emoji:'🟡',color:'yellow',intervalHours:24, defaultDose:400,  doseOptions:[400],         hasCustom:false, doseUnit:'units', tabletMg:null, note:'Once daily'},
+  {id:'zinc',       brand:'Zincate',      generic:'Zinc Sulfate',         emoji:'🟡',color:'yellow',intervalHours:24, defaultDose:220,  doseOptions:[220],         hasCustom:false, doseUnit:'mg',    tabletMg:220,  note:'Once daily'},
+];
+
+const SCHEDULE_GROUPS = {
+  prn: {label:'As Needed'},
+  mornings_empty: {label:'mornings (Empty Stomach)'},
+  morning: {label:'Morning'},
+  midday: {label:'Midday'},
+  evening: {label:'Evening'},
+  night: {label:'Night'}
+};
+
+const TRACKER_GROUP_ORDER = ['prn','mornings_empty','morning','midday','evening','night'];
+
+MEDS.forEach(m=>{
+  if (m.scheduleGroups) return;
+  switch(m.id){
+    case 'journavx':      m.scheduleGroups=['morning','evening']; break;
+    case 'xanax':         m.scheduleGroups=['morning','prn']; break;
+    case 'zoloft':
+    case 'wellbutrin':
+    case 'multivit':
+    case 'vitamine':
+    case 'zinc':          m.scheduleGroups=['morning']; break;
+    case 'lyrica':
+    case 'vitaminc':
+    case 'vitamind':      m.scheduleGroups=['morning','evening']; break;
+    case 'gabapentin':    m.scheduleGroups=['morning','midday','evening']; break;
+    case 'miralax':       m.scheduleGroups=['night']; break;
+    case 'medrol':        m.scheduleGroups=['midday']; break;
+    case 'dilaudid':
+    case 'zanaflex':
+    case 'tylenol':       m.scheduleGroups=['prn']; break;
+    default:              m.scheduleGroups=['midday'];
+  }
+});
+
+const EFFECT_WINDOWS = {
+  dilaudid: {min:30, max:120},
+  xanax:    {min:30, max:90},
+  zanaflex: {min:45, max:120}
+};
+const XANAX_PRN_WINDOW = { startHour: 8, dayResetHour: 4, maxPrnPerDay: 2, spacingHours: 4 };
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let logs = JSON.parse(localStorage.getItem('tomMedLogs_v2') || '[]');
+let currentTab = 'tracker';
+let openMedId  = null;
+let openGroupContext = null;
+let confirmCb  = null;
+let activeFilters = new Set(MEDS.map(m=>m.id));
+let filterMenuOpen = false;
+let insightsRange = '24h';
+// FIX 4: In-flight guard prevents overlapping cloud fetches
+let cloudFetchInFlight = false;
+const medState = {};
+const trackerSectionExpanded = {};
+const THEME_KEY = 'tomMedsTheme_v1';
+let currentTheme = localStorage.getItem(THEME_KEY) || 'light';
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+function getMed(medId) { return MEDS.find(m=>m.id===medId); }
+
+function applyTheme(theme) {
+  currentTheme = theme === 'dark' ? 'dark' : 'light';
+  document.body.setAttribute('data-theme', currentTheme);
+  localStorage.setItem(THEME_KEY, currentTheme);
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  if (themeMeta) themeMeta.setAttribute('content', currentTheme === 'dark' ? '#0b111a' : '#f4f6ff');
+}
+
+function toggleTheme() {
+  applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+  render();
+}
+
+function getState(medId) {
+  if (!medState[medId]) {
+    const med = getMed(medId);
+    medState[medId] = {
+      selectedDose: med.isPain ? null : med.defaultDose,
+      useCustom:false,
+      customVal:'',
+      pastVal:'',
+      pastGroupContext:null
+    };
+  }
+  return medState[medId];
+}
+
+function saveLogs() {
+  localStorage.setItem('tomMedLogs_v2', JSON.stringify(logs));
+}
+
+function pillCount(med, dose) {
+  if (!med.tabletMg || med.doseUnit==='tablet' || med.doseUnit==='units' || med.doseUnit==='tabs' || med.doseUnit==='g' || med.isPain) return '';
+  const n = dose / med.tabletMg;
+  const nice = n===Math.floor(n) ? n : parseFloat(n.toFixed(2));
+  return ` · ${nice} ${nice===1?'tab':'tabs'}`;
+}
+
+function fmtDoseDecimal(n) { return Number(n).toFixed(1); }
+function formatPainValue(n) { return `${fmtDoseDecimal(n)}/10`; }
+function formatDoseDisplay(med, dose) {
+  if (med.isPain) return formatPainValue(dose);
+  return `${dose}${med.doseUnit}${pillCount(med,dose)}`;
+}
+
+// FIX 2: getMedrolPackDay now correctly returns 7 once all 6 doses are logged,
+// making the "pack complete" badge reachable in renderTracker.
+function getMedrolPackDay() {
+  const pl = logs.filter(l=>l.medId==='medrol').sort((a,b)=>a.time-b.time);
+  return pl.length >= 6 ? 7 : pl.length + 1;
+}
+function getMedrolDayDose(day) { return [6,5,4,3,2,1][Math.min(day-1,5)]; }
+
+function getLastLog(medId) {
+  const ml = logs.filter(l=>l.medId===medId);
+  return ml.length ? ml.reduce((a,b)=>a.time>b.time?a:b) : null;
+}
+
+function getLastWithinMs(medId, ms) {
+  const cutoff = Date.now() - ms;
+  const ml = logs.filter(l=>l.medId===medId && l.time >= cutoff).sort((a,b)=>b.time-a.time);
+  return ml.length ? ml[0] : null;
+}
+
+function getAvailability(med) {
+  if (med.isPain) return {ok:true,msLeft:0,reason:'none'};
+  const last=getLastLog(med.id);
+  if(!last) return {ok:true,msLeft:0,reason:'none'};
+  const elapsed=Date.now()-last.time, iv=med.intervalHours*3600000;
+  if (elapsed>=iv) return {ok:true,msLeft:0,reason:'none'};
+  return {ok:false,msLeft:iv-elapsed,reason:'interval'};
+}
+
+function fmtWaitClock(ms) {
+  const totalMinutes = Math.max(0, Math.ceil(ms/60000));
+  const hours = Math.floor(totalMinutes / 60);
+  const mins = totalMinutes % 60;
+  return `${String(hours).padStart(2,'0')}:${String(mins).padStart(2,'0')}`;
+}
+
+function getConflictWarnings(med) {
+  if (!med || med.isPain) return [];
+  const twoHours = 2 * 3600000;
+  const oneHour = 3600000;
+  const warnings = [];
+
+  if (med.id === 'zanaflex') {
+    const lastDilaudid = getLastWithinMs('dilaudid', twoHours);
+    const lastXanax = getLastWithinMs('xanax', twoHours);
+    if (lastDilaudid) {
+      const clearTs = lastDilaudid.time + twoHours;
+      warnings.push({ otherMedId:'dilaudid', clearTs,
+        message:`Cannot take Zanaflex within 2 hours of Dilaudid. Wait ${fmtWaitClock(clearTs - Date.now())}`
+      });
+    }
+    if (lastXanax) {
+      const clearTs = lastXanax.time + twoHours;
+      warnings.push({ otherMedId:'xanax', clearTs,
+        message:`Cannot take Zanaflex within 2 hours of Xanax. Wait ${fmtWaitClock(clearTs - Date.now())}`
+      });
+    }
+  }
+
+  if (med.id === 'dilaudid') {
+    const lastZanaflex = getLastWithinMs('zanaflex', twoHours);
+    const lastXanax = getLastWithinMs('xanax', oneHour);
+    if (lastZanaflex) {
+      const clearTs = lastZanaflex.time + twoHours;
+      warnings.push({ otherMedId:'zanaflex', clearTs,
+        message:`Cannot take Dilaudid within 2 hours of Zanaflex. Wait ${fmtWaitClock(clearTs - Date.now())}`
+      });
+    }
+    if (lastXanax) {
+      const clearTs = lastXanax.time + oneHour;
+      warnings.push({ otherMedId:'xanax', clearTs,
+        message:`Cannot take Dilaudid within 1 hour of Xanax. Wait ${fmtWaitClock(clearTs - Date.now())}`
+      });
+    }
+  }
+
+  if (med.id === 'xanax') {
+    const lastZanaflex = getLastWithinMs('zanaflex', twoHours);
+    const lastDilaudid = getLastWithinMs('dilaudid', oneHour);
+    if (lastZanaflex) {
+      const clearTs = lastZanaflex.time + twoHours;
+      warnings.push({ otherMedId:'zanaflex', clearTs,
+        message:`Cannot take Xanax within 2 hours of Zanaflex. Wait ${fmtWaitClock(clearTs - Date.now())}`
+      });
+    }
+    if (lastDilaudid) {
+      const clearTs = lastDilaudid.time + oneHour;
+      warnings.push({ otherMedId:'dilaudid', clearTs,
+        message:`Cannot take Xanax within 1 hour of Dilaudid. Wait ${fmtWaitClock(clearTs - Date.now())}`
+      });
+    }
+  }
+
+  return warnings;
+}
+
+function startOfDay(ts) {
+  const d = new Date(ts);
+  d.setHours(0,0,0,0);
+  return d.getTime();
+}
+
+function startOfXanaxDay(ts = Date.now()) {
+  const d = new Date(ts);
+  if (d.getHours() < XANAX_PRN_WINDOW.dayResetHour) d.setDate(d.getDate() - 1);
+  d.setHours(XANAX_PRN_WINDOW.dayResetHour, 0, 0, 0);
+  return d.getTime();
+}
+
+function getXanaxWindow(dayTs = Date.now()) {
+  const dayStart = startOfXanaxDay(dayTs);
+  const dayEnd = dayStart + 24*3600000;
+  return {
+    dayStart,
+    dayEnd,
+    windowStart: dayStart + ((24 + XANAX_PRN_WINDOW.startHour - XANAX_PRN_WINDOW.dayResetHour) % 24) * 3600000,
+    windowEnd: dayEnd
+  };
+}
+
+function getXanaxDayLogs(dayTs = Date.now()) {
+  const { dayStart, dayEnd } = getXanaxWindow(dayTs);
+  const dayLogs = logs.filter(l => l.medId === 'xanax' && l.time >= dayStart && l.time < dayEnd).sort((a,b)=>a.time-b.time);
+  let morningAssigned = false;
+  return dayLogs.map(l => {
+    let ctx = l.groupContext;
+    if (!ctx) ctx = morningAssigned ? 'prn' : 'morning';
+    if (ctx === 'morning') morningAssigned = true;
+    return {...l, resolvedGroupContext: ctx};
+  });
+}
+
+function getXanaxRules(groupContext = openGroupContext || 'prn') {
+  const dayLogs = getXanaxDayLogs();
+  const morningLog = dayLogs.find(l => l.resolvedGroupContext === 'morning') || null;
+  const prnLogs = dayLogs.filter(l => l.resolvedGroupContext === 'prn');
+  const lastAny = dayLogs.length ? dayLogs[dayLogs.length - 1] : null;
+  const now = Date.now();
+  const { dayEnd, windowStart, windowEnd } = getXanaxWindow(now);
+
+  if (groupContext === 'morning') {
+    if (morningLog) {
+      const nextTs = dayEnd;
+      const msLeft = Math.max(0, nextTs - now);
+      return { ok: msLeft <= 0, msLeft, nextTs, note: 'morning dose logged', blockLabel: 'Logged' };
+    }
+    return { ok: true, msLeft: 0, nextTs: null, note: 'morning dose still needed', blockLabel: '' };
+  }
+
+  let nextTs = null;
+  let note = `${Math.max(0, XANAX_PRN_WINDOW.maxPrnPerDay - prnLogs.length)} dose${Math.max(0, XANAX_PRN_WINDOW.maxPrnPerDay - prnLogs.length) === 1 ? '' : 's'} left today`;
+  let blockLabel = '';
+
+  if (!morningLog) {
+    note = 'Log morning dose first for today';
+    blockLabel = 'morning first';
+  }
+  if (now < windowStart) {
+    nextTs = windowStart;
+    if (morningLog) {
+      note = 'PRN window opens at 8:00 AM';
+      blockLabel = '8:00 AM';
+    }
+  }
+  if (now >= windowEnd) {
+    nextTs = getXanaxWindow(now + 24*3600000).windowStart;
+    if (morningLog) {
+      note = 'PRN window is closed until 8:00 AM';
+      blockLabel = 'Window closed';
+    }
+  }
+  if (prnLogs.length >= XANAX_PRN_WINDOW.maxPrnPerDay) {
+    nextTs = getXanaxWindow(dayEnd + 1).windowStart;
+    note = '2 PRN doses already logged today';
+    blockLabel = 'Daily max';
+  }
+  if (lastAny) {
+    const spacingTs = lastAny.time + XANAX_PRN_WINDOW.spacingHours*3600000;
+    nextTs = nextTs ? Math.max(nextTs, spacingTs) : spacingTs;
+    if (spacingTs > now && !blockLabel) note = `Wait ${fmtWaitClock(spacingTs - now)} between Xanax doses`;
+  }
+  const msLeft = nextTs ? Math.max(0, nextTs - now) : 0;
+  const morningBlocked = !morningLog;
+  const windowBlocked = now < windowStart || now >= windowEnd;
+  const maxBlocked = prnLogs.length >= XANAX_PRN_WINDOW.maxPrnPerDay;
+  const spacingBlocked = !!(nextTs && nextTs > now);
+  const ok = !morningBlocked && !windowBlocked && !maxBlocked && !spacingBlocked;
+  if (!ok && !blockLabel && spacingBlocked) blockLabel = fmtCountdown(msLeft);
+  return { ok, msLeft, nextTs, note, blockLabel };
+}
+
+function canTake(med, groupContext = openGroupContext) {
+  if (med.id === 'xanax') {
+    const rules = getXanaxRules(groupContext);
+    return { ok: rules.ok, msLeft: rules.msLeft, reason: rules.ok ? 'none' : 'interval', warnings: getConflictWarnings(med), nextTs: rules.nextTs, specialNote: rules.note, blockLabel: rules.blockLabel };
+  }
+  if (groupContext && groupContext !== 'prn' && Array.isArray(med.scheduleGroups) && med.scheduleGroups.includes(groupContext) && hasCompletedScheduledDoseToday(med, groupContext)) {
+    return {
+      ok:false,
+      msLeft:0,
+      reason:'section-complete',
+      warnings:getConflictWarnings(med),
+      specialNote:`Already logged for ${SCHEDULE_GROUPS[groupContext].label.toLowerCase()}`,
+      blockLabel:'Logged'
+    };
+  }
+  const sequenceBlock = getScheduledSequenceBlock(med, groupContext);
+  if (sequenceBlock) {
+    return {
+      ok:false,
+      msLeft:0,
+      reason:'sequence',
+      warnings:getConflictWarnings(med),
+      specialNote:sequenceBlock.specialNote,
+      blockLabel:sequenceBlock.blockLabel
+    };
+  }
+  const availability = getAvailability(med);
+  return { ...availability, warnings: getConflictWarnings(med) };
+}
+
+function getNextAvailableTs(med, groupContext = openGroupContext) {
+  if (med.isPain) return null;
+  if (med.id === 'xanax') {
+    if (groupContext === 'prn' && !getXanaxDayLogs().some(l => l.resolvedGroupContext === 'morning')) return null;
+    const rules = getXanaxRules(groupContext);
+    const warningTs = getConflictWarnings(med).reduce((max, w) => Math.max(max, w.clearTs), 0);
+    const nextTs = Math.max(rules.nextTs || 0, warningTs || 0);
+    if (!rules.ok && !nextTs) return null;
+    return nextTs > Date.now() ? nextTs : null;
+  }
+  if (groupContext && groupContext !== 'prn' && Array.isArray(med.scheduleGroups) && med.scheduleGroups.includes(groupContext) && hasCompletedScheduledDoseToday(med, groupContext)) {
+    return null;
+  }
+  if (getScheduledSequenceBlock(med, groupContext)) {
+    return null;
+  }
+  const avail = getAvailability(med);
+  const intervalTs = avail.ok ? Date.now() : Date.now() + avail.msLeft;
+  const warningTs = getConflictWarnings(med).reduce((max, w) => Math.max(max, w.clearTs), 0);
+  const nextTs = Math.max(intervalTs, warningTs || 0);
+  return nextTs > Date.now() ? nextTs : null;
+}
+
+function getEffectiveDose(medId) {
+  const med=getMed(medId), s=getState(medId);
+  if (med.hasCustom && s.useCustom) {
+    const v=parseFloat(s.customVal);
+    return isNaN(v) ? s.selectedDose : v;
+  }
+  if (med.isPack) return getMedrolDayDose(getMedrolPackDay());
+  return s.selectedDose;
+}
+
+function validateEffectiveDose(medId) {
+  const med = getMed(medId);
+  const dose = getEffectiveDose(medId);
+
+  if (med.isPain) {
+    if (dose === null || dose === undefined || isNaN(dose)) return {ok:false,msg:'Select a pain level'};
+    if (dose < 0 || dose > 10) return {ok:false,msg:'Pain must be between 0 and 10'};
+    if (Math.round(dose * 2) !== dose * 2) return {ok:false,msg:'Pain must use 0.5 increments'};
+    return {ok:true};
+  }
+
+  if (isNaN(dose) || dose <= 0) return {ok:false,msg:'Enter a valid dose'};
+  return {ok:true};
+}
+
+function getPainColor(val) {
+  const clamped = Math.max(0, Math.min(10, Number(val)));
+  const hue = 120 - (clamped * 12);
+  return `hsl(${hue}, 68%, 58%)`;
+}
+
+function getHistoryFilterOrder() {
+  const pain = MEDS.find(m=>m.id==='pain');
+  const others = MEDS.filter(m=>m.id!=='pain').slice().sort((a,b)=>a.brand.localeCompare(b.brand));
+  return pain ? [pain, ...others] : others;
+}
+
+function allFiltersSelected() {
+  return activeFilters.size === MEDS.length && MEDS.every(m => activeFilters.has(m.id));
+}
+
+function getMedDailyFrequency(med, groupKey = null) {
+  if (Array.isArray(med.scheduleGroups) && med.scheduleGroups.length) {
+    const scheduled = med.scheduleGroups.filter(g => g !== 'prn');
+    if (scheduled.length) return scheduled.length;
+  }
+  if (med.isPack) return 1;
+  if (!med.intervalHours || med.intervalHours <= 0) return 1;
+  return Math.max(1, Math.round(24 / med.intervalHours));
+}
+
+function sortMedsForGroup(meds, groupKey) {
+  return meds.slice().sort((a,b) => {
+    const freqDiff = getMedDailyFrequency(b, groupKey) - getMedDailyFrequency(a, groupKey);
+    if (freqDiff !== 0) return freqDiff;
+    return a.brand.localeCompare(b.brand);
+  });
+}
+
+function getResolvedDayLogsForMed(med, dayTs = Date.now()) {
+  if (med.id === 'xanax') return getXanaxDayLogs(dayTs);
+  const scheduledGroups = (med.scheduleGroups || []).filter(g => g !== 'prn');
+  const start = startOfDay(dayTs);
+  const end = start + 24*3600000;
+  const dayLogs = logs.filter(l => l.medId === med.id && l.time >= start && l.time < end).sort((a,b)=>a.time-b.time);
+  const expected = scheduledGroups.slice();
+  return dayLogs.map(l => {
+    let ctx = l.groupContext;
+    if (!scheduledGroups.includes(ctx)) {
+      ctx = expected.shift() || scheduledGroups[scheduledGroups.length - 1] || null;
+    } else {
+      const idx = expected.indexOf(ctx);
+      if (idx !== -1) expected.splice(idx, 1);
+    }
+    return {...l, resolvedGroupContext: ctx};
+  });
+}
+
+function getScheduledGroupsForMed(med) {
+  return (med.scheduleGroups || []).filter(g => g !== 'prn');
+}
+
+function getPastGroupOptions(med) {
+  if (!med || med.isPain || !Array.isArray(med.scheduleGroups)) return [];
+  return med.scheduleGroups.slice();
+}
+
+function getDefaultPastGroupContext(med) {
+  const options = getPastGroupOptions(med);
+  return options.length ? options[0] : null;
+}
+
+function getPastGroupContextForMed(medId) {
+  const med = getMed(medId);
+  const state = getState(medId);
+  const options = getPastGroupOptions(med);
+  if (!options.length) return null;
+  if (!options.includes(state.pastGroupContext)) state.pastGroupContext = getDefaultPastGroupContext(med);
+  return state.pastGroupContext;
+}
+
+function getFirstPendingScheduledGroup(med, dayTs = Date.now()) {
+  const scheduledGroups = getScheduledGroupsForMed(med);
+  if (!scheduledGroups.length) return null;
+  const completedGroups = new Set(
+    getResolvedDayLogsForMed(med, dayTs)
+      .map(l => l.resolvedGroupContext)
+      .filter(Boolean)
+  );
+  return scheduledGroups.find(groupKey => !completedGroups.has(groupKey)) || null;
+}
+
+function getScheduledSequenceBlock(med, groupContext, dayTs = Date.now()) {
+  if (!groupContext || groupContext === 'prn' || med.isPain || med.id === 'xanax') return null;
+  const scheduledGroups = getScheduledGroupsForMed(med);
+  if (!scheduledGroups.includes(groupContext) || scheduledGroups.length <= 1) return null;
+  const firstPending = getFirstPendingScheduledGroup(med, dayTs);
+  if (!firstPending || firstPending === groupContext) return null;
+  const pendingLabel = SCHEDULE_GROUPS[firstPending]?.label || firstPending;
+  return {
+    firstPending,
+    specialNote: `${pendingLabel} dose still needs to be logged first`,
+    blockLabel: `${pendingLabel} first`
+  };
+}
+
+function hasCompletedScheduledDoseToday(med, groupKey) {
+  if (groupKey === 'prn' || med.isPain) return false;
+  return getResolvedDayLogsForMed(med).some(l => l.resolvedGroupContext === groupKey);
+}
+
+function getTrackerProgress(med, groupKey) {
+  if (hasCompletedScheduledDoseToday(med, groupKey)) return { pct: 0, barCls: '' };
+
+  const last = med.id === 'xanax' && groupKey === 'prn'
+    ? getXanaxDayLogs().filter(l => l.resolvedGroupContext === 'prn').slice(-1)[0] || getLastLog(med.id)
+    : getLastLog(med.id);
+  const intervalHours = med.id === 'xanax' ? (groupKey === 'prn' ? XANAX_PRN_WINDOW.spacingHours : 24) : med.intervalHours;
+  const pct = intervalHours > 0 && last ? Math.min(100,(Date.now()-last.time)/(intervalHours*3600000)*100) : 100;
+  const barCls = pct < 50 ? 'low' : pct < 80 ? 'mid' : '';
+  return { pct, barCls };
+}
+
+function isTrackerRowNewlyAvailable(med, groupKey) {
+  const avail = canTake(med, groupKey);
+  const warnings = avail.warnings || [];
+  if (!avail.ok || warnings.length || hasCompletedScheduledDoseToday(med, groupKey)) return false;
+
+  if (med.id === 'xanax') {
+    const relevantLast = groupKey === 'prn'
+      ? getXanaxDayLogs().filter(l => l.resolvedGroupContext === 'prn').slice(-1)[0] || null
+      : getXanaxDayLogs().find(l => l.resolvedGroupContext === 'morning') || null;
+    if (!relevantLast) return groupKey === 'morning';
+    const elapsed = Date.now() - relevantLast.time;
+    const iv = (groupKey === 'prn' ? XANAX_PRN_WINDOW.spacingHours : 24) * 3600000;
+    return elapsed >= iv && elapsed < iv + 1800000;
+  }
+
+  const last = getLastLog(med.id);
+  if (!last || !med.intervalHours || med.intervalHours <= 0) return false;
+  const elapsed = Date.now() - last.time;
+  const iv = med.intervalHours * 3600000;
+  return elapsed >= iv && elapsed < iv + 1800000;
+}
+
+function getSectionRows(groupKey) {
+  return sortMedsForGroup(
+    MEDS.filter(m => !m.isPain && Array.isArray(m.scheduleGroups) && m.scheduleGroups.includes(groupKey)),
+    groupKey
+  );
+}
+
+function getSectionStatus(groupKey) {
+  const rows = getSectionRows(groupKey);
+  const completed = rows.filter(med => hasCompletedScheduledDoseToday(med, groupKey)).length;
+  return { rows, total: rows.length, completed, isComplete: rows.length > 0 && completed === rows.length };
+}
+
+function isTrackerSectionExpanded(groupKey, isComplete) {
+  if (Object.prototype.hasOwnProperty.call(trackerSectionExpanded, groupKey)) return !!trackerSectionExpanded[groupKey];
+  return !isComplete;
+}
+
+function toggleTrackerSection(groupKey) {
+  const status = getSectionStatus(groupKey);
+  trackerSectionExpanded[groupKey] = !isTrackerSectionExpanded(groupKey, status.isComplete);
+  renderTracker();
+}
+
+function getTrackerSummaryStats() {
+  const groups = TRACKER_GROUP_ORDER
+    .filter(groupKey => groupKey !== 'prn')
+    .map(groupKey => ({ groupKey, label: SCHEDULE_GROUPS[groupKey].label, ...getSectionStatus(groupKey) }))
+    .filter(group => group.total > 0);
+
+  const completed = groups.reduce((sum, group) => sum + group.completed, 0);
+  const total = groups.reduce((sum, group) => sum + group.total, 0);
+  return { completed, total, groups };
+}
+
+function getXanaxStatusCard(groupContext) {
+  const dayLogs = getXanaxDayLogs();
+  const morningLogged = dayLogs.some(l => l.resolvedGroupContext === 'morning');
+  const prnCount = dayLogs.filter(l => l.resolvedGroupContext === 'prn').length;
+
+  if (groupContext === 'morning') {
+    return {
+      label: 'morning dose',
+      meta: 'Must be logged before PRN doses are available',
+      value: morningLogged ? 'Logged' : 'Needed',
+      valueClass: morningLogged ? 'ok' : 'warn'
+    };
+  }
+
+  return {
+    label: 'PRN doses left today',
+    meta: morningLogged ? 'Window: 8:00 AM-4:00 AM' : 'morning dose must be logged first',
+    value: `${Math.max(0, XANAX_PRN_WINDOW.maxPrnPerDay - prnCount)} left`,
+    valueClass: morningLogged ? (prnCount >= XANAX_PRN_WINDOW.maxPrnPerDay ? 'block' : 'warn') : 'block'
+  };
+}
+
+// ─── FORMAT ───────────────────────────────────────────────────────────────────
+function fmtCountdown(ms) {
+  const s=Math.ceil(ms/1000),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
+  if(h>0) return `${h}h ${m}m`;
+  if(m>0) return `${m}m ${sec}s`;
+  return `${sec}s`;
+}
+function fmtTime(ts) { return new Date(ts).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}); }
+function fmtDate(ts) {
+  const d=new Date(ts),t=new Date(),y=new Date(t); y.setDate(t.getDate()-1);
+  if(d.toDateString()===t.toDateString()) return 'Today';
+  if(d.toDateString()===y.toDateString()) return 'Yesterday';
+  return d.toLocaleDateString([],{weekday:'long',month:'short',day:'numeric'});
+}
+function fmtDateTime(ts) { return `${fmtDate(ts)} at ${fmtTime(ts)}`; }
+function localDTVal(ts) {
+  const d=new Date(ts),p=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+// ─── SYNC STATUS ──────────────────────────────────────────────────────────────
+function setSyncStatus(status, label) {
+  const dot=document.getElementById('sync-dot'), lbl=document.getElementById('sync-label');
+  if(!dot) return;
+  dot.className='sync-dot'+(status==='ok'?' green':status==='syncing'?' orange':status==='error'?' red':'');
+  lbl.textContent=label||'';
+}
+
+// ─── SUPABASE OPS ─────────────────────────────────────────────────────────────
+async function pushEntry(entry) {
+  const med=getMed(entry.medId);
+  if (!backendConfigured()) return;
+  try {
+    setSyncStatus('syncing','Saving…');
+    await supaFetch('POST', getActiveBackend().table, {
+      entry_id: String(entry.id),
+      med_id:   entry.medId,
+      med_brand:med?med.brand:entry.medId,
+      time:     entry.time,
+      dose:     entry.dose,
+      unit:     entry.unit,
+      past:     !!entry.past,
+      override: !!entry.override,
+      group_context: entry.groupContext || null
+    });
+    setSyncStatus('ok','Saved');
+    setTimeout(()=>setSyncStatus('',''),2000);
+  } catch(e) {
+    console.warn('Supabase push failed:',e);
+    setSyncStatus('error','Sync error');
+    setTimeout(()=>setSyncStatus('',''),4000);
+  }
+}
+
+async function deleteFromCloud(entryId) {
+  if (!backendConfigured()) return;
+  try {
+    setSyncStatus('syncing','Deleting…');
+    await supaFetch('DELETE', `${getActiveBackend().table}?entry_id=eq.${String(entryId)}`, null);
+    setSyncStatus('ok','Deleted');
+    setTimeout(()=>setSyncStatus('',''),2000);
+  } catch(e) {
+    console.warn('Supabase delete failed:',e);
+    setSyncStatus('error','Delete error');
+    setTimeout(()=>setSyncStatus('',''),4000);
+  }
+}
+
+// FIX 4: Guard flag prevents concurrent cloud fetches from overwriting each other
+// on slow connections. Uses try/finally to always release the lock.
+async function loadFromCloud() {
+  if (!backendConfigured()) {
+    setSyncStatus('error', `${getActiveBackend().label} local only`);
+    return;
+  }
+  if (cloudFetchInFlight) return;
+  cloudFetchInFlight = true;
+  try {
+    setSyncStatus('syncing','Loading…');
+    const rows=await supaFetch('GET',`${getActiveBackend().table}?order=time.asc`,null);
+    if(rows && rows.length>=0) {
+      logs=rows.map(r=>({
+        id: String(r.entry_id),
+        medId: r.med_id,
+        time: r.time,
+        dose: r.dose,
+        unit: r.unit,
+        past: r.past,
+        override: r.override,
+        groupContext: r.group_context || null
+      }));
+      saveLogs();
+    }
+    setSyncStatus('ok','Synced');
+    setTimeout(()=>setSyncStatus('',''),2000);
+    render();
+  } catch(e) {
+    console.warn('Supabase load failed:',e);
+    setSyncStatus('error','Offline — local data');
+    setTimeout(()=>setSyncStatus('',''),4000);
+  } finally {
+    cloudFetchInFlight = false;
+  }
+}
+
+async function checkSyncStatus() {
+  const el=document.getElementById('sync-check-result'); if(!el) return;
+  if (!backendConfigured()) {
+    el.textContent = `${getActiveBackend().label} local only`;
+    el.style.color = 'var(--ios-orange)';
+    return;
+  }
+  try {
+    const rows=await supaFetch('GET',`${getActiveBackend().table}?select=entry_id`,null);
+    const cc=rows?rows.length:0, lc=logs.length;
+    if(cc===lc){el.textContent=`✅ In sync (${cc} entries)`;el.style.color='var(--ios-green)';}
+    else{el.textContent=`⚠️ Local: ${lc} · Cloud: ${cc}`;el.style.color='var(--ios-orange)';}
+  } catch(e){el.textContent='📵 Offline — can\'t check';el.style.color='var(--ios-lbl3)';}
+}
+
+// ─── SHORTCUTS ────────────────────────────────────────────────────────────────
+function launchShortcut(medId, type) {
+  const med = getMed(medId);
+  const nextTs = getNextAvailableTs(med);
+  if (!nextTs) { showToast('✅', `${med.brand} is already available!`); return; }
+
+  const nextDate = new Date(nextTs);
+  const now = new Date();
+  const isNextDay = nextDate.toDateString() !== now.toDateString();
+  const timeStr = nextDate.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+  const displayTime = isNextDay ? `Tomorrow at ${timeStr}` : timeStr;
+
+  const payload = JSON.stringify({
+    med: med.brand,
+    type: type,
+    time: `${String(nextDate.getHours()).padStart(2,'0')}:${String(nextDate.getMinutes()).padStart(2,'0')}`,
+    timeStr: timeStr,
+    displayTime: displayTime,
+    label: `${med.brand} — OK to take at ${displayTime}`
+  });
+
+  window.location.href = `shortcuts://run-shortcut?name=TomsMeds&input=text&text=${encodeURIComponent(payload)}`;
+  showToast('🔔', `Opening Shortcuts for ${type}…`);
+}
+
+// ─── LOG / DELETE ─────────────────────────────────────────────────────────────
+function resetPainSelection() {
+  const s = getState('pain');
+  s.selectedDose = null;
+}
+
+// FIX 5: Normalize empty-string groupContext to null so it's stored cleanly
+// and doesn't interfere with Xanax slot logic downstream.
+function logDose(medId, overrideTime, isPast, isOverride, groupContext) {
+  const med=getMed(medId);
+  const valid = validateEffectiveDose(medId);
+  if (!valid.ok) { showToast('⚠️', valid.msg); return; }
+  if (!isPast && !isOverride && !med.isPain) {
+    const avail = canTake(med, groupContext || null);
+    if (!avail.ok) {
+      showToast('⚠️', avail.specialNote || 'This dose is not available yet');
+      return;
+    }
+  }
+
+  const dose=getEffectiveDose(medId);
+  const time=overrideTime||Date.now();
+  const resolvedContext = groupContext || null;
+  const entry={id:String(Date.now()+Math.random()),medId,time,dose,unit:med.doseUnit,past:!!isPast,override:!!isOverride,groupContext: resolvedContext};
+
+  logs.push(entry);
+  saveLogs();
+  pushEntry(entry);
+
+  if (med.isPain) resetPainSelection();
+
+  closeSheet();
+
+  let msg='';
+  if (med.isPain) {
+    msg = isPast ? `Past pain — ${formatPainValue(dose)}` : `Pain logged — ${formatPainValue(dose)}`;
+  } else if (isOverride) {
+    msg = `Override — ${med.brand} ${formatDoseDisplay(med,dose)}`;
+  } else if (isPast) {
+    msg = `Past dose — ${med.brand} ${formatDoseDisplay(med,dose)}`;
+  } else {
+    msg = `${med.brand} ${formatDoseDisplay(med,dose)} logged`;
+  }
+
+  showToast(isOverride?'⚠️':isPast?'↩':'✓', msg);
+  render();
+}
+
+function askDelete(logId) {
+  const log=logs.find(l=>String(l.id)===String(logId));
+  if(!log) return;
+  const med=getMed(log.medId);
+  const val = med?.isPain ? formatPainValue(log.dose) : formatDoseDisplay(med, log.dose);
+  showConfirm(
+    'Delete Entry?',
+    `${med?med.brand:log.medId} — ${val}\n${fmtDateTime(log.time)}`,
+    'Delete Entry', true,
+    () => {
+      logs=logs.filter(l=>String(l.id)!==String(logId));
+      saveLogs();
+      deleteFromCloud(logId);
+      showToast('🗑','Entry deleted');
+      render();
+    }
+  );
+}
+
+// ─── CONFIRM / TOAST ──────────────────────────────────────────────────────────
+function showConfirm(title,msg,actionLabel,destructive,cb) {
+  document.getElementById('confirm-title').textContent=title;
+  document.getElementById('confirm-msg').textContent=msg;
+  const btn=document.getElementById('confirm-act-btn');
+  btn.textContent=actionLabel;
+  btn.className='confirm-act '+(destructive?'destr':'prim');
+  confirmCb=cb;
+  document.getElementById('confirm-overlay').classList.add('show');
+  document.getElementById('confirm-sheet').classList.add('show');
+}
+function runConfirm() { closeConfirm(); if(confirmCb){confirmCb();confirmCb=null;} }
+function closeConfirm() {
+  document.getElementById('confirm-overlay').classList.remove('show');
+  document.getElementById('confirm-sheet').classList.remove('show');
+}
+
+let toastTimer;
+function showToast(icon,msg) {
+  document.getElementById('toast-icon').textContent=icon;
+  document.getElementById('toast-text').textContent=msg;
+  const t=document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ─── SHEET ────────────────────────────────────────────────────────────────────
+function openSheet(medId, groupContext) {
+  openMedId=medId;
+  openGroupContext=groupContext || null;
+  renderSheet(medId, openGroupContext);
+  document.getElementById('sheet-overlay').classList.add('show');
+  document.getElementById('med-sheet').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+
+function closeSheet() {
+  document.getElementById('sheet-overlay').classList.remove('show');
+  document.getElementById('med-sheet').classList.remove('show');
+  document.body.style.overflow='';
+  openMedId=null;
+  openGroupContext=null;
+}
+
+function setPainValue(val) {
+  const s = getState('pain');
+  s.selectedDose = val === '' ? null : parseFloat(val);
+  updateActionBtn('pain');
+}
+function setPainValuePast(val) {
+  const s = getState('pain');
+  s.selectedDose = val === '' ? null : parseFloat(val);
+  updatePastBtn('pain');
+}
+
+function buildDoseHtml(medId, isPastMode=false) {
+  const med=getMed(medId), s=getState(medId);
+
+  if (med.isPain) {
+    let options = `<option value="">Select your pain level</option>`;
+    for (let i = 0; i <= 10; i += 0.5) {
+      const val = i.toFixed(1);
+      options += `<option value="${val}">${val}/10</option>`;
+    }
+    return `
+      <div class="dose-lbl">Pain Level</div>
+      <div class="pain-picker-wrap">
+        <select id="pain-picker" class="pain-picker ${s.selectedDose==null?'placeholder':''}" onchange="${isPastMode ? `setPainValuePast(this.value)` : `setPainValue(this.value)`}">
+          ${options}
+        </select>
+      </div>
+    `;
+  }
+
+  let doseHtml='<div class="dose-lbl">Dose</div><div class="dose-chips" id="dose-chips-wrap">';
+  med.doseOptions.forEach(d=>{
+    const sel=!s.useCustom&&d===s.selectedDose;
+    doseHtml+=`<button class="dose-chip ${sel?'sel':''}" onclick="${isPastMode ? `selectDosePast('${medId}',${d})` : `selectDose('${medId}',${d})`}">${d}${med.doseUnit}${pillCount(med,d)}</button>`;
+  });
+  if(med.hasCustom) doseHtml+=`<button class="dose-chip custom-chip ${s.useCustom?'sel':''}" id="custom-chip-btn" onclick="${isPastMode ? `activateCustomPast('${medId}')` : `activateCustom('${medId}')`}">Custom</button>`;
+  doseHtml+='</div>';
+
+  if(s.useCustom) {
+    doseHtml+=`<div class="custom-row"><input class="custom-input" id="custom-dose-input" type="number" step="0.5" min="0.5" placeholder="Enter dose" value="${s.customVal}" oninput="${isPastMode ? `onCustomInputPast('${medId}',this.value)` : `onCustomInput('${medId}',this.value)`}"><span class="custom-unit">${med.doseUnit}</span></div>`;
+  }
+
+  return doseHtml;
+}
+
+function renderSheet(medId, groupContext) {
+  const med=getMed(medId);
+  const avail=canTake(med, groupContext);
+  const warnings=avail.warnings || [];
+  const last=getLastLog(medId);
+  const s=getState(medId);
+  const nextSafeTs=getNextAvailableTs(med, groupContext);
+
+  document.getElementById('sheet-title').textContent=med.brand;
+  document.getElementById('sheet-subtitle').textContent=`${med.generic} · ${med.note}${med.id==='xanax' && groupContext ? ' · ' + (groupContext==='morning' ? 'morning dose' : 'PRN dose') : ''}`;
+
+  const lastHtml=last
+    ?`<div class="last-block"><div class="last-lbl">${med.isPain ? 'Last Logged' : 'Last Taken'}</div>
+       <div class="last-val">${fmtDateTime(last.time)}</div>
+       <div class="last-sub">${med.isPain ? formatPainValue(last.dose) : formatDoseDisplay(med,last.dose)}${last.past?' · past entry':''}${last.override?' · override':''}</div>
+      </div>`
+    :`<div class="last-block" style="color:var(--ios-lbl2);font-size:15px">No ${med.isPain?'pain entries':'doses'} logged yet</div>`;
+
+  let packHtml='';
+  if(med.isPack) {
+    const day=getMedrolPackDay(), dayDose=getMedrolDayDose(day);
+    // FIX 2 (reflected here): day can now be 7, so this branch correctly shows "Done"
+    packHtml=day<=6
+      ?`<div class="pack-day-block"><div class="pack-day-label">Pack day · ${dayDose} tablet${dayDose>1?'s':''} today</div><div class="pack-day-value">Day ${day} of 6</div></div>`
+      :`<div class="pack-day-block"><div class="pack-day-label" style="color:var(--ios-green)">✅ Pack complete (6 of 6 days logged)</div></div>`;
+  }
+  const xanaxStatus = med.id === 'xanax' ? getXanaxStatusCard(groupContext) : null;
+  const xanaxStatusHtml = xanaxStatus
+    ? `<div class="dose-status-card"><div class="dose-status-copy"><div class="dose-status-label">${xanaxStatus.label}</div><div class="dose-status-meta">${xanaxStatus.meta}</div></div><div class="dose-status-value ${xanaxStatus.valueClass}">${xanaxStatus.value}</div></div>`
+    : '';
+
+  const doseHtml = med.isPack ? '' : buildDoseHtml(medId, false);
+  const warningHtml = warnings.length
+    ? `<div class="alert-card"><div class="alert-title">⚠️ Overlap Warning</div><div class="alert-body">${warnings.map(w=>w.message).join('\n')}</div></div>`
+    : '';
+
+  if (med.isPain) {
+    const selected = getEffectiveDose(medId);
+    const ready = selected !== null && selected !== undefined && !isNaN(selected);
+    document.getElementById('sheet-body').innerHTML=`${lastHtml}${doseHtml}<button class="action-btn ${ready?'btn-green':'btn-disabled'}" id="main-action-btn" ${ready?`onclick="logDose('${medId}', null, false, false, null)"`:''}>${ready ? `Log Pain — ${formatPainValue(selected)}` : 'Log Pain'}</button>`;
+    const picker = document.getElementById('pain-picker');
+    if (picker) {
+      picker.value = s.selectedDose == null ? '' : Number(s.selectedDose).toFixed(1);
+      picker.classList.toggle('placeholder', s.selectedDose == null);
+    }
+    return;
+  }
+
+  const effDose = med.isPack ? `${getMedrolDayDose(getMedrolPackDay())} tabs` : formatDoseDisplay(med, getEffectiveDose(medId));
+  let actionHtml='';
+
+  if (avail.ok) {
+    if (warnings.length) {
+      actionHtml = `<button class="action-btn btn-red" id="main-action-btn" onclick="askOverride('${medId}',${groupContext ? `'${groupContext}'` : 'null'})">Override — ${effDose}</button>`;
+    } else {
+      actionHtml = `<button class="action-btn btn-green" id="main-action-btn" onclick="logDose('${medId}', null, false, false, ${groupContext ? `'${groupContext}'` : 'null'})">OK to Take — ${effDose}</button>`;
+    }
+  } else {
+    const blockedText = avail.specialNote || (avail.msLeft > 0 ? `Not yet — ${fmtCountdown(avail.msLeft)}` : 'Not available yet');
+    actionHtml = `<button class="action-btn btn-disabled" id="main-action-btn">${blockedText}</button>
+      <button class="action-btn btn-red" id="override-action-btn" onclick="askOverride('${medId}',${groupContext ? `'${groupContext}'` : 'null'})">Override — ${effDose}</button>`;
+  }
+
+  const notifyHtml = nextSafeTs
+    ? `<div style="display:flex;gap:10px;margin-bottom:10px">
+         <button class="action-btn btn-teal" style="margin-bottom:0;font-size:15px;padding:12px" onclick="launchShortcut('${medId}','reminder')">🔔 Reminder</button>
+         <button class="action-btn btn-red" style="margin-bottom:0;font-size:15px;padding:12px" onclick="launchShortcut('${medId}','alarm')">⏰ Alarm</button>
+       </div>`
+    : '';
+
+  document.getElementById('sheet-body').innerHTML=`${lastHtml}${packHtml}${xanaxStatusHtml}${warningHtml}${doseHtml}${actionHtml}${notifyHtml}`;
+  if(s.useCustom) {
+    setTimeout(()=>{const el=document.getElementById('custom-dose-input');if(el)el.focus();},80);
+  }
+}
+
+function selectDose(medId,dose) {
+  const s=getState(medId);
+  s.selectedDose=dose;
+  s.useCustom=false;
+  document.querySelectorAll('#dose-chips-wrap .dose-chip').forEach(btn=>{
+    if(btn.id==='custom-chip-btn'){btn.classList.remove('sel');return;}
+    btn.classList.toggle('sel', parseFloat(btn.textContent)===dose);
+  });
+  const cr=document.querySelector('.custom-row'); if(cr) cr.remove();
+  updateActionBtn(medId);
+}
+function activateCustom(medId) { getState(medId).useCustom=true; renderSheet(medId, openGroupContext); }
+function onCustomInput(medId,val) { getState(medId).customVal=val; updateActionBtn(medId); }
+
+function updateActionBtn(medId) {
+  const med=getMed(medId), avail=canTake(med, openGroupContext), warnings=avail.warnings || [];
+  const mainBtn=document.getElementById('main-action-btn');
+  const overrideBtn=document.getElementById('override-action-btn');
+  const gc = openGroupContext;
+
+  if (med.isPain) {
+    if (!mainBtn) return;
+    const dose = getEffectiveDose(medId);
+    const ready = dose !== null && dose !== undefined && !isNaN(dose);
+    mainBtn.className = `action-btn ${ready?'btn-green':'btn-disabled'}`;
+    mainBtn.textContent = ready ? `Log Pain — ${formatPainValue(dose)}` : 'Log Pain';
+    if (ready) mainBtn.setAttribute('onclick', `logDose('${medId}', null, false, false, null)`);
+    else mainBtn.removeAttribute('onclick');
+    const picker = document.getElementById('pain-picker');
+    if (picker) picker.classList.toggle('placeholder', !ready);
+    return;
+  }
+
+  const effDose = formatDoseDisplay(med, getEffectiveDose(medId));
+  const gcArg = gc ? `'${gc}'` : 'null';
+
+  if (avail.ok) {
+    if (mainBtn) {
+      if (warnings.length) {
+        mainBtn.className = 'action-btn btn-red';
+        mainBtn.textContent = `Override — ${effDose}`;
+        mainBtn.setAttribute('onclick', `askOverride('${medId}',${gcArg})`);
+      } else {
+        mainBtn.className = 'action-btn btn-green';
+        mainBtn.textContent = `OK to Take — ${effDose}`;
+        mainBtn.setAttribute('onclick', `logDose('${medId}', null, false, false, ${gcArg})`);
+      }
+    }
+  } else {
+    if (mainBtn) {
+      mainBtn.className = 'action-btn btn-disabled';
+      mainBtn.textContent = avail.specialNote || (avail.msLeft > 0 ? `Not yet - ${fmtCountdown(avail.msLeft)}` : 'Not available yet');
+      mainBtn.removeAttribute('onclick');
+    }
+    if (overrideBtn) {
+      overrideBtn.textContent = `Override — ${effDose}`;
+      overrideBtn.setAttribute('onclick', `askOverride('${medId}',${gcArg})`);
+    }
+  }
+}
+
+function askOverride(medId, groupContext) {
+  const med = getMed(medId);
+  const dose = getEffectiveDose(medId);
+  const effDose = formatDoseDisplay(med, dose);
+  const avail = canTake(med, groupContext);
+  const warnings = avail.warnings || [];
+  const lines = [`${med.brand} — ${effDose}`];
+
+  if (!avail.ok && avail.reason === 'interval') {
+    lines.push(`Not due for another ${fmtCountdown(avail.msLeft)}`);
+  }
+  warnings.forEach(w => lines.push(w.message));
+
+  showConfirm(
+    'Override?',
+    `${lines.join('\n')}\nLog anyway?`,
+    `Override — ${effDose}`,
+    true,
+    () => logDose(medId, null, false, true, groupContext)
+  );
+}
+
+// ─── PAST LOGGING ─────────────────────────────────────────────────────────────
+// FIX 3: openMedId is now correctly set so any code that reads it while the
+// past sheet is open gets the right med instead of null.
+function openPastSheet(medId) {
+  openMedId = medId;
+  const med=getMed(medId),s=getState(medId);
+  const pastGroupOptions = getPastGroupOptions(med);
+  const showPastGroupPicker = pastGroupOptions.length > 1;
+  const selectedPastGroup = getPastGroupContextForMed(medId);
+  document.getElementById('sheet-title').textContent=med.brand;
+  document.getElementById('sheet-subtitle').textContent=`${med.generic} · Log a past ${med.isPain ? 'pain entry' : 'dose'}`;
+
+  const doseHtml = med.isPack ? '' : buildDoseHtml(medId, true);
+  const nowStr=localDTVal(Date.now()),savedVal=s.pastVal||nowStr;
+  const pastGroupHtml = showPastGroupPicker
+    ? `<div class="past-inner">
+        <div class="past-lbl">Which section was this for?</div>
+        <div class="segmented" style="display:flex;flex-wrap:wrap">
+          ${pastGroupOptions.map(groupKey => `<button class="seg-btn ${selectedPastGroup===groupKey?'active':''}" onclick="setPastGroupContext('${medId}','${groupKey}')">${SCHEDULE_GROUPS[groupKey]?.label || groupKey}</button>`).join('')}
+        </div>
+      </div>`
+    : '';
+  const pastBlock=`<div class="past-inner"><div class="past-lbl">${med.isPain ? 'When was this pain level logged?' : 'When was it taken?'}</div>
+    <input class="past-datetime" id="past-dt-input" type="datetime-local" max="${nowStr}" value="${savedVal}" onchange="getState('${medId}').pastVal=this.value">
+  </div>`;
+
+  const dose = getEffectiveDose(medId);
+  const ready = med.isPain ? (dose !== null && dose !== undefined && !isNaN(dose)) : true;
+  const effDose = med.isPack ? `${getMedrolDayDose(getMedrolPackDay())} tabs` : (ready ? formatDoseDisplay(med,dose) : '');
+
+  document.getElementById('sheet-body').innerHTML=`${doseHtml}${pastGroupHtml}${pastBlock}<button class="action-btn ${ready?'btn-orange':'btn-disabled'}" id="past-log-btn" ${ready?`onclick="submitPast('${medId}')"`:''}>${med.isPain ? (ready ? `↩ Log Past Pain — ${effDose}` : '↩ Log Past Pain') : `↩ Log Past Dose — ${effDose}`}</button>`;
+  document.getElementById('sheet-overlay').classList.add('show');
+  document.getElementById('med-sheet').classList.add('show');
+  document.body.style.overflow='hidden';
+
+  if (med.isPain) {
+    const picker = document.getElementById('pain-picker');
+    if (picker) {
+      picker.value = s.selectedDose == null ? '' : Number(s.selectedDose).toFixed(1);
+      picker.classList.toggle('placeholder', s.selectedDose == null);
+    }
+  } else if(s.useCustom) {
+    setTimeout(()=>{const el=document.getElementById('custom-dose-input');if(el)el.focus();},80);
+  }
+}
+
+function setPastGroupContext(medId, groupContext) {
+  getState(medId).pastGroupContext = groupContext || null;
+  openPastSheet(medId);
+}
+
+function selectDosePast(medId,dose) {
+  const s=getState(medId); s.selectedDose=dose; s.useCustom=false;
+  document.querySelectorAll('#dose-chips-wrap .dose-chip').forEach(btn=>{
+    if(btn.id==='custom-chip-btn'){btn.classList.remove('sel');return;}
+    btn.classList.toggle('sel',parseFloat(btn.textContent)===dose);
+  });
+  const cr=document.querySelector('.custom-row'); if(cr) cr.remove();
+  updatePastBtn(medId);
+}
+function activateCustomPast(medId) {
+  const inp=document.getElementById('past-dt-input'); if(inp) getState(medId).pastVal=inp.value;
+  getState(medId).useCustom=true; openPastSheet(medId);
+}
+function onCustomInputPast(medId,val) { getState(medId).customVal=val; updatePastBtn(medId); }
+
+function updatePastBtn(medId) {
+  const med=getMed(medId);
+  const btn=document.getElementById('past-log-btn');
+  if(!btn) return;
+
+  if (med.isPain) {
+    const dose = getEffectiveDose(medId);
+    const ready = dose !== null && dose !== undefined && !isNaN(dose);
+    btn.className = `action-btn ${ready?'btn-orange':'btn-disabled'}`;
+    btn.textContent = ready ? `↩ Log Past Pain — ${formatPainValue(dose)}` : '↩ Log Past Pain';
+    if (ready) btn.setAttribute('onclick', `submitPast('${medId}')`);
+    else btn.removeAttribute('onclick');
+    const picker = document.getElementById('pain-picker');
+    if (picker) picker.classList.toggle('placeholder', !ready);
+    return;
+  }
+
+  const effDose=formatDoseDisplay(med,getEffectiveDose(medId));
+  btn.textContent=`↩ Log Past Dose — ${effDose}`;
+}
+
+function submitPast(medId) {
+  const valid = validateEffectiveDose(medId);
+  if (!valid.ok) { showToast('⚠️', valid.msg); return; }
+
+  const inp=document.getElementById('past-dt-input');
+  if(!inp||!inp.value){showToast('⚠️','Please pick a date & time');return;}
+  const ts=new Date(inp.value).getTime();
+  if(isNaN(ts)){showToast('⚠️','Invalid date/time');return;}
+  if(ts>Date.now()){showToast('⚠️','Time cannot be in the future');return;}
+  getState(medId).pastVal=inp.value;
+  logDose(medId,ts,true,false,getPastGroupContextForMed(medId));
+  getState(medId).pastVal='';
+}
+
+// ─── FILTER DROPDOWN ──────────────────────────────────────────────────────────
+function toggleFilterMenu() {
+  filterMenuOpen = !filterMenuOpen;
+  const menu = document.getElementById('filter-menu');
+  const backdrop = document.getElementById('filter-backdrop');
+  if (menu) menu.classList.toggle('show', filterMenuOpen);
+  if (backdrop) backdrop.classList.toggle('show', filterMenuOpen);
+}
+function closeFilterMenu() {
+  filterMenuOpen = false;
+  const menu = document.getElementById('filter-menu');
+  const backdrop = document.getElementById('filter-backdrop');
+  if (menu) menu.classList.remove('show');
+  if (backdrop) backdrop.classList.remove('show');
+}
+function toggleAllFilters() {
+  if (allFiltersSelected()) activeFilters = new Set();
+  else activeFilters = new Set(MEDS.map(m=>m.id));
+  renderHistory();
+}
+function clearAllFilters() {
+  activeFilters = new Set();
+  renderHistory();
+}
+function toggleFilter(medId) {
+  if (activeFilters.has(medId)) activeFilters.delete(medId);
+  else activeFilters.add(medId);
+  renderHistory();
+}
+function filteredHistoryLogs() {
+  return logs.filter(l => activeFilters.has(l.medId));
+}
+function historyFilterLabel() {
+  if (allFiltersSelected()) return 'Filter (All)';
+  if (activeFilters.size === 0) return 'Filter (None)';
+  return `Filter (${activeFilters.size} selected)`;
+}
+
+// ─── TABS ─────────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  currentTab=tab;
+  closeFilterMenu();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+tab).classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+  render();
+  window.scrollTo(0,0);
+}
+
+// ─── TRACKER ──────────────────────────────────────────────────────────────────
+function renderTracker() {
+  const available = MEDS.filter(m => {
+    if (m.isPain || !Array.isArray(m.scheduleGroups)) return false;
+    return m.scheduleGroups.some(groupKey => isTrackerRowNewlyAvailable(m, groupKey));
+  });
+  const summary = getTrackerSummaryStats();
+  const summaryPct = summary.total ? Math.round((summary.completed / summary.total) * 100) : 0;
+
+  let html='<div style="height:8px"></div>';
+  html += `
+    <div class="hero-card">
+      <div class="hero-head">
+        <div>
+          <div class="hero-name">Today's Meds</div>
+          <div class="hero-progress">${summary.completed} of ${summary.total} done</div>
+        </div>
+        <div class="hero-actions">
+          <button class="theme-toggle" onclick="toggleTheme()" aria-label="Switch to ${currentTheme === 'dark' ? 'light' : 'dark'} theme" title="Switch to ${currentTheme === 'dark' ? 'light' : 'dark'} theme">${currentTheme === 'dark' ? '☀️' : '🌙'}</button>
+        </div>
+      </div>
+      <div class="hero-meter"><div class="hero-meter-fill" style="width:${summaryPct}%"></div></div>
+      <div class="hero-grid">
+        ${summary.groups.map(group => `
+          <div class="hero-chip">
+            <div class="hero-chip-val">${group.completed} / ${group.total}</div>
+            <div class="hero-chip-lbl">${group.label}</div>
+            <div class="hero-chip-sub">${group.total - group.completed} left</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+  html += `<div style="margin:0 16px 12px"><button class="action-btn btn-red" onclick="openSheet('pain')" style="margin-bottom:0">📊 Log Pain Level</button></div>`;
+
+  if(available.length) {
+    html+=`<div class="alert-card" style="margin:0 16px 16px"><div class="alert-title">⏰ Now Available</div><div class="alert-body">${available.map(m=>`<strong>${m.brand}</strong>`).join(', ')} can now be taken.</div></div>`;
+  }
+
+  TRACKER_GROUP_ORDER.forEach(groupKey=>{
+    const section = getSectionStatus(groupKey);
+    const meds = section.rows;
+    if (!meds.length) return;
+    const sectionExpanded = isTrackerSectionExpanded(groupKey, section.isComplete);
+    const sectionLabel = section.isComplete ? `${SCHEDULE_GROUPS[groupKey].label} - Complete` : SCHEDULE_GROUPS[groupKey].label;
+
+    html += `<div class="tracker-section ${sectionExpanded ? 'expanded' : 'collapsed'}">`;
+    html += `
+      <button class="section-toggle ${section.isComplete ? 'complete' : ''}" onclick="toggleTrackerSection('${groupKey}')">
+        <div class="section-toggle-left">
+          <div class="section-toggle-title">${sectionLabel}</div>
+          <div class="section-toggle-meta">${section.completed}/${section.total}</div>
+        </div>
+        <div class="section-toggle-icon">${sectionExpanded ? '⌄' : '›'}</div>
+      </button>`;
+    html += `<div class="section-body ${sectionExpanded ? '' : 'collapsed'}"><div><div class="list-group">`;
+
+    meds.forEach(med=>{
+      // FIX 1: was canTake(med, groupContext) — groupContext was undefined in this scope.
+      // Now correctly passes groupKey from the enclosing forEach.
+      const avail=canTake(med, groupKey);
+      const warnings=avail.warnings || [];
+      const last=getLastLog(med.id);
+      const trackerProgress = getTrackerProgress(med, groupKey);
+      const pct = trackerProgress.pct;
+      const barCls = trackerProgress.barCls;
+      const completedToday = hasCompletedScheduledDoseToday(med, groupKey);
+      const readyLabel=(med.id==='dilaudid'||med.id==='xanax'||med.id==='zanaflex')?'OK to Take':'Take Now';
+
+      let badge='';
+      if (warnings.length) {
+        badge=`<span class="status-pill pill-warn">Blocked</span>`;
+      } else if (med.isPack) {
+        const day=getMedrolPackDay();
+        // FIX 2 (reflected here): day can now reach 7 so the "Done" badge is reachable
+        if(avail.ok&&day<=6) badge=`<span class="status-pill pill-ok">Day ${day}</span>`;
+        else if(day>6) badge=`<span class="status-pill" style="background:rgba(191,90,242,0.18);color:var(--ios-purple)">Done</span>`;
+        else badge=`<span class="status-pill pill-wait">${fmtCountdown(avail.msLeft)}</span>`;
+      } else if (completedToday) {
+        badge=`<span class="status-pill pill-done">Completed</span>`;
+      } else if (!avail.ok) {
+        badge=`<span class="status-pill pill-wait">${avail.blockLabel || fmtCountdown(avail.msLeft)}</span>`;
+      } else {
+        badge=`<span class="status-pill pill-ok">${readyLabel}</span>`;
+      }
+
+      const lastParts = [];
+      if (last) lastParts.push(`Last: ${fmtTime(last.time)} · ${formatDoseDisplay(med,last.dose)}`);
+      else lastParts.push(med.note || 'No doses logged');
+
+      if (med.id === 'xanax') {
+        const rules = getXanaxRules(groupKey);
+        if (groupKey === 'prn') lastParts.push(`${Math.max(0, 2 - getXanaxDayLogs().filter(l=>l.resolvedGroupContext==='prn').length)} PRN left today`);
+        if (groupKey === 'morning' && getXanaxDayLogs().find(l=>l.resolvedGroupContext==='morning')) lastParts.push('Completed today');
+        if (rules.note && !/dose(?:s)? left today/i.test(rules.note) && !lastParts.includes(rules.note)) lastParts.push(rules.note);
+      } else if (avail.reason === 'sequence' && avail.specialNote && !lastParts.includes(avail.specialNote)) {
+        lastParts.push(avail.specialNote);
+      } else if (completedToday && !lastParts.includes('Completed today')) {
+        lastParts.push('Completed today');
+      }
+      if (warnings.length) lastParts.push('Overlap warning');
+      const lastSub = lastParts.join(' · ');
+
+      html+=`<div class="list-row" onclick="openSheet('${med.id}','${groupKey}')">
+        <div class="med-icon ${med.color}">${med.emoji}</div>
+        <div class="med-text">
+          <div class="med-name">${med.brand}</div>
+          <div class="med-generic">${med.generic}</div>
+          <div class="prog-track"><div class="prog-fill ${barCls}" style="width:${pct}%"></div></div>
+          <div class="med-sub">${lastSub}</div>
+        </div>
+        <div class="med-right">${badge}<span class="chev">›</span></div>
+      </div>`;
+    });
+
+    html += '</div></div></div></div>';
+  });
+
+  document.getElementById('tracker-content').innerHTML=html;
+}
+
+// ─── PAST TAB ─────────────────────────────────────────────────────────────────
+function renderPast() {
+  let html='<div style="height:8px"></div>';
+  html+=`<div style="margin:0 16px 14px;padding:0 4px;font-size:14px;color:var(--ios-lbl2);line-height:1.5">Select an item, choose the dose or pain level, and enter when it was actually taken / logged.</div>`;
+  html+='<div style="margin:0 16px 20px"><div class="list-group">';
+  MEDS.forEach(med=>{
+    html+=`<div class="list-row" onclick="openPastSheet('${med.id}')">
+      <div class="med-icon ${med.color}">${med.emoji}</div>
+      <div class="med-text"><div class="med-name">${med.brand}</div><div class="med-generic">${med.generic}</div></div>
+      <span class="chev">›</span></div>`;
+  });
+  html+='</div></div>';
+  document.getElementById('past-content').innerHTML=html;
+}
+
+// ─── HISTORY ──────────────────────────────────────────────────────────────────
+function renderHistory() {
+  let html='<div style="height:8px"></div>';
+  html+=`<div class="sync-bar"><div class="sync-bar-label">☁️ Cloud sync</div><div class="sync-bar-result" id="sync-check-result">Checking…</div></div>`;
+  setTimeout(checkSyncStatus,300);
+
+  html += `
+    <div class="filter-bar">
+      <button class="filter-button" onclick="toggleFilterMenu()">
+        <div>
+          <div class="filter-button-label">${historyFilterLabel()}</div>
+          <div class="filter-button-sub">Pain first, others alphabetical</div>
+        </div>
+        <div style="color:var(--ios-lbl2)">▾</div>
+      </button>
+      <div class="filter-menu ${filterMenuOpen?'show':''}" id="filter-menu">
+        <div class="filter-menu-head">
+          <div class="filter-menu-title">History Filters</div>
+          <button class="filter-clear-btn" onclick="clearAllFilters()">Clear All</button>
+        </div>
+        <div class="filter-list">
+          <div class="filter-item" onclick="toggleAllFilters()">
+            <div class="filter-item-left">
+              <div class="checkmark">${allFiltersSelected()?'✓':''}</div>
+              <div class="filter-item-label">All</div>
+            </div>
+          </div>
+          ${getHistoryFilterOrder().map(m=>`
+            <div class="filter-item" onclick="toggleFilter('${m.id}')">
+              <div class="filter-item-left">
+                <div class="checkmark">${activeFilters.has(m.id)?'✓':''}</div>
+                <div class="filter-item-label">${m.brand}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>`;
+
+  if(!logs.length) {
+    html+='<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No History Yet</div><div>Start logging doses in the Tracker tab.</div></div>';
+    document.getElementById('history-content').innerHTML=html;
+    return;
+  }
+
+  const filtered = filteredHistoryLogs().sort((a,b)=>b.time-a.time);
+  if (!filtered.length) {
+    html+='<div class="empty"><div class="empty-icon">🧹</div><div class="empty-title">No Matching History</div><div>Select one or more filters above.</div></div>';
+    document.getElementById('history-content').innerHTML=html;
+    return;
+  }
+
+  const byDay={};
+  filtered.forEach(log=>{
+    const d=fmtDate(log.time);
+    if(!byDay[d]) byDay[d]=[];
+    byDay[d].push(log);
+  });
+
+  Object.entries(byDay).forEach(([day,entries])=>{
+    html+=`<div style="padding:0 16px 6px"><div class="list-header">${day}</div></div><div style="margin:0 16px 16px"><div class="list-group">`;
+    entries.forEach(log=>{
+      const med=getMed(log.medId);
+      if(!med) return;
+      const dotColor = med.isPain ? getPainColor(log.dose) : (log.override?'var(--ios-red)':log.past?'var(--ios-orange)':'var(--ios-green)');
+      const tag = log.override?' · override':log.past?' · past entry':'';
+      const valueText = med.isPain
+        ? `<span style="color:${getPainColor(log.dose)};font-weight:600">${formatPainValue(log.dose)}</span>`
+        : `${formatDoseDisplay(med,log.dose)}`;
+
+      html+=`<div class="list-row" style="cursor:default">
+        <div class="hist-dot" style="background:${dotColor}"></div>
+        <div class="med-text">
+          <div class="med-name">${med.brand}</div>
+          <div class="med-generic">${med.generic}${tag}</div>
+        </div>
+        <div class="med-right" style="gap:12px">
+          <div style="text-align:right">
+            <div style="font-size:14px;font-weight:500">${valueText}</div>
+            <div style="font-size:12px;color:var(--ios-lbl2)">${fmtTime(log.time)}</div>
+          </div>
+          <button class="hist-del" onclick="askDelete('${log.id}')">✕</button>
+        </div>
+      </div>`;
+    });
+    html+='</div></div>';
+  });
+
+  html+=`<button class="copy-btn" onclick="copyToNotes()">📋 Copy for Notes App</button>`;
+  html+=`<button class="copy-btn" onclick="exportCSV()" style="margin-top:-8px">📊 Export as CSV</button>`;
+  document.getElementById('history-content').innerHTML=html;
+}
+
+// ─── INSIGHTS ─────────────────────────────────────────────────────────────────
+function setInsightsRange(range) {
+  insightsRange = range;
+  renderInsights();
+}
+
+function getPainLogsSorted() {
+  return logs.filter(l => l.medId === 'pain').sort((a,b)=>a.time-b.time);
+}
+
+function buildPainGraphSVG(range) {
+  const now = Date.now();
+  const windowMs = range === '24h' ? 24*3600000 : 7*24*3600000;
+  const start = now - windowMs;
+  const painLogs = getPainLogsSorted().filter(l => l.time >= start);
+
+  if (!painLogs.length) {
+    return `<div class="empty" style="padding:36px 20px"><div class="empty-title" style="font-size:18px">No pain data yet</div><div>Log pain to see the graph.</div></div>`;
+  }
+
+  const w = 700, h = 280, left = 44, right = 16, top = 14, bottom = 28;
+  const innerW = w-left-right;
+  const innerH = h-top-bottom;
+
+  const xFor = t => left + ((t - start) / windowMs) * innerW;
+  const yFor = v => top + (1 - (v / 10)) * innerH;
+
+  const points = painLogs.map(p => `${xFor(p.time)},${yFor(p.dose)}`).join(' ');
+  const yLines = [0,2.5,5,7.5,10].map(v =>
+    `<line x1="${left}" y1="${yFor(v)}" x2="${w-right}" y2="${yFor(v)}" class="graph-grid" />
+     <text x="8" y="${yFor(v)+4}" class="graph-axis-label">${v}</text>`
+  ).join('');
+
+  const xLabels = range === '24h'
+    ? [0,6,12,18,24].map(hr=>{
+        const t = start + hr*3600000;
+        const d = new Date(t);
+        return `<text x="${xFor(t)}" y="${h-8}" text-anchor="middle" class="graph-axis-label">${d.toLocaleTimeString([], {hour:'numeric'})}</text>`;
+      }).join('')
+    : [0,2,4,6,7].map(day=>{
+        const t = start + day*24*3600000;
+        const d = new Date(t);
+        return `<text x="${xFor(t)}" y="${h-8}" text-anchor="middle" class="graph-axis-label">${d.toLocaleDateString([], {month:'short', day:'numeric'})}</text>`;
+      }).join('');
+
+  const dots = painLogs.map(p =>
+    `<circle cx="${xFor(p.time)}" cy="${yFor(p.dose)}" r="4.2" fill="${getPainColor(p.dose)}" />`
+  ).join('');
+
+  return `
+    <div class="graph-wrap">
+      <svg viewBox="0 0 ${w} ${h}" class="graph-svg" preserveAspectRatio="none" aria-label="Pain graph">
+        ${yLines}
+        <polyline points="${points}" class="graph-line" />
+        ${dots}
+        ${xLabels}
+      </svg>
+    </div>`;
+}
+
+function computeEffectivenessStats() {
+  const painLogs = getPainLogsSorted();
+  const stats = [];
+
+  Object.entries(EFFECT_WINDOWS).forEach(([medId, win]) => {
+    const med = getMed(medId);
+    const medLogs = logs.filter(l => l.medId === medId).sort((a,b)=>a.time-b.time);
+    const events = [];
+
+    medLogs.forEach(medLog => {
+      const baseline = [...painLogs].reverse().find(p => p.time < medLog.time);
+      if (!baseline) return;
+
+      const start = medLog.time + win.min * 60000;
+      const end = medLog.time + win.max * 60000;
+      const post = painLogs.filter(p => p.time >= start && p.time <= end);
+      if (!post.length) return;
+
+      const best = Math.min(...post.map(p => Number(p.dose)));
+      const relief = Number(baseline.dose) - best;
+
+      events.push({
+        dose: medLog.dose,
+        baseline: Number(baseline.dose),
+        best,
+        relief
+      });
+    });
+
+    const validCount = events.length;
+    if (!validCount) {
+      stats.push({med, validCount:0});
+      return;
+    }
+
+    const avgRelief = events.reduce((s,e)=>s+e.relief,0) / validCount;
+    const successRate = events.filter(e=>e.relief >= 1.0).length / validCount;
+
+    const doseMap = {};
+    events.forEach(e => {
+      const key = String(e.dose);
+      if (!doseMap[key]) doseMap[key] = [];
+      doseMap[key].push(e.relief);
+    });
+
+    let bestDose = null;
+    Object.entries(doseMap).forEach(([dose, rels]) => {
+      const avg = rels.reduce((s,v)=>s+v,0)/rels.length;
+      if (!bestDose || avg > bestDose.avg) bestDose = {dose, avg};
+    });
+
+    stats.push({
+      med,
+      validCount,
+      avgRelief,
+      successRate,
+      bestDose,
+      events
+    });
+  });
+
+  return stats.sort((a,b) => (b.avgRelief ?? -999) - (a.avgRelief ?? -999));
+}
+
+function insightStatusClass(avgRelief) {
+  if (avgRelief >= 2.0) return 'trend-good';
+  if (avgRelief >= 0.75) return 'trend-mid';
+  return 'trend-bad';
+}
+
+function insightStatusLabel(avgRelief) {
+  if (avgRelief >= 2.0) return 'Good';
+  if (avgRelief >= 0.75) return 'Mixed';
+  return 'Poor';
+}
+
+function renderInsights() {
+  const stats = computeEffectivenessStats();
+  let html = '<div style="height:8px"></div>';
+
+  html += `
+    <div class="insight-wrap">
+      <div class="insight-card">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+          <div>
+            <div class="insight-title">Pain Graph</div>
+            <div class="insight-sub">Raw pain entries only</div>
+          </div>
+          <div class="segmented">
+            <button class="seg-btn ${insightsRange==='24h'?'active':''}" onclick="setInsightsRange('24h')">24h</button>
+            <button class="seg-btn ${insightsRange==='7d'?'active':''}" onclick="setInsightsRange('7d')">7d</button>
+          </div>
+        </div>
+        ${buildPainGraphSVG(insightsRange)}
+      </div>
+    </div>`;
+
+  html += `<div class="insight-wrap"><div class="list-header" style="padding-left:0">Medication Effectiveness</div></div>`;
+
+  stats.forEach(stat => {
+    if (!stat.validCount || stat.validCount < 3) {
+      html += `
+        <div class="insight-wrap">
+          <div class="insight-card">
+            <div class="insight-title">${stat.med.brand}</div>
+            <div class="insight-sub">Not enough data yet · Need at least 3 valid events</div>
+          </div>
+        </div>`;
+      return;
+    }
+
+    const cls = insightStatusClass(stat.avgRelief);
+    const label = insightStatusLabel(stat.avgRelief);
+
+    html += `
+      <div class="insight-wrap">
+        <div class="insight-card">
+          <div class="insight-title">${stat.med.brand}</div>
+          <div class="insight-sub ${cls}">${label} · ${stat.validCount} valid event${stat.validCount===1?'':'s'}</div>
+
+          <div class="insight-grid">
+            <div class="metric">
+              <div class="metric-lbl">Avg Relief</div>
+              <div class="metric-val ${cls}">-${Math.abs(stat.avgRelief).toFixed(1)}</div>
+              <div class="metric-sub">Pain drop</div>
+            </div>
+            <div class="metric">
+              <div class="metric-lbl">Best Dose</div>
+              <div class="metric-val">${stat.bestDose.dose}${stat.med.doseUnit}</div>
+              <div class="metric-sub">Avg -${Math.abs(stat.bestDose.avg).toFixed(1)}</div>
+            </div>
+            <div class="metric">
+              <div class="metric-lbl">Success Rate</div>
+              <div class="metric-val">${Math.round(stat.successRate*100)}%</div>
+              <div class="metric-sub">≥ 1.0 relief</div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  });
+
+  document.getElementById('insights-content').innerHTML = html;
+}
+
+// ─── COPY TO NOTES ────────────────────────────────────────────────────────────
+function copyToNotes() {
+  const filtered = filteredHistoryLogs().sort((a,b)=>b.time-a.time);
+  if(!filtered.length){showToast('⚠️','No history to copy');return;}
+
+  const byDay={};
+  filtered.forEach(log=>{const d=fmtDate(log.time);if(!byDay[d])byDay[d]=[];byDay[d].push(log);});
+  let text="Tom's Medication Log\n";
+  text+=`Generated: ${new Date().toLocaleDateString([],{weekday:'long',year:'numeric',month:'long',day:'numeric'})}\n${'─'.repeat(32)}\n\n`;
+
+  Object.entries(byDay).forEach(([day,entries])=>{
+    text+=`${day}\n`;
+    entries.forEach(log=>{
+      const med=getMed(log.medId);
+      const tags=[log.past?'past':'',log.override?'override':''].filter(Boolean).join(', ');
+      const label = med?.isPain
+        ? `Pain ${formatPainValue(log.dose)}`
+        : `${(med?med.brand:log.medId).padEnd(14)} ${formatDoseDisplay(med, log.dose)}`;
+      text+=`  ${fmtTime(log.time).padEnd(10)} ${label}${tags?' ['+tags+']':''}\n`;
+    });
+    text+='\n';
+  });
+
+  navigator.clipboard.writeText(text).then(()=>showToast('📋','Copied! Paste into Notes')).catch(()=>prompt('Copy and paste into Notes:',text));
+}
+
+function exportCSV() {
+  const filtered = filteredHistoryLogs().sort((a,b)=>a.time-b.time);
+  if(!filtered.length){showToast('⚠️','No history to export');return;}
+
+  const rows = [
+    ['Date','Time','Medication','Generic','Dose','Unit','Type']
+  ];
+
+  filtered.forEach(log=>{
+    const med = getMed(log.medId);
+    const d = new Date(log.time);
+    const type = log.override ? 'override' : log.past ? 'past' : 'normal';
+    rows.push([
+      d.toLocaleDateString([],{year:'numeric',month:'2-digit',day:'2-digit'}),
+      d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true}),
+      med ? med.brand : log.medId,
+      med ? med.generic : '',
+      log.dose,
+      log.unit,
+      type
+    ]);
+  });
+
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `toms-meds-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('📊','CSV downloaded');
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function render() {
+  if(currentTab==='tracker') renderTracker();
+  else if(currentTab==='past') renderPast();
+  else if(currentTab==='history') renderHistory();
+  else renderInsights();
+}
+
+// FIX 4: Use setTimeout-based polling instead of setInterval so that each
+// poll waits for the previous fetch to complete (via the cloudFetchInFlight
+// guard) before scheduling the next one, preventing overlapping requests.
+function scheduleNextSync() {
+  setTimeout(async () => {
+    await loadFromCloud();
+    scheduleNextSync();
+  }, 30000);
+}
+
+applyTheme(currentTheme);
+render();
+if (backendConfigured()) loadFromCloud().then(scheduleNextSync);
+else setSyncStatus('error', `${getActiveBackend().label} local only`);
+</script>
+</body>
+</html>
