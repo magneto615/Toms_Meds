@@ -10,597 +10,23 @@
 <title>Tom's Meds</title>
 <style>
 :root{
-
-  --bg:#f4f6ff;
---bg2:#ffffff;
---bg3:#eef2ff;
---bg4:#dfe6fb;
-
-  --sep:rgba(70,86,140,.12);
---lbl:#2d396b;
---lbl2:rgba(45,57,107,.70);
---lbl3:rgba(45,57,107,.45);
-
-  --blue:#59b9f8;
---green:#5cca92;
---red:#ef7d74;
---orange:#f4b163;
---purple:#8a8df2;
---teal:#67cdd9;
---yellow:#f4d26b;
-
-  --fill:rgba(89,185,248,.10);
---fill2:rgba(89,185,248,.18);
---shadow:0 16px 40px rgba(113,126,181,.13);
-
+  --bg:#f4f6ff;--bg2:#fff;--bg3:#eef2ff;--bg4:#dfe6fb;--sep:rgba(70,86,140,.12);
+  --lbl:#2d396b;--lbl2:rgba(45,57,107,.70);--lbl3:rgba(45,57,107,.45);
+  --blue:#59b9f8;--green:#5cca92;--red:#ef7d74;--orange:#f4b163;--purple:#8a8df2;--teal:#67cdd9;--yellow:#f4d26b;
+  --fill:rgba(89,185,248,.10);--fill2:rgba(89,185,248,.18);--shadow:0 16px 40px rgba(113,126,181,.13);
   --sf:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Helvetica Neue',sans-serif;
-
 }
-
-body[data-theme=dark]{
-
-  --bg:#09111d;
---bg2:#1a2436;
---bg3:#223048;
---bg4:#2d3e5a;
---sep:rgba(182,198,239,.13);
-
-  --lbl:#edf3ff;
---lbl2:rgba(237,243,255,.72);
---lbl3:rgba(237,243,255,.45);
-
-  --fill:rgba(89,185,248,.15);
---fill2:rgba(89,185,248,.25);
---shadow:0 18px 42px rgba(0,0,0,.34);
-
-}
-
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
--webkit-tap-highlight-color:transparent}
-
-html,body{
-min-height:100dvh;
-background:linear-gradient(180deg,var(--bg),var(--bg3));
-color:var(--lbl);
-font-family:var(--sf);
-font-size:17px;
-line-height:1.35;
--webkit-font-smoothing:antialiased}
-
-button,input,select,textarea{
-font-family:var(--sf)}
-
-.header{
-position:sticky;
-top:0;
-z-index:50;
-padding:calc(env(safe-area-inset-top,18px) + 12px) 16px 12px;
-background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(255,255,255,.74));
-backdrop-filter:blur(22px);
-border-bottom:1px solid var(--sep)}
-
-body[data-theme=dark] .header{
-background:linear-gradient(180deg,rgba(9,17,29,.96),rgba(9,17,29,.76))}
-
-.header-row{
-max-width:1100px;
-margin:0 auto;
-display:flex;
-align-items:center;
-justify-content:space-between;
-gap:12px}
-
-.title{
-font-size:22px;
-font-weight:850;
-letter-spacing:-.04em}
-.sub{
-font-size:12px;
-color:var(--lbl2);
-margin-top:2px}
-.head-actions{
-display:flex;
-gap:8px;
-align-items:center}
-
-.icon-btn{
-border:none;
-background:var(--fill2);
-color:var(--lbl);
-border-radius:999px;
-padding:10px 12px;
-font-size:14px;
-font-weight:750;
-cursor:pointer}
-.sync-dot{
-display:inline-block;
-width:8px;
-height:8px;
-border-radius:50%;
-background:var(--lbl3);
-margin-right:6px}
-.sync-dot.ok{
-background:var(--green)}
-.sync-dot.err{
-background:var(--red)}
-.sync-dot.busy{
-background:var(--orange)}
-
-.wrap{
-max-width:1100px;
-margin:0 auto;
-padding:16px 16px calc(env(safe-area-inset-bottom,20px) + 96px)}
-.page{
-display:none}
-.page.active{
-display:block}
-
-.hero{
-background:linear-gradient(180deg,var(--bg2),rgba(255,255,255,.72));
-border:1px solid var(--sep);
-border-radius:28px;
-padding:16px;
-margin-bottom:16px;
-box-shadow:var(--shadow)}
-body[data-theme=dark] .hero{
-background:linear-gradient(180deg,var(--bg2),rgba(26,36,54,.82))}
-
-.hero-top{
-display:flex;
-justify-content:space-between;
-gap:12px;
-align-items:flex-start}
-.hero-name{
-font-size:24px;
-font-weight:850;
-letter-spacing:-.04em}
-.muted{
-color:var(--lbl2)}
-
-.metric-grid{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:10px;
-margin-top:14px}
-.metric{
-background:var(--bg3);
-border-radius:18px;
-padding:12px;
-text-align:center}
-.metric-val{
-font-size:20px;
-font-weight:800}
-.metric-lbl{
-font-size:11px;
-color:var(--lbl2);
-text-transform:uppercase;
-letter-spacing:.06em;
-margin-top:4px}
-
-.section{
-margin:0 0 16px}
-.section-head{
-display:flex;
-align-items:center;
-justify-content:space-between;
-gap:10px;
-padding:0 4px 8px;
-cursor:pointer}
-.section-title{
-font-size:13px;
-font-weight:850;
-text-transform:uppercase;
-letter-spacing:.06em;
-color:var(--lbl2)}
-.section-meta{
-font-size:12px;
-color:var(--lbl3);
-font-weight:750}
-.section.collapsed .card{
-display:none}
-.card{
-background:var(--bg2);
-border:1px solid var(--sep);
-border-radius:24px;
-overflow:hidden;
-box-shadow:var(--shadow)}
-
-.row{
-display:flex;
-align-items:center;
-gap:13px;
-padding:14px 16px;
-position:relative;
-cursor:pointer}
-.row:not(:last-child):after{
-content:'';
-position:absolute;
-left:16px;
-right:0;
-bottom:0;
-height:1px;
-background:var(--sep)}
-.row:active{
-background:var(--fill)}
-.row.disabled{
-opacity:.55;
-cursor:default}
-
-.med-icon{
-width:44px;
-height:44px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:21px;
-flex-shrink:0;
-background:var(--bg3)}
-.med-icon.orange{
-background:#ffe6c7}
-.med-icon.green{
-background:#d6f4e4}
-.med-icon.blue{
-background:#d9ecff}
-.med-icon.yellow{
-background:#ffefbf}
-.med-icon.purple{
-background:#e2dcff}
-.med-icon.teal{
-background:#d7f5f8}
-.med-icon.red{
-background:#ffd8d3}
-body[data-theme=dark] .med-icon.orange{
-background:#473528}
-body[data-theme=dark] .med-icon.green{
-background:#293e35}
-body[data-theme=dark] .med-icon.blue{
-background:#283948}
-body[data-theme=dark] .med-icon.yellow{
-background:#4f452d}
-body[data-theme=dark] .med-icon.purple{
-background:#39344c}
-body[data-theme=dark] .med-icon.teal{
-background:#294046}
-body[data-theme=dark] .med-icon.red{
-background:#4b3030}
-
-.med-text{
-flex:1;
-min-width:0}
-.med-name{
-font-size:17px;
-font-weight:800;
-letter-spacing:-.02em}
-.med-generic{
-font-size:13px;
-color:var(--lbl2);
-margin-top:1px}
-.med-sub{
-font-size:12px;
-color:var(--lbl2);
-margin-top:4px;
-line-height:1.35}
-.med-right{
-text-align:right;
-flex-shrink:0}
-.pill{
-font-size:12px;
-font-weight:850;
-padding:7px 10px;
-border-radius:999px;
-background:var(--fill2);
-display:inline-block}
-.pill.ok{
-background:rgba(92,202,146,.20);
-color:#27845a}
-.pill.wait{
-background:rgba(244,177,99,.25);
-color:#a75f18}
-.pill.block{
-background:rgba(239,125,116,.20);
-color:#d46d65}
-.pill.arch{
-background:rgba(138,141,242,.22);
-color:var(--purple)}
-.chev{
-color:var(--lbl3);
-font-size:18px;
-margin-left:6px}
-.empty{
-text-align:center;
-padding:44px 20px;
-color:var(--lbl2)}
-.empty-icon{
-font-size:42px;
-margin-bottom:10px}
-.empty-title{
-font-weight:800;
-color:var(--lbl);
-font-size:19px;
-margin-bottom:6px}
-
-.tabbar{
-position:fixed;
-left:50%;
-bottom:calc(env(safe-area-inset-bottom,18px) + 6px);
-transform:translateX(-50%);
-width:min(720px,calc(100vw - 32px));
-z-index:100;
-display:flex;
-background:rgba(255,255,255,.88);
-backdrop-filter:blur(28px);
-border:1px solid var(--sep);
-border-radius:24px;
-box-shadow:0 18px 38px rgba(0,0,0,.18);
-overflow:hidden}
-body[data-theme=dark] .tabbar{
-background:rgba(17,24,39,.82)}
-.tab{
-flex:1;
-border:none;
-background:transparent;
-color:var(--lbl3);
-padding:10px 3px 7px;
-cursor:pointer}
-.tab.active{
-color:var(--blue)}
-.tab-icon{
-font-size:22px;
-line-height:1}
-.tab-label{
-font-size:10px;
-font-weight:650;
-margin-top:2px}
-
-.overlay{
-display:none;
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.50);
-z-index:200}
-.overlay.show{
-display:block}
-.sheet{
-position:fixed;
-left:50%;
-bottom:20px;
-transform:translate(-50%,calc(100% + 40px));
-width:min(820px,calc(100vw - 32px));
-max-height:min(88dvh,900px);
-overflow-y:auto;
-background:rgba(255,255,255,.97);
-border:1px solid var(--sep);
-border-radius:28px;
-z-index:210;
-box-shadow:0 30px 70px rgba(0,0,0,.32);
-transition:transform .28s cubic-bezier(.32,.72,0,1)}
-body[data-theme=dark] .sheet{
-background:rgba(26,36,54,.98)}
-.sheet.show{
-transform:translate(-50%,0)}
-.handle{
-width:44px;
-height:5px;
-border-radius:99px;
-background:var(--sep);
-margin:10px auto 0}
-.sheet-head{
-display:flex;
-justify-content:space-between;
-gap:10px;
-align-items:flex-start;
-padding:14px 20px 0}
-.sheet-title{
-font-size:21px;
-font-weight:850;
-letter-spacing:-.04em}
-.sheet-subtitle{
-font-size:14px;
-color:var(--lbl2);
-margin-top:2px}
-.close{
-width:32px;
-height:32px;
-border-radius:50%;
-border:none;
-background:var(--fill2);
-color:var(--lbl2);
-font-size:16px;
-font-weight:850;
-cursor:pointer}
-.sheet-body{
-padding:16px 20px 22px}
-
-.btn{
-width:100%;
-border:none;
-border-radius:14px;
-padding:14px 16px;
-font-size:16px;
-font-weight:800;
-margin-top:10px;
-cursor:pointer}
-.btn:active{
-transform:scale(.99)}
-.btn.green{
-background:var(--green);
-color:#07120b}
-.btn.blue{
-background:var(--blue);
-color:#06121c}
-.btn.red{
-background:rgba(239,125,116,.18);
-color:var(--red);
-border:1px solid rgba(239,125,116,.35)}
-.btn.gray{
-background:var(--bg3);
-color:var(--lbl)}
-.btn.orange{
-background:var(--orange);
-color:#171007}
-.btn.small{
-width:auto;
-padding:8px 11px;
-font-size:13px;
-margin:0}
-.btn-row{
-display:flex;
-gap:10px}
-.btn-row .btn{
-flex:1}
-
-.form-grid{
-display:grid;
-grid-template-columns:repeat(2,minmax(0,1fr));
-gap:12px}
-.field{
-margin-bottom:12px}
-.field label{
-display:block;
-font-size:12px;
-font-weight:800;
-color:var(--lbl2);
-text-transform:uppercase;
-letter-spacing:.06em;
-margin-bottom:6px}
-.input,.select,.textarea{
-width:100%;
-border:1.5px solid var(--bg4);
-background:var(--bg3);
-color:var(--lbl);
-border-radius:14px;
-padding:11px 12px;
-font-size:16px}
-.textarea{
-min-height:74px;
-resize:vertical}
-.checks{
-display:flex;
-gap:8px;
-flex-wrap:wrap}
-.check{
-display:flex;
-align-items:center;
-gap:7px;
-background:var(--bg3);
-border:1px solid var(--bg4);
-border-radius:999px;
-padding:8px 10px;
-font-size:14px}
-.check input{
-width:16px;
-height:16px}
-.chips{
-display:flex;
-gap:8px;
-flex-wrap:wrap;
-margin:8px 0 12px}
-.chip{
-border:1.5px solid var(--bg4);
-background:var(--bg3);
-color:var(--lbl2);
-border-radius:999px;
-padding:8px 14px;
-font-weight:750;
-cursor:pointer}
-.chip.sel{
-background:var(--blue);
-border-color:var(--blue);
-color:white}
-.info{
-background:var(--bg3);
-border-radius:18px;
-padding:12px 14px;
-margin-bottom:12px}
-.info-label{
-font-size:12px;
-color:var(--lbl2);
-text-transform:uppercase;
-letter-spacing:.06em}
-.info-val{
-font-weight:750;
-margin-top:3px}
-.warn-card{
-background:rgba(239,125,116,.14);
-border:1px solid rgba(239,125,116,.28);
-border-radius:16px;
-padding:12px 14px;
-margin-bottom:12px;
-font-size:14px;
-color:var(--lbl)}
-.graph{
-width:100%;
-height:auto;
-border:1px solid var(--sep);
-border-radius:16px;
-background:var(--bg3);
-margin-top:12px}
-.history-filter{
-display:flex;
-gap:8px;
-margin-bottom:12px}
-.history-filter .select{
-flex:1}
-.mini-card{
-background:var(--bg3);
-border:1px solid var(--sep);
-border-radius:16px;
-padding:12px;
-margin-bottom:10px}
-.mini-top{
-display:flex;
-align-items:center;
-justify-content:space-between;
-gap:10px}
-.toast{
-position:fixed;
-top:calc(env(safe-area-inset-top,20px) + 60px);
-left:50%;
-transform:translate(-50%,-20px);
-opacity:0;
-pointer-events:none;
-z-index:300;
-background:rgba(255,255,255,.96);
-color:var(--lbl);
-border:1px solid var(--sep);
-border-radius:18px;
-padding:12px 16px;
-font-weight:800;
-box-shadow:var(--shadow);
-transition:all .25s}
-body[data-theme=dark] .toast{
-background:rgba(26,36,54,.96)}
-.toast.show{
-opacity:1;
-transform:translate(-50%,0)}
-.hidden{
-display:none!important}
-.custom-dose-row{
-display:none}
-.custom-dose-row.show{
-display:block}
-.settings-actions{
-display:flex;
-gap:8px;
-align-items:center}
-.danger-note{
-font-size:12px;
-color:var(--lbl2);
-line-height:1.35;
-margin-top:8px}
-@media(max-width:680px){
-.metric-grid{
-grid-template-columns:repeat(2,1fr)}
-.form-grid{
-grid-template-columns:1fr}
-.btn-row{
-flex-direction:column}
-}
-
+body[data-theme=dark]{--bg:#09111d;--bg2:#1a2436;--bg3:#223048;--bg4:#2d3e5a;--sep:rgba(182,198,239,.13);--lbl:#edf3ff;--lbl2:rgba(237,243,255,.72);--lbl3:rgba(237,243,255,.45);--fill:rgba(89,185,248,.15);--fill2:rgba(89,185,248,.25);--shadow:0 18px 42px rgba(0,0,0,.34)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100dvh;background:linear-gradient(180deg,var(--bg),var(--bg3));color:var(--lbl);font-family:var(--sf);font-size:17px;line-height:1.35;-webkit-font-smoothing:antialiased}button,input,select,textarea{font-family:var(--sf)}
+.header{position:sticky;top:0;z-index:50;padding:calc(env(safe-area-inset-top,18px) + 12px) 16px 12px;background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(255,255,255,.74));backdrop-filter:blur(22px);border-bottom:1px solid var(--sep)}body[data-theme=dark] .header{background:linear-gradient(180deg,rgba(9,17,29,.96),rgba(9,17,29,.76))}.header-row{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}.title{font-size:22px;font-weight:850;letter-spacing:-.04em}.sub{font-size:12px;color:var(--lbl2);margin-top:2px}.head-actions{display:flex;gap:8px;align-items:center}.icon-btn{border:none;background:var(--fill2);color:var(--lbl);border-radius:999px;padding:10px 12px;font-size:14px;font-weight:750;cursor:pointer}.sync-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--lbl3);margin-right:6px}.sync-dot.ok{background:var(--green)}.sync-dot.err{background:var(--red)}.sync-dot.busy{background:var(--orange)}
+.wrap{max-width:1100px;margin:0 auto;padding:16px 16px calc(env(safe-area-inset-bottom,20px) + 96px)}.page{display:none}.page.active{display:block}
+.hero{background:linear-gradient(180deg,var(--bg2),rgba(255,255,255,.72));border:1px solid var(--sep);border-radius:28px;padding:16px;margin-bottom:16px;box-shadow:var(--shadow)}body[data-theme=dark] .hero{background:linear-gradient(180deg,var(--bg2),rgba(26,36,54,.82))}.hero-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.hero-name{font-size:24px;font-weight:850;letter-spacing:-.04em}.muted{color:var(--lbl2)}
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}.metric{background:var(--bg3);border-radius:18px;padding:12px;text-align:center}.metric-val{font-size:22px;font-weight:850}.metric-lbl{font-size:11px;color:var(--lbl2);text-transform:uppercase;letter-spacing:.06em;margin-top:4px}.tracker-summary{margin-top:0;margin-bottom:16px}.tracker-summary .metric{background:linear-gradient(180deg,var(--bg2),var(--bg3));border:1px solid var(--sep);box-shadow:0 10px 22px rgba(113,126,181,.08)}.tracker-summary .complete .metric-val{color:var(--green)}
+.section{margin:0 0 16px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 4px 8px;cursor:pointer}.section-title{font-size:13px;font-weight:850;text-transform:uppercase;letter-spacing:.06em;color:var(--lbl2)}.section-meta{font-size:12px;color:var(--lbl3);font-weight:750}.section.collapsed .card{display:none}.card{background:var(--bg2);border:1px solid var(--sep);border-radius:24px;overflow:hidden;box-shadow:var(--shadow)}
+.row{display:flex;align-items:center;gap:13px;padding:14px 16px;position:relative;cursor:pointer}.row:not(:last-child):after{content:'';position:absolute;left:16px;right:0;bottom:0;height:1px;background:var(--sep)}.row:active{background:var(--fill)}.row.disabled{opacity:.55;cursor:default}.med-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0;background:var(--bg3)}.med-icon.orange{background:#ffe6c7}.med-icon.green{background:#d6f4e4}.med-icon.blue{background:#d9ecff}.med-icon.yellow{background:#ffefbf}.med-icon.purple{background:#e2dcff}.med-icon.teal{background:#d7f5f8}.med-icon.red{background:#ffd8d3}body[data-theme=dark] .med-icon.orange{background:#473528}body[data-theme=dark] .med-icon.green{background:#293e35}body[data-theme=dark] .med-icon.blue{background:#283948}body[data-theme=dark] .med-icon.yellow{background:#4f452d}body[data-theme=dark] .med-icon.purple{background:#39344c}body[data-theme=dark] .med-icon.teal{background:#294046}body[data-theme=dark] .med-icon.red{background:#4b3030}.med-text{flex:1;min-width:0}.med-name{font-size:17px;font-weight:800;letter-spacing:-.02em}.med-generic{font-size:13px;color:var(--lbl2);margin-top:1px}.med-sub{font-size:12px;color:var(--lbl2);margin-top:4px;line-height:1.35}.med-right{text-align:right;flex-shrink:0}.pill{font-size:12px;font-weight:850;padding:7px 10px;border-radius:999px;background:var(--fill2);display:inline-block}.pill.ok{background:rgba(92,202,146,.20);color:#27845a}.pill.wait{background:rgba(244,177,99,.25);color:#a75f18}.pill.block{background:rgba(239,125,116,.20);color:#d46d65}.pill.arch{background:rgba(138,141,242,.22);color:var(--purple)}.chev{color:var(--lbl3);font-size:18px;margin-left:6px}.empty{text-align:center;padding:44px 20px;color:var(--lbl2)}.empty-icon{font-size:42px;margin-bottom:10px}.empty-title{font-weight:800;color:var(--lbl);font-size:19px;margin-bottom:6px}
+.tabbar{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,18px) + 6px);transform:translateX(-50%);width:min(720px,calc(100vw - 32px));z-index:100;display:flex;background:rgba(255,255,255,.88);backdrop-filter:blur(28px);border:1px solid var(--sep);border-radius:24px;box-shadow:0 18px 38px rgba(0,0,0,.18);overflow:hidden}body[data-theme=dark] .tabbar{background:rgba(17,24,39,.82)}.tab{flex:1;border:none;background:transparent;color:var(--lbl3);padding:10px 3px 7px;cursor:pointer}.tab.active{color:var(--blue)}.tab-icon{font-size:22px;line-height:1}.tab-label{font-size:10px;font-weight:650;margin-top:2px}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.50);z-index:200}.overlay.show{display:block}.sheet{position:fixed;left:50%;bottom:20px;transform:translate(-50%,calc(100% + 40px));width:min(820px,calc(100vw - 32px));max-height:min(88dvh,900px);overflow-y:auto;background:rgba(255,255,255,.97);border:1px solid var(--sep);border-radius:28px;z-index:210;box-shadow:0 30px 70px rgba(0,0,0,.32);transition:transform .28s cubic-bezier(.32,.72,0,1)}body[data-theme=dark] .sheet{background:rgba(26,36,54,.98)}.sheet.show{transform:translate(-50%,0)}.handle{width:44px;height:5px;border-radius:99px;background:var(--sep);margin:10px auto 0}.sheet-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:14px 20px 0}.sheet-title{font-size:21px;font-weight:850;letter-spacing:-.04em}.sheet-subtitle{font-size:14px;color:var(--lbl2);margin-top:2px}.close{width:32px;height:32px;border-radius:50%;border:none;background:var(--fill2);color:var(--lbl2);font-size:16px;font-weight:850;cursor:pointer}.sheet-body{padding:16px 20px 22px}.btn{width:100%;border:none;border-radius:14px;padding:14px 16px;font-size:16px;font-weight:800;margin-top:10px;cursor:pointer}.btn:active{transform:scale(.99)}.btn.green{background:var(--green);color:#07120b}.btn.blue{background:var(--blue);color:#06121c}.btn.red{background:rgba(239,125,116,.18);color:var(--red);border:1px solid rgba(239,125,116,.35)}.btn.gray{background:var(--bg3);color:var(--lbl)}.btn.orange{background:var(--orange);color:#171007}.btn.small{width:auto;padding:8px 11px;font-size:13px;margin:0}.btn-row{display:flex;gap:10px}.btn-row .btn{flex:1}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{margin-bottom:12px}.field label{display:block;font-size:12px;font-weight:800;color:var(--lbl2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}.input,.select,.textarea{width:100%;border:1.5px solid var(--bg4);background:var(--bg3);color:var(--lbl);border-radius:14px;padding:11px 12px;font-size:16px}.textarea{min-height:74px;resize:vertical}.checks{display:flex;gap:8px;flex-wrap:wrap}.check{display:flex;align-items:center;gap:7px;background:var(--bg3);border:1px solid var(--bg4);border-radius:999px;padding:8px 10px;font-size:14px}.check input{width:16px;height:16px}.chips{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}.chip{border:1.5px solid var(--bg4);background:var(--bg3);color:var(--lbl2);border-radius:999px;padding:8px 14px;font-weight:750;cursor:pointer}.chip.sel{background:var(--blue);border-color:var(--blue);color:white}.info{background:var(--bg3);border-radius:18px;padding:12px 14px;margin-bottom:12px}.info-label{font-size:12px;color:var(--lbl2);text-transform:uppercase;letter-spacing:.06em}.info-val{font-weight:750;margin-top:3px}.warn-card{background:rgba(239,125,116,.14);border:1px solid rgba(239,125,116,.28);border-radius:16px;padding:12px 14px;margin-bottom:12px;font-size:14px;color:var(--lbl)}.graph{width:100%;height:auto;border:1px solid var(--sep);border-radius:16px;background:var(--bg3);margin-top:12px}.history-filter{display:flex;gap:8px;margin-bottom:12px}.history-filter .select{flex:1}.mini-card{background:var(--bg3);border:1px solid var(--sep);border-radius:16px;padding:12px;margin-bottom:10px}.toast{position:fixed;top:calc(env(safe-area-inset-top,20px) + 60px);left:50%;transform:translate(-50%,-20px);opacity:0;pointer-events:none;z-index:300;background:rgba(255,255,255,.96);color:var(--lbl);border:1px solid var(--sep);border-radius:18px;padding:12px 16px;font-weight:800;box-shadow:var(--shadow);transition:all .25s}body[data-theme=dark] .toast{background:rgba(26,36,54,.96)}.toast.show{opacity:1;transform:translate(-50%,0)}.hidden{display:none!important}.custom-dose-row{display:none}.custom-dose-row.show{display:block}.danger-note{font-size:12px;color:var(--lbl2);line-height:1.35;margin-top:8px}@media(max-width:680px){.metric-grid{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:1fr}.btn-row{flex-direction:column}}
 </style>
 </head>
 <body>
@@ -609,150 +35,80 @@ flex-direction:column}
 <nav class="tabbar"><button class="tab active" id="tab-tracker" onclick="switchTab('tracker')"><div class="tab-icon">💊</div><div class="tab-label">Tracker</div></button><button class="tab" id="tab-history" onclick="switchTab('history')"><div class="tab-icon">📋</div><div class="tab-label">History</div></button><button class="tab" id="tab-insights" onclick="switchTab('insights')"><div class="tab-icon">📈</div><div class="tab-label">Insights</div></button><button class="tab" id="tab-meds" onclick="switchTab('meds')"><div class="tab-icon">⚙️</div><div class="tab-label">Settings</div></button></nav>
 <div class="overlay" id="overlay" onclick="closeSheet()"></div><div class="sheet" id="sheet"><div class="handle"></div><div class="sheet-head"><div><div class="sheet-title" id="sheet-title"></div><div class="sheet-subtitle" id="sheet-subtitle"></div></div><button class="close" onclick="closeSheet()">×</button></div><div class="sheet-body" id="sheet-body"></div></div><div class="toast" id="toast"></div>
 <script>
-// ─────────────────────────────────────────────────────────────────────────────
-// CONFIG
-// ─────────────────────────────────────────────────────────────────────────────
-const SUPA_URL = 'https://twnnqelxvjjtgqlbczrc.supabase.co';
-const SUPA_KEY = 'sb_publishable_TrCW2TvbZl6V4J5CSSm-Lw_xWw9oWuZ';
-const SCHEDULE_GROUPS = {morning:'Morning',midday:'Midday',evening:'Evening',night:'Night',prn:'As Needed'};
-const TRACKER_GROUP_ORDER = ['prn','morning','midday','evening','night'];
-const DASHBOARD_GROUPS = ['morning','midday','evening','night'];
-const THEME_KEY = 'tomMedsTheme_v4';
-let meds=[], logs=[], packSteps=[], conflicts=[];
-let currentTab='tracker', historyFilter='all', currentTheme=localStorage.getItem(THEME_KEY)||'light';
-let collapsedSections = JSON.parse(localStorage.getItem('tomMedsCollapsed_v4') || '{}');
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SUPABASE HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
-function setSync(state,label){const dot=document.getElementById('sync-dot');dot.className='sync-dot '+(state||'');document.getElementById('sync-label').textContent=label||'';}
-async function supa(method, path, body) {
-  const res = await fetch(`${SUPA_URL}/rest/v1/${path}`, {
-    method,
-    headers: {
-      apikey: SUPA_KEY,
-      Authorization: `Bearer ${SUPA_KEY}`,
-      'Content-Type': 'application/json',
-      Prefer: 'return=representation' // 🔥 IMPORTANT
-    },
-    body: body ? JSON.stringify(body) : undefined
-  });
-
-  if (!res.ok) {
-    throw new Error(`${res.status} ${await res.text()}`);
-  }
-
-  // 🔥 SAFE JSON PARSE
-  const text = await res.text();
-  return text ? JSON.parse(text) : null;
-}async function loadAll(){try{setSync('busy','Syncing…');const [m,d,p,c]=await Promise.all([supa('GET','medications?select=*&order=brand.asc'),supa('GET','doses?select=*&order=time.desc'),supa('GET','medication_pack_steps?select=*&order=sequence_order.asc'),supa('GET','medication_conflicts?select=*')]);meds=(m||[]).map(normalizeMed);logs=(d||[]).map(normalizeLog);packSteps=p||[];conflicts=c||[];setSync('ok','Synced');render();}catch(e){console.error(e);setSync('err','Sync error');toast('Sync error: '+e.message.slice(0,120));}}
-async function manualRefresh(){toast('Refreshing…');await loadAll();}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// NORMALIZATION + UTILITIES
-// ─────────────────────────────────────────────────────────────────────────────
-function normalizeMed(m){return {...m, archived:!!m.archived, schedule_groups:Array.isArray(m.schedule_groups)?m.schedule_groups:parsePgArray(m.schedule_groups), dose_options:Array.isArray(m.dose_options)?m.dose_options:parseJsonArray(m.dose_options), default_dose:toNum(m.default_dose), interval_hours:toNum(m.interval_hours)||0, tablet_mg:toNum(m.tablet_mg), is_pack:!!m.is_pack, is_pain:!!m.is_pain || String(m.brand||'').toLowerCase()==='pain level'};}
-function normalizeLog(l){return {...l, loggedTime:Number(l.time||0), dose:toNum(l.dose), displayBrand:l.medication_name||l.med_brand||''};}
-function parsePgArray(v){if(Array.isArray(v))return v;if(!v)return[];return String(v).replace(/[{}]/g,'').split(',').map(s=>s.trim().replace(/^"|"$/g,'')).filter(Boolean);}
+const SUPA_URL='https://twnnqelxvjjtgqlbczrc.supabase.co';
+const SUPA_KEY='sb_publishable_TrCW2TvbZl6V4J5CSSm-Lw_xWw9oWuZ';
+const SCHEDULE_GROUPS={morning:'Morning',midday:'Midday',evening:'Evening',night:'Night',prn:'As Needed'};
+const SCHEDULE_ORDER=['morning','midday','evening','night'];
+const TRACKER_GROUP_ORDER=['prn','morning','midday','evening','night'];
+const DASHBOARD_GROUPS=['morning','midday','evening','night'];
+const THEME_KEY='tomMedsTheme_v5';
+let meds=[],logs=[],packSteps=[],conflicts=[];
+let currentTab='tracker',historyFilter='all',currentTheme=localStorage.getItem(THEME_KEY)||'light';
+let collapsedSections=JSON.parse(localStorage.getItem('tomMedsCollapsed_v5')||'{}');
+function setSync(state,label){const dot=qs('sync-dot');dot.className='sync-dot '+(state||'');qs('sync-label').textContent=label||''}
+async function supa(method,path,body){const res=await fetch(`${SUPA_URL}/rest/v1/${path}`,{method,headers:{apikey:SUPA_KEY,Authorization:`Bearer ${SUPA_KEY}`,'Content-Type':'application/json',Prefer:'return=representation'},body:body?JSON.stringify(body):undefined});if(!res.ok)throw new Error(`${res.status} ${await res.text()}`);const text=await res.text();return text?JSON.parse(text):null}
+async function loadAll(){try{setSync('busy','Syncing…');const [m,d,p,c]=await Promise.all([supa('GET','medications?select=*&order=brand.asc'),supa('GET','doses?select=*&order=time.desc'),supa('GET','medication_pack_steps?select=*&order=sequence_order.asc'),supa('GET','medication_conflicts?select=*')]);meds=(m||[]).map(normalizeMed);logs=(d||[]).map(normalizeLog);packSteps=p||[];conflicts=c||[];setSync('ok',`${activeMeds().length} active · ${logs.length} logs`);render()}catch(e){console.error(e);setSync('err','Sync error');toast('Sync error: '+e.message.slice(0,140))}}
+async function manualRefresh(){toast('Refreshing…');await loadAll()}
+function normalizeMed(m){return{...m,archived:!!m.archived,schedule_groups:Array.isArray(m.schedule_groups)?m.schedule_groups:parsePgArray(m.schedule_groups),dose_options:Array.isArray(m.dose_options)?m.dose_options:parseJsonArray(m.dose_options),default_dose:toNum(m.default_dose),interval_hours:toNum(m.interval_hours)||0,tablet_mg:toNum(m.tablet_mg),is_pack:!!m.is_pack,is_pain:!!m.is_pain||String(m.brand||'').toLowerCase()==='pain level'}}
+function normalizeLog(l){return{...l,entry_id:l.entry_id||l.id||null,loggedTime:Number(l.time||0),dose:toNum(l.dose),displayBrand:l.medication_name||l.med_brand||'',resolved_group:null}}
+function parsePgArray(v){if(Array.isArray(v))return v;if(!v)return[];return String(v).replace(/[{}]/g,'').split(',').map(s=>s.trim().replace(/^"|"$/g,'')).filter(Boolean)}
 function parseJsonArray(v){if(Array.isArray(v))return v;if(!v)return[];try{const j=JSON.parse(v);return Array.isArray(j)?j:[]}catch{return String(v).split(',').map(x=>Number(x.trim())).filter(Number.isFinite)}}
-function toNum(v){if(v===null||v===undefined||v==='')return null;const n=Number(v);return Number.isFinite(n)?n:null;}
-function esc(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function toNum(v){if(v===null||v===undefined||v==='')return null;const n=Number(v);return Number.isFinite(n)?n:null}
+function esc(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 function qs(id){return document.getElementById(id)}
-function todayStart(){const d=new Date();d.setHours(0,0,0,0);return d.getTime();}
-function todayEnd(){const d=new Date();d.setHours(23,59,59,999);return d.getTime();}
-function fmtDose(d,u){if(d===null||d===undefined||Number.isNaN(Number(d)))return'';return `${Number(d)}${u?esc(u):''}`;}
-function fmtDateTime(ms){return new Date(Number(ms)).toLocaleString();}
+function todayStart(){const d=new Date();d.setHours(0,0,0,0);return d.getTime()}
+function todayEnd(){const d=new Date();d.setHours(23,59,59,999);return d.getTime()}
+function fmtDose(d,u){if(d===null||d===undefined||Number.isNaN(Number(d)))return'';return `${Number(d)}${u?esc(u):''}`}
+function fmtDateTime(ms){return new Date(Number(ms)).toLocaleString()}
 function getMed(id){return meds.find(m=>m.id===id)}
 function activeMeds(){return meds.filter(m=>!m.archived).sort(medSort)}
 function settingsMeds(){return meds.slice().sort((a,b)=>(a.archived-b.archived)||a.brand.localeCompare(b.brand))}
 function medSort(a,b){const ao=(a.sort_order??999),bo=(b.sort_order??999);return ao!==bo?ao-bo:a.brand.localeCompare(b.brand)}
 function medLogs(id){return logs.filter(l=>l.medication_id===id)}
 function lastLog(id){return medLogs(id).sort((a,b)=>b.loggedTime-a.loggedTime)[0]||null}
-function since(ms){const diff=Date.now()-Number(ms);if(diff<60000)return'just now';const m=Math.floor(diff/60000);if(m<60)return`${m}m ago`;const h=Math.floor(m/60);if(h<24)return`${h}h ago`;return`${Math.floor(h/24)}d ago`;}
-function waitText(ms){const mins=Math.max(0,Math.ceil(ms/60000));const h=Math.floor(mins/60),m=mins%60;return h?`${h}h ${m}m`:`${m}m`;}
-function toast(msg){const t=qs('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast._tm);toast._tm=setTimeout(()=>t.classList.remove('show'),2600)}
+function waitText(ms){const mins=Math.max(0,Math.ceil(ms/60000));const h=Math.floor(mins/60),m=mins%60;return h?`${h}h ${m}m`:`${m}m`}
+function since(ms){const diff=Date.now()-Number(ms);if(diff<60000)return'just now';const m=Math.floor(diff/60000);if(m<60)return`${m}m ago`;const h=Math.floor(m/60);if(h<24)return`${h}h ago`;return`${Math.floor(h/24)}d ago`}
+function toast(msg){const t=qs('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast._tm);toast._tm=setTimeout(()=>t.classList.remove('show'),3000)}
 function applyTheme(theme){currentTheme=theme==='dark'?'dark':'light';document.body.setAttribute('data-theme',currentTheme);localStorage.setItem(THEME_KEY,currentTheme);qs('theme-btn').textContent=currentTheme==='dark'?'☀︎':'☾'}
 function toggleTheme(){applyTheme(currentTheme==='dark'?'light':'dark')}
 function switchTab(tab){currentTab=tab;document.querySelectorAll('.tab,.page').forEach(e=>e.classList.remove('active'));qs('tab-'+tab)?.classList.add('active');qs('page-'+tab)?.classList.add('active');render()}
 function openSheet(title,subtitle,body){qs('sheet-title').textContent=title;qs('sheet-subtitle').textContent=subtitle||'';qs('sheet-body').innerHTML=body;qs('overlay').classList.add('show');qs('sheet').classList.add('show')}
 function closeSheet(){qs('overlay').classList.remove('show');qs('sheet').classList.remove('show')}
 function activeGroups(med){const groups=Array.isArray(med.schedule_groups)?med.schedule_groups:[];return groups.length?groups:['prn']}
-function doseOptions(med){const opts=Array.isArray(med.dose_options)?med.dose_options.filter(x=>x!==null&&x!==undefined):[];if(!opts.length&&med.default_dose!==null)opts.push(med.default_dose);return [...new Set(opts.map(Number).filter(Number.isFinite))]}
+function scheduledGroups(med){return activeGroups(med).filter(g=>g!=='prn').sort((a,b)=>SCHEDULE_ORDER.indexOf(a)-SCHEDULE_ORDER.indexOf(b))}
+function doseOptions(med){const opts=Array.isArray(med.dose_options)?med.dose_options.filter(x=>x!==null&&x!==undefined):[];if(!opts.length&&med.default_dose!==null)opts.push(med.default_dose);return[...new Set(opts.map(Number).filter(Number.isFinite))]}
 function pillCount(med,dose){if(!med.tablet_mg||!dose||['tablet','tablets','unit','units','g','ml'].includes(String(med.dose_unit||'').toLowerCase()))return'';const n=Number(dose)/Number(med.tablet_mg);if(!Number.isFinite(n))return'';const nice=n===Math.floor(n)?n:Number(n.toFixed(2));return` · ${nice} ${nice===1?'tab':'tabs'}`}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// LOGIC: PACKS, COMPLETION, CONFLICTS
-// ─────────────────────────────────────────────────────────────────────────────
 function packFor(med){return packSteps.filter(s=>s.medication_id===med.id).sort((a,b)=>(a.sequence_order||0)-(b.sequence_order||0))}
-function packTotalDoses(med){const steps=packFor(med);return steps.reduce((sum,s)=>sum + (Number(s.duration_days||0) * (activeGroups(med).filter(g=>g!=='prn').length || 1)),0)}
-function packProgress(med){if(!med.is_pack)return null;const total=packTotalDoses(med);const count=medLogs(med.id).length;return {count,total,done:total>0&&count>=total}}
-function currentPackDose(med){const steps=packFor(med);if(!steps.length)return med.default_dose;let remaining=medLogs(med.id).length;const daily=Math.max(1,activeGroups(med).filter(g=>g!=='prn').length||1);for(const step of steps){const stepDoses=Number(step.duration_days||0)*daily;if(remaining<stepDoses)return toNum(step.dose);remaining-=stepDoses}return toNum(steps[steps.length-1]?.dose)||med.default_dose}
+function packTotalDoses(med){const steps=packFor(med);const daily=Math.max(1,scheduledGroups(med).length||Number(steps[0]?.doses_per_day)||1);return steps.reduce((sum,s)=>sum+(Number(s.duration_days||0)*(Number(s.doses_per_day)||daily)),0)}
+function packProgress(med){if(!med.is_pack)return null;const total=packTotalDoses(med);const count=medLogs(med.id).length;return{count,total,done:total>0&&count>=total}}
+function currentPackDose(med){const steps=packFor(med);if(!steps.length)return med.default_dose;let remaining=medLogs(med.id).length;const daily=Math.max(1,scheduledGroups(med).length||Number(steps[0]?.doses_per_day)||1);for(const step of steps){const stepDoses=Number(step.duration_days||0)*(Number(step.doses_per_day)||daily);if(remaining<stepDoses)return toNum(step.dose);remaining-=stepDoses}return toNum(steps[steps.length-1]?.dose)||med.default_dose}
 function currentDose(med){return med.is_pack?currentPackDose(med):med.default_dose}
-function completedGroupToday(med, group) {
-  if (group === 'prn' || med.is_pain) return false;
-
-  const start = todayStart();
-  const end = todayEnd();
-
-  return logs.some(l =>
-    l.medication_id === med.id &&
-    l.loggedTime >= start &&
-    l.loggedTime <= end &&
-    l.schedule_group === group   // 🔥 THIS IS THE FIX
-  );
-}function sectionStats(group){const list=activeMeds().filter(m=>!m.is_pain&&activeGroups(m).includes(group));const total=list.length;const taken=list.filter(m=>completedGroupToday(m,group)).length;return{taken,total,complete:total>0&&taken>=total}}
+function dayLogsForMed(med){const groups=scheduledGroups(med);const day=logs.filter(l=>l.medication_id===med.id&&l.loggedTime>=todayStart()&&l.loggedTime<=todayEnd()).sort((a,b)=>a.loggedTime-b.loggedTime);const used=new Set();return day.map(l=>{let g=l.schedule_group||l.group_context||l.resolved_group||null;if(g==='manual')g=null;if(g&&activeGroups(med).includes(g)){used.add(g);return{...l,resolved_group:g}}if(groups.length){const next=groups.find(x=>!used.has(x));if(next){used.add(next);return{...l,resolved_group:next}}}return{...l,resolved_group:g||'prn'}})}
+function completedGroupToday(med,group){if(group==='prn'||med.is_pain)return false;return dayLogsForMed(med).some(l=>l.resolved_group===group)}
+function firstPendingGroup(med){return scheduledGroups(med).find(g=>!completedGroupToday(med,g))||null}
+function sequenceBlock(med,group){if(!group||group==='prn'||med.is_pain)return null;const first=firstPendingGroup(med);if(first&&first!==group)return{label:`${SCHEDULE_GROUPS[first]} first`,detail:`Take ${SCHEDULE_GROUPS[first].toLowerCase()} dose first`};return null}
+function sectionStats(group){const list=activeMeds().filter(m=>!m.is_pain&&activeGroups(m).includes(group));const total=list.length;const taken=list.filter(m=>completedGroupToday(m,group)).length;return{taken,total,complete:total>0&&taken>=total}}
 function conflictRulesFor(id){return conflicts.filter(c=>c.med_a===id)}
-function conflictWarnings(medId){const out=[];for(const c of conflictRulesFor(medId)){const other=getMed(c.med_b);if(!other)continue;const last=lastLog(other.id);if(!last)continue;const clearTs=last.loggedTime + Number(c.window_hours||0)*3600000;if(clearTs>Date.now())out.push({other,clearTs,message:`Blocked by ${other.brand} for ${waitText(clearTs-Date.now())}`})}return out.sort((a,b)=>b.clearTs-a.clearTs)}
-function availability(med,group){if(med.archived)return{ok:false,label:'Archived',detail:'Archived medications cannot be logged',blocked:false};if(med.is_pain)return{ok:true,label:'Log',detail:'Pain level',blocked:false};const prog=packProgress(med);if(prog?.done)return{ok:false,label:'Complete',detail:'Pack complete',blocked:false};if(group&&group!=='prn'&&completedGroupToday(med,group))return{ok:false,label:'Logged',detail:`${SCHEDULE_GROUPS[group]} completed`,blocked:false};const last=lastLog(med.id),iv=Number(med.interval_hours||0)*3600000;if(last&&iv>0){const next=last.loggedTime+iv;if(Date.now()<next)return{ok:false,label:waitText(next-Date.now()),detail:'Interval wait',blocked:true}}const blocks=conflictWarnings(med.id);if(blocks.length)return{ok:false,label:waitText(blocks[0].clearTs-Date.now()),detail:blocks[0].message,blocked:true};return{ok:true,label:'Log',detail:last?`Last ${since(last.loggedTime)}`:'Not logged yet',blocked:false}}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// RENDERING
-// ─────────────────────────────────────────────────────────────────────────────
+function conflictWarnings(medId){const out=[];for(const c of conflictRulesFor(medId)){const other=getMed(c.med_b);if(!other)continue;const last=lastLog(other.id);if(!last)continue;const clearTs=last.loggedTime+Number(c.window_hours||0)*3600000;if(clearTs>Date.now())out.push({other,clearTs,message:`Blocked by ${other.brand} for ${waitText(clearTs-Date.now())}`})}return out.sort((a,b)=>b.clearTs-a.clearTs)}
+function availability(med,group){if(med.archived)return{ok:false,label:'Archived',detail:'Archived medications cannot be logged',blocked:false};if(med.is_pain)return{ok:true,label:'OK',detail:'Pain level',blocked:false};const prog=packProgress(med);if(prog?.done)return{ok:false,label:'Complete',detail:'Pack complete',blocked:false};if(group&&group!=='prn'&&completedGroupToday(med,group))return{ok:false,label:'Logged',detail:`${SCHEDULE_GROUPS[group]} completed`,blocked:false};const seq=sequenceBlock(med,group);if(seq)return{ok:false,label:seq.label,detail:seq.detail,blocked:false};const last=lastLog(med.id),iv=Number(med.interval_hours||0)*3600000;if(last&&iv>0){const next=last.loggedTime+iv;if(Date.now()<next)return{ok:false,label:waitText(next-Date.now()),detail:'Interval wait',blocked:true}}const blocks=conflictWarnings(med.id);if(blocks.length)return{ok:false,label:waitText(blocks[0].clearTs-Date.now()),detail:blocks[0].message,blocked:true};return{ok:true,label:'OK',detail:last?`Last ${since(last.loggedTime)}`:'OK to take now',blocked:false}}
 function render(){if(currentTab==='tracker')renderTracker();if(currentTab==='history')renderHistory();if(currentTab==='insights')renderInsights();if(currentTab==='meds')renderMedSettings()}
-function renderTopCards(){return `<div class="metric-grid" style="margin-top:0;margin-bottom:16px">${DASHBOARD_GROUPS.map(g=>{const s=sectionStats(g);return `<div class="metric"><div class="metric-val">${s.taken}/${s.total}</div><div class="metric-lbl">${SCHEDULE_GROUPS[g]}</div></div>`}).join('')}</div>`}
-function renderHero(){const today=logs.filter(l=>l.loggedTime>=todayStart()).length;return `<div class="hero"><div class="hero-top"><div><div class="hero-name">Medication Tracker</div><div class="muted">Active meds, scheduled sections, PRN logging, and settings-backed history.</div></div><button class="btn small blue" onclick="openMedEditor()">+ Med</button></div><div class="metric-grid"><div class="metric"><div class="metric-val">${today}</div><div class="metric-lbl">Today</div></div><div class="metric"><div class="metric-val">${activeMeds().length}</div><div class="metric-lbl">Active</div></div><div class="metric"><div class="metric-val">${meds.filter(m=>m.archived).length}</div><div class="metric-lbl">Archived</div></div><div class="metric"><div class="metric-val">${Math.round(conflicts.length/2)}</div><div class="metric-lbl">Conflict Pairs</div></div></div></div>`}
+function renderTopCards(){return`<div class="metric-grid tracker-summary">${DASHBOARD_GROUPS.map(g=>{const s=sectionStats(g);return`<div class="metric ${s.complete?'complete':''}"><div class="metric-val">${s.taken}/${s.total}</div><div class="metric-lbl">${SCHEDULE_GROUPS[g]}</div></div>`}).join('')}</div>`}
+function renderHero(showAdd=true){const today=logs.filter(l=>l.loggedTime>=todayStart()).length;return`<div class="hero"><div class="hero-top"><div><div class="hero-name">Medication Tracker</div><div class="muted">Scheduled, PRN, history, archive-safe medication tracking.</div></div>${showAdd?`<button class="btn small blue" onclick="openMedEditor()">+ Med</button>`:''}</div><div class="metric-grid"><div class="metric"><div class="metric-val">${today}</div><div class="metric-lbl">Today</div></div><div class="metric"><div class="metric-val">${activeMeds().length}</div><div class="metric-lbl">Active</div></div><div class="metric"><div class="metric-val">${meds.filter(m=>m.archived).length}</div><div class="metric-lbl">Archived</div></div><div class="metric"><div class="metric-val">${Math.round(conflicts.length/2)}</div><div class="metric-lbl">Conflict Pairs</div></div></div></div>`}
 function renderTracker(){const page=qs('page-tracker');const pain=activeMeds().find(m=>m.is_pain||String(m.brand).toLowerCase()==='pain level');const grouped={morning:[],midday:[],evening:[],night:[],prn:[]};for(const med of activeMeds()){if(med.id===pain?.id)continue;for(const g of activeGroups(med)){if(grouped[g])grouped[g].push(med)}}let html=renderTopCards();if(pain)html+=`<div class="section"><div class="card">${painRow(pain)}</div></div>`;for(const g of TRACKER_GROUP_ORDER){const list=grouped[g].sort(medSort);if(!list.length)continue;html+=renderTrackerSection(g,list)}if(!activeMeds().length)html+=`<div class="empty"><div class="empty-icon">💊</div><div class="empty-title">No active medications</div><div>Use Settings to add or unarchive medications.</div></div>`;page.innerHTML=html}
-function painRow(med){return `<div class="row" onclick="openLogSheet('${med.id}','pain')"><div class="med-icon red">📊</div><div class="med-text"><div class="med-name">Pain Level</div><div class="med-sub">Log current pain level</div></div><div class="med-right"><div class="pill ok">Log</div></div><div class="chev">›</div></div>`}
-function renderTrackerSection(group,list){const scheduled=group!=='prn';const stat=scheduled?sectionStats(group):null;const autoComplete=scheduled&&stat.complete;const collapsed=collapsedSections[group]!==undefined?collapsedSections[group]:autoComplete;const meta=scheduled?`${stat.taken}/${stat.total}`:`${list.length}`;return `<div class="section ${collapsed?'collapsed':''}" id="section-${group}"><div class="section-head" onclick="toggleSection('${group}')"><div class="section-title">${SCHEDULE_GROUPS[group]}</div><div class="section-meta">${meta} ${collapsed?'▸':'▾'}</div></div><div class="card">${list.map(m=>trackerRow(m,group)).join('')}</div></div>`}
-function toggleSection(g){collapsedSections[g]=!collapsedSections[g];localStorage.setItem('tomMedsCollapsed_v4',JSON.stringify(collapsedSections));renderTracker()}
-function trackerRow(med,group){const av=availability(med,group),dose=currentDose(med),prog=packProgress(med);const details=[med.note||'',prog?`Pack ${prog.count}/${prog.total}`:'',av.detail].filter(Boolean).join(' · ');const cls=av.ok?'ok':(av.blocked?'wait':'block');return `<div class="row" onclick="openLogSheet('${med.id}','${group}')"><div class="med-icon ${esc(med.color||'blue')}">${esc(med.emoji||'💊')}</div><div class="med-text"><div class="med-name">${esc(med.brand)}</div><div class="med-generic">${esc(med.generic||'')}</div>${details?`<div class="med-sub">${esc(details)}</div>`:''}</div><div class="med-right"><div class="pill ${cls}">${esc(av.label)}</div><div class="med-sub">${fmtDose(dose,med.dose_unit)}${pillCount(med,dose)}</div></div><div class="chev">›</div></div>`}
-function renderHistory(){const opts=['<option value="all">All medications</option>',...meds.map(m=>`<option value="${m.id}" ${historyFilter===m.id?'selected':''}>${esc(m.brand)}${m.archived?' (archived)':''}</option>`)].join('');const items=logs.filter(l=>historyFilter==='all'||l.medication_id===historyFilter).sort((a,b)=>b.loggedTime-a.loggedTime);qs('page-history').innerHTML=`${renderHero()}<div class="history-filter"><select class="select" onchange="historyFilter=this.value;renderHistory()">${opts}</select></div><div class="section"><div class="section-title">History</div><div class="card">${items.length?items.map(historyRow).join(''):`<div class="empty"><div class="empty-title">No history</div></div>`}</div></div>`}
-function historyRow(l){const med=getMed(l.medication_id);const name=med?.brand||l.displayBrand||'Unknown medication';return `<div class="row"><div class="med-icon ${esc(med?.color||'blue')}">${esc(med?.emoji||'💊')}</div><div class="med-text"><div class="med-name">${esc(name)}</div><div class="med-generic">${esc(med?.generic||'')}</div><div class="med-sub">${fmtDateTime(l.loggedTime)}${l.schedule_group?' · '+esc(SCHEDULE_GROUPS[l.schedule_group]||l.schedule_group):''}</div></div><div class="med-right"><div class="pill">${fmtDose(l.dose,l.dose_unit||med?.dose_unit||'')}</div></div></div>`}
+function painRow(med){return`<div class="row" onclick="openLogSheet('${med.id}','pain')"><div class="med-icon red">📊</div><div class="med-text"><div class="med-name">Pain Level</div><div class="med-sub">Log current pain level</div></div><div class="med-right"><div class="pill ok">OK</div></div><div class="chev">›</div></div>`}
+function renderTrackerSection(group,list){const scheduled=group!=='prn';const stat=scheduled?sectionStats(group):null;const autoComplete=scheduled&&stat.complete;const collapsed=collapsedSections[group]!==undefined?collapsedSections[group]:autoComplete;const meta=scheduled?`${stat.taken}/${stat.total}`:`${list.length}`;return`<div class="section ${collapsed?'collapsed':''}" id="section-${group}"><div class="section-head" onclick="toggleSection('${group}')"><div class="section-title">${SCHEDULE_GROUPS[group]}</div><div class="section-meta">${meta} ${collapsed?'▸':'▾'}</div></div><div class="card">${list.map(m=>trackerRow(m,group)).join('')}</div></div>`}
+function toggleSection(g){collapsedSections[g]=!collapsedSections[g];localStorage.setItem('tomMedsCollapsed_v5',JSON.stringify(collapsedSections));renderTracker()}
+function trackerRow(med,group){const av=availability(med,group),dose=currentDose(med),prog=packProgress(med);const details=[med.note||'',prog?`Pack ${prog.count}/${prog.total}`:'',av.detail].filter(Boolean).join(' · ');const cls=av.ok?'ok':(av.blocked?'wait':'block');return`<div class="row" onclick="openLogSheet('${med.id}','${group}')"><div class="med-icon ${esc(med.color||'blue')}">${esc(med.emoji||'💊')}</div><div class="med-text"><div class="med-name">${esc(med.brand)}</div><div class="med-generic">${esc(med.generic||'')}</div>${details?`<div class="med-sub">${esc(details)}</div>`:''}</div><div class="med-right"><div class="pill ${cls}">${esc(av.label)}</div><div class="med-sub">${fmtDose(dose,med.dose_unit)}${pillCount(med,dose)}</div></div><div class="chev">›</div></div>`}
+function renderHistory(){const opts=['<option value="all">All medications</option>',...meds.map(m=>`<option value="${m.id}" ${historyFilter===m.id?'selected':''}>${esc(m.brand)}${m.archived?' (archived)':''}</option>`)].join('');const items=logs.filter(l=>historyFilter==='all'||l.medication_id===historyFilter).sort((a,b)=>b.loggedTime-a.loggedTime);qs('page-history').innerHTML=`<div class="hero"><div class="hero-top"><div><div class="hero-name">History</div><div class="muted">Review and delete accidental log entries.</div></div></div></div><div class="history-filter"><select class="select" onchange="historyFilter=this.value;renderHistory()">${opts}</select></div><div class="section"><div class="section-title">History</div><div class="card">${items.length?items.map(historyRow).join(''):`<div class="empty"><div class="empty-title">No history</div></div>`}</div></div>`}
+function historyRow(l){const med=getMed(l.medication_id);const name=med?.brand||l.displayBrand||'Unknown medication';return`<div class="row"><div class="med-icon ${esc(med?.color||'blue')}">${esc(med?.emoji||'💊')}</div><div class="med-text"><div class="med-name">${esc(name)}</div><div class="med-generic">${esc(med?.generic||'')}</div><div class="med-sub">${fmtDateTime(l.loggedTime)}${l.schedule_group?' · '+esc(SCHEDULE_GROUPS[l.schedule_group]||l.schedule_group):''}</div></div><div class="med-right"><div class="pill">${fmtDose(l.dose,l.dose_unit||med?.dose_unit||'')}</div><button class="btn small red" style="margin-top:7px" onclick="event.stopPropagation();deleteHistoryEntry('${l.entry_id}')">Delete</button></div></div>`}
+async function deleteHistoryEntry(entryId){if(!entryId)return toast('Missing entry id');if(!confirm('Delete this log entry?'))return;try{await supa('DELETE',`doses?entry_id=eq.${entryId}`);toast('Log deleted');await loadAll()}catch(e){toast('Delete failed: '+e.message.slice(0,120))}}
 function renderMedSettings(){qs('page-meds').innerHTML=`<div class="hero"><div class="hero-top"><div><div class="hero-name">Medication Settings</div><div class="muted">Add, edit, archive/unarchive, packs, conflicts, and log past doses.</div></div><button class="btn small blue" onclick="openMedEditor()">+ Add</button></div></div><div class="section"><div class="section-title">All Medications</div><div class="card">${settingsMeds().map(settingsRow).join('')||`<div class="empty"><div class="empty-title">No medications</div></div>`}</div></div>`}
-function settingsRow(med){const sub=[med.generic,activeGroups(med).map(g=>SCHEDULE_GROUPS[g]||g).join(', '),med.is_pack?'Pack':'',med.archived?'Archived':'Active'].filter(Boolean).join(' · ');return `<div class="row" onclick="openMedEditor('${med.id}')"><div class="med-icon ${esc(med.color||'blue')}">${esc(med.emoji||'💊')}</div><div class="med-text"><div class="med-name">${esc(med.brand)}</div><div class="med-sub">${esc(sub)}</div></div><div class="med-right">${med.archived?'<div class="pill arch">Archived</div>':'<div class="pill ok">Active</div>'}</div><div class="chev">›</div></div>`}
-function renderInsights(){const now=Date.now(),day=86400000;const last7=logs.filter(l=>l.loggedTime>=now-7*day);const today=logs.filter(l=>l.loggedTime>=todayStart());const graph=historyGraphSvg(last7);qs('page-insights').innerHTML=`<div class="hero"><div class="hero-top"><div><div class="hero-name">Insights</div><div class="muted">Basic placeholder insights. We can rebuild this later.</div></div></div><div class="metric-grid"><div class="metric"><div class="metric-val">${today.length}</div><div class="metric-lbl">Today</div></div><div class="metric"><div class="metric-val">${last7.length}</div><div class="metric-lbl">7 Days</div></div><div class="metric"><div class="metric-val">${activeMeds().length}</div><div class="metric-lbl">Active</div></div><div class="metric"><div class="metric-val">${meds.filter(m=>m.archived).length}</div><div class="metric-lbl">Archived</div></div></div>${graph}</div>`}
-function historyGraphSvg(items){const days=Array.from({length:7},(_,i)=>{const d=new Date(Date.now()-(6-i)*86400000);d.setHours(0,0,0,0);return{ts:d.getTime(),label:d.toLocaleDateString(undefined,{weekday:'short'}),count:0}});for(const l of items){const start=new Date(l.loggedTime);start.setHours(0,0,0,0);const x=days.find(d=>d.ts===start.getTime());if(x)x.count++}const max=Math.max(1,...days.map(d=>d.count));const pts=days.map((d,i)=>`${20+i*43},${110-(d.count/max)*80}`).join(' ');return `<svg class="graph" viewBox="0 0 300 130"><polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="3"/><g>${days.map((d,i)=>`<text x="${20+i*43}" y="124" font-size="9" text-anchor="middle" fill="currentColor">${d.label}</text>`).join('')}</g></svg>`}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// LOGGING SHEETS
-// ─────────────────────────────────────────────────────────────────────────────
-function openLogSheet(id,group){const med=getMed(id);if(!med)return;const av=availability(med,group);if(med.archived){toast('Archived medications cannot be logged');return}const dose=currentDose(med);const opts=med.is_pain?Array.from({length:21},(_,i)=>i/2):doseOptions(med);let body='';if(med.note)body+=`<div class="info"><div class="info-label">Note</div><div class="info-val">${esc(med.note)}</div></div>`;if(av.blocked)body+=`<div class="warn-card">${esc(av.detail)}<br>Use override only if you intentionally want to bypass this block.</div>`;if(med.is_pain){body+=`<div class="field"><label>Pain level</label><select class="select" id="log-dose">${opts.map(o=>`<option value="${o}">${o.toFixed(1)}/10</option>`).join('')}</select></div>`}else{body+=`<div class="field"><label>Dose</label><div class="chips">${opts.map(o=>`<button class="chip ${Number(o)===Number(dose)?'sel':''}" onclick="selectDose(this,'${o}')">${fmtDose(o,med.dose_unit)}</button>`).join('')}${med.has_custom!==false?`<button class="chip" onclick="showCustomDose(this)">Custom</button>`:''}</div><input type="hidden" id="log-dose" value="${esc(dose)}"><div class="custom-dose-row" id="custom-dose-row"><input class="input" type="number" step="any" id="custom-dose-input" placeholder="Custom dose (${esc(med.dose_unit||'')})" oninput="qs('log-dose').value=this.value"></div><div class="muted" style="font-size:13px">Unit: ${esc(med.dose_unit||'none')}</div></div>`}body+=`<button class="btn green" onclick="saveDose('${med.id}','${group}',false)">${av.ok?'Log Dose':'Log Anyway'}</button>`;if(av.blocked)body+=`<button class="btn orange" onclick="saveDose('${med.id}','${group}',true)">Override Block and Log</button>`;body+=`<button class="btn gray" onclick="closeSheet()">Cancel</button>`;openSheet(med.brand,med.generic||'',body)}
+function settingsRow(med){const sub=[med.generic,activeGroups(med).map(g=>SCHEDULE_GROUPS[g]||g).join(', '),med.is_pack?'Pack':'',med.archived?'Archived':'Active'].filter(Boolean).join(' · ');return`<div class="row" onclick="openMedEditor('${med.id}')"><div class="med-icon ${esc(med.color||'blue')}">${esc(med.emoji||'💊')}</div><div class="med-text"><div class="med-name">${esc(med.brand)}</div><div class="med-sub">${esc(sub)}</div></div><div class="med-right">${med.archived?'<div class="pill arch">Archived</div>':'<div class="pill ok">Active</div>'}</div><div class="chev">›</div></div>`}
+function renderInsights(){const now=Date.now(),day=86400000;const last7=logs.filter(l=>l.loggedTime>=now-7*day);const today=logs.filter(l=>l.loggedTime>=todayStart());qs('page-insights').innerHTML=`<div class="hero"><div class="hero-top"><div><div class="hero-name">Insights</div><div class="muted">Basic placeholder insights. We can rebuild this later.</div></div></div><div class="metric-grid"><div class="metric"><div class="metric-val">${today.length}</div><div class="metric-lbl">Today</div></div><div class="metric"><div class="metric-val">${last7.length}</div><div class="metric-lbl">7 Days</div></div><div class="metric"><div class="metric-val">${activeMeds().length}</div><div class="metric-lbl">Active</div></div><div class="metric"><div class="metric-val">${meds.filter(m=>m.archived).length}</div><div class="metric-lbl">Archived</div></div></div>${historyGraphSvg(last7)}</div>`}
+function historyGraphSvg(items){const days=Array.from({length:7},(_,i)=>{const d=new Date(Date.now()-(6-i)*86400000);d.setHours(0,0,0,0);return{ts:d.getTime(),label:d.toLocaleDateString(undefined,{weekday:'short'}),count:0}});for(const l of items){const start=new Date(l.loggedTime);start.setHours(0,0,0,0);const x=days.find(d=>d.ts===start.getTime());if(x)x.count++}const max=Math.max(1,...days.map(d=>d.count));const pts=days.map((d,i)=>`${20+i*43},${110-(d.count/max)*80}`).join(' ');return`<svg class="graph" viewBox="0 0 300 130"><polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="3"/><g>${days.map((d,i)=>`<text x="${20+i*43}" y="124" font-size="9" text-anchor="middle" fill="currentColor">${d.label}</text>`).join('')}</g></svg>`}
+function openLogSheet(id,group){const med=getMed(id);if(!med)return;const av=availability(med,group);if(med.archived){toast('Archived medications cannot be logged');return}const dose=currentDose(med);const opts=med.is_pain?Array.from({length:21},(_,i)=>i/2):doseOptions(med);let body='';if(med.note)body+=`<div class="info"><div class="info-label">Note</div><div class="info-val">${esc(med.note)}</div></div>`;if(!av.ok)body+=`<div class="warn-card">${esc(av.detail)}${av.blocked?'<br>Use override only if you intentionally want to bypass this block.':''}</div>`;if(med.is_pain){body+=`<div class="field"><label>Pain level</label><select class="select" id="log-dose">${opts.map(o=>`<option value="${o}">${o.toFixed(1)}/10</option>`).join('')}</select></div>`}else{body+=`<div class="field"><label>Dose</label><div class="chips">${opts.map(o=>`<button class="chip ${Number(o)===Number(dose)?'sel':''}" onclick="selectDose(this,'${o}')">${fmtDose(o,med.dose_unit)}</button>`).join('')}${med.has_custom!==false?`<button class="chip" onclick="showCustomDose(this)">Custom</button>`:''}</div><input type="hidden" id="log-dose" value="${esc(dose)}"><div class="custom-dose-row" id="custom-dose-row"><input class="input" type="number" step="any" id="custom-dose-input" placeholder="Custom dose (${esc(med.dose_unit||'')})" oninput="qs('log-dose').value=this.value"></div><div class="muted" style="font-size:13px">Unit: ${esc(med.dose_unit||'none')}</div></div>`}body+=`<button class="btn green" onclick="saveDose('${med.id}','${group}',false)">Log Dose</button>`;if(av.blocked)body+=`<button class="btn orange" onclick="saveDose('${med.id}','${group}',true)">Override Block and Log</button>`;body+=`<button class="btn gray" onclick="closeSheet()">Cancel</button>`;openSheet(med.brand,med.generic||'',body)}
 function selectDose(btn,val){document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));btn.classList.add('sel');qs('log-dose').value=val;qs('custom-dose-row')?.classList.remove('show')}
 function showCustomDose(btn){document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));btn.classList.add('sel');qs('custom-dose-row').classList.add('show');qs('custom-dose-input').focus();qs('log-dose').value=qs('custom-dose-input').value||''}
-async function saveDose(id,group,override){const med=getMed(id);if(!med||med.archived)return toast('Cannot log archived medication');const av=availability(med,group);if(!override&&!av.ok&&av.blocked)return toast('Blocked. Use override if appropriate.');const dose=Number(qs('log-dose')?.value);if(!Number.isFinite(dose)||dose<0)return toast('Enter a valid dose');try{await supa('POST','doses',{medication_id:id,medication_name:med.brand,dose,time:Date.now(),dose_unit:med.dose_unit||'',schedule_group:group,override:!!override});toast('Logged');closeSheet();await loadAll()}catch(e){toast('Log failed: '+e.message.slice(0,110))}}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// MEDICATION EDITOR
-// ─────────────────────────────────────────────────────────────────────────────
-function openMedEditor(id){const med=id?getMed(id):null;const isNew=!med;const m=med||{brand:'',generic:'',emoji:'💊',color:'blue',dose_unit:'mg',default_dose:null,dose_options:[],interval_hours:0,tablet_mg:null,note:'',schedule_groups:['prn'],archived:false,is_pack:false,is_pain:false};let body=`<div class="form-grid"><div class="field"><label>Brand / Name</label><input class="input" id="med-brand" value="${esc(m.brand||'')}"></div><div class="field"><label>Generic</label><input class="input" id="med-generic" value="${esc(m.generic||'')}"></div><div class="field"><label>Default dose</label><input class="input" type="number" step="any" id="med-default-dose" value="${esc(m.default_dose??'')}"></div><div class="field"><label>Dose unit</label><input class="input" id="med-dose-unit" value="${esc(m.dose_unit||'')}"></div><div class="field"><label>Dose options (comma separated)</label><input class="input" id="med-dose-options" value="${esc(doseOptions(m).join(','))}"></div><div class="field"><label>Interval hours</label><input class="input" type="number" step="any" id="med-interval" value="${esc(m.interval_hours||0)}"></div><div class="field"><label>Tablet mg</label><input class="input" type="number" step="any" id="med-tablet" value="${esc(m.tablet_mg??'')}"></div><div class="field"><label>Color</label><select class="select" id="med-color">${['blue','green','orange','yellow','purple','teal','red'].map(c=>`<option value="${c}" ${m.color===c?'selected':''}>${c}</option>`).join('')}</select></div></div><div class="field"><label>Emoji</label><input class="input" id="med-emoji" value="${esc(m.emoji||'💊')}"></div><div class="field"><label>Schedule groups</label><div class="checks">${Object.keys(SCHEDULE_GROUPS).map(g=>`<label class="check"><input type="checkbox" class="sched-check" value="${g}" ${activeGroups(m).includes(g)?'checked':''}>${SCHEDULE_GROUPS[g]}</label>`).join('')}</div></div><div class="field"><label>Note</label><textarea class="textarea" id="med-note">${esc(m.note||'')}</textarea></div><div class="checks"><label class="check"><input type="checkbox" id="med-is-pack" ${m.is_pack?'checked':''}>Pack / taper</label><label class="check"><input type="checkbox" id="med-is-pain" ${m.is_pain?'checked':''}>Pain level</label></div><button class="btn green" onclick="saveMed('${id||''}')">${isNew?'Create Medication':'Save Medication'}</button>`;if(!isNew){body+=`<div class="btn-row"><button class="btn blue" onclick="openPastDose('${id}')">Log Past Dose</button><button class="btn gray" onclick="openPackEditor('${id}')">Pack Steps</button></div><button class="btn gray" onclick="openConflictEditor('${id}')">Conflict Rules</button>${m.archived?`<button class="btn blue" onclick="setArchived('${id}',false)">Unarchive</button>`:`<button class="btn red" onclick="setArchived('${id}',true)">Archive</button>`}<div class="danger-note">Archive keeps history, leaves it visible in Settings, and removes it from Tracker/logging.</div>`}body+=`<button class="btn gray" onclick="closeSheet()">Close</button>`;openSheet(isNew?'Add Medication':'Medication Settings',m.brand||'',body)}
-async function saveMed(id){const groups=[...document.querySelectorAll('.sched-check:checked')].map(x=>x.value);const doseOptions=(qs('med-dose-options').value||'').split(',').map(x=>Number(x.trim())).filter(Number.isFinite);const payload={brand:qs('med-brand').value.trim(),generic:qs('med-generic').value.trim(),emoji:qs('med-emoji').value.trim()||'💊',color:qs('med-color').value,dose_unit:qs('med-dose-unit').value.trim(),default_dose:toNum(qs('med-default-dose').value),dose_options:doseOptions,interval_hours:toNum(qs('med-interval').value)||0,tablet_mg:toNum(qs('med-tablet').value),note:qs('med-note').value.trim(),schedule_groups:groups.length?groups:['prn'],is_pack:qs('med-is-pack').checked,is_pain:qs('med-is-pain').checked};if(!payload.brand)return toast('Name is required');try{if(id)await supa('PATCH',`medications?id=eq.${id}`,payload);else await supa('POST','medications',payload);toast(id?'Medication saved':'Medication created');closeSheet();await loadAll()}catch(e){toast('Save failed: '+e.message.slice(0,110))}}
-async function setArchived(id,val){try{await supa('PATCH',`medications?id=eq.${id}`,{archived:val});toast(val?'Archived':'Unarchived');closeSheet();await loadAll()}catch(e){toast('Archive failed: '+e.message.slice(0,110))}}
-function openPastDose(id){const med=getMed(id);if(!med)return;if(med.archived)return toast('Archived meds cannot be logged');const nowLocal=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);openSheet('Log Past Dose',med.brand,`<div class="field"><label>Date and time</label><input class="input" type="datetime-local" id="past-time" value="${nowLocal}"></div><div class="field"><label>Dose (${esc(med.dose_unit||'')})</label><input class="input" type="number" step="any" id="past-dose" value="${esc(currentDose(med)||'')}"></div><button class="btn green" onclick="savePastDose('${id}')">Log Past Dose</button><button class="btn gray" onclick="openMedEditor('${id}')">Back</button>`) }
-async function savePastDose(id){const med=getMed(id),dose=Number(qs('past-dose').value),timeVal=qs('past-time').value;if(!med||med.archived)return toast('Cannot log archived medication');if(!timeVal||!Number.isFinite(dose))return toast('Enter time and dose');try{await supa('POST','doses',{medication_id:id,medication_name:med.brand,dose,time:new Date(timeVal).getTime(),dose_unit:med.dose_unit||'',schedule_group:'manual'});toast('Past dose logged');closeSheet();await loadAll()}catch(e){toast('Past log failed: '+e.message.slice(0,110))}}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PACK + CONFLICT EDITORS
-// ─────────────────────────────────────────────────────────────────────────────
-function openPackEditor(id){const med=getMed(id),steps=packFor(med);let body=`<div class="mini-card"><div class="muted">Each row is a taper step. Duration is in days. Current dose is calculated from logged doses and schedule frequency.</div></div><div id="pack-list">${steps.map((s,i)=>packStepRow(s,i)).join('')}</div><button class="btn blue" onclick="addPackStepRow()">+ Add Step</button><button class="btn green" onclick="savePackSteps('${id}')">Save Pack Steps</button><button class="btn gray" onclick="openMedEditor('${id}')">Back</button>`;openSheet('Pack Steps',med.brand,body)}
-function packStepRow(s={},i){return `<div class="mini-card pack-step"><div class="form-grid"><div class="field"><label>Order</label><input class="input pack-order" type="number" value="${esc(s.sequence_order??i+1)}"></div><div class="field"><label>Dose</label><input class="input pack-dose" type="number" step="any" value="${esc(s.dose??'')}"></div><div class="field"><label>Duration days</label><input class="input pack-days" type="number" step="1" value="${esc(s.duration_days??'')}"></div><div class="field"><label>&nbsp;</label><button class="btn small red" onclick="this.closest('.pack-step').remove()">Remove</button></div></div></div>`}
-function addPackStepRow(){qs('pack-list').insertAdjacentHTML('beforeend',packStepRow({},document.querySelectorAll('.pack-step').length))}
-async function savePackSteps(id){const rows=[...document.querySelectorAll('.pack-step')].map(r=>({medication_id:id,sequence_order:Number(r.querySelector('.pack-order').value),dose:Number(r.querySelector('.pack-dose').value),duration_days:Number(r.querySelector('.pack-days').value)})).filter(x=>Number.isFinite(x.sequence_order)&&Number.isFinite(x.dose)&&Number.isFinite(x.duration_days));try{await supa('DELETE',`medication_pack_steps?medication_id=eq.${id}`);for(const row of rows)await supa('POST','medication_pack_steps',row);await supa('PATCH',`medications?id=eq.${id}`,{is_pack:rows.length>0});toast('Pack saved');closeSheet();await loadAll()}catch(e){toast('Pack save failed: '+e.message.slice(0,110))}}
-function openConflictEditor(id){const med=getMed(id);const own=conflictRulesFor(id);let body=`<div class="mini-card"><div class="muted">Rules are stored both ways automatically by Supabase. If this medication conflicts with another, the other medication will also conflict with this one.</div></div><div class="field"><label>Other medication</label><select class="select" id="conf-other">${meds.filter(m=>m.id!==id).map(m=>`<option value="${m.id}">${esc(m.brand)}</option>`).join('')}</select></div><div class="field"><label>Window hours</label><input class="input" id="conf-hours" type="number" step="any" value="2"></div><button class="btn blue" onclick="addConflictRule('${id}')">+ Add Conflict</button><div class="section"><div class="section-title">Existing Rules</div><div class="card">${own.length?own.map(c=>conflictRow(c,id)).join(''):`<div class="empty"><div class="empty-title">No rules</div></div>`}</div></div><button class="btn gray" onclick="openMedEditor('${id}')">Back</button>`;openSheet('Conflict Rules',med.brand,body)}
-function conflictRow(c,id){const other=getMed(c.med_b);return `<div class="row"><div class="med-text"><div class="med-name">${esc(other?.brand||'Unknown')}</div><div class="med-sub">${Number(c.window_hours)} hour window</div></div><button class="btn small red" onclick="removeConflictRule('${id}','${c.med_b}')">Remove</button></div>`}
-async function addConflictRule(id){const other=qs('conf-other').value,hours=Number(qs('conf-hours').value);if(!other||!Number.isFinite(hours)||hours<=0)return toast('Choose med and hours');try{await supa('POST','medication_conflicts',{med_a:id,med_b:other,window_hours:hours});toast('Conflict added');await loadAll();openConflictEditor(id)}catch(e){toast('Conflict add failed: '+e.message.slice(0,110))}}
-async function removeConflictRule(a,b){try{await supa('DELETE',`medication_conflicts?or=(and(med_a.eq.${a},med_b.eq.${b}),and(med_a.eq.${b},med_b.eq.${a}))`);toast('Conflict removed');await loadAll();openConflictEditor(a)}catch(e){toast('Remove failed: '+e.message.slice(0,110))}}
-
-applyTheme(currentTheme);loadAll();setInterval(()=>{if(currentTab==='tracker')renderTracker()},60000);
-</script>
-</body>
-</html>
+async function saveDose(id,group,override){const med=getMed(id);if(!med||med.archived)return toast('Cannot log archived medication');const av=availability(med,group);if(!override&&!av.ok&&av.blocked)return toast('Blocked. Use override if appropriate.');if(!override&&!av.ok&&!av.blocked)return toast(av.detail||'Not ready yet');const dose=Number(qs('log-dose')?.value);if(!Number.isFinite(dose)||dose<0)return toast('Enter a valid dose');try{await supa('POST','doses',{medication_id:id,medication_name:med.brand,dose,time:Date.now(),dose_unit:med.dose_unit||'',schedule_group:group,group_context:group,override:!!override});toast('Logged');closeSheet();await loadAll()}catch(e){toast('Log failed: '+e.message.slice(0,130))}}
+function openMedEditor(id){const med=id?getMed(id):null;const isNew=!med;const m=med||{brand:'',generic:'',emoji:'💊',color:'blue',dose_unit:'mg',default_dose:null,dose_options:[],interval_hours:0,tablet_mg:null,note:'',schedule_groups:['prn'],archived:false,is_pack:false,is_pain:false};let body=`<div class="form-grid"><div class="field"><label>Brand / Name</label><input class="input" id="med-brand" value="${esc(m.brand||'')}"></div><div class="field"><label>Generic</label><input class="input" id="med-generic" value="${esc(m.generic||'')}"></div><div class="field"><label>Default dose</label><input class="input" type="number" step="any" id="med-default-dose" value="${esc(m.default_dose??'')}"></div><div class="field"><label>Dose unit</label><input class="input" id="med-dose-unit" value="${esc(m.dose_unit||'')}"></div><div class="field"><label>Dose options</label><input class="input" id="med-dose-options" value="${esc(doseOptions(m).join(','))}"></div><div class="field"><label>Interval hours</label><input class="input" type="number" step="any" id="med-interval" value="${esc(m.interval_hours||0)}"></div><div class="field"><label>Tablet mg</label><input class="input" type="number" step="any" id="med-tablet" value="${esc(m.tablet_mg??'')}"></div><div class="field"><label>Color</label><select class="select" id="med-color">${['blue','green','orange','yellow','purple','teal','red'].map(c=>`<option value="${c}" ${m.color===c?'selected':''}>${c}</option>`).join('')}</select></div></div><div class="field"><label>Emoji</label><input class="input" id="med-emoji" value="${esc(m.emoji||'💊')}"></div><div class="field"><label>Schedule groups</label><div class="checks">${Object.keys(SCHEDULE_GROUPS).map(g=>`<label class="check"><input type="checkbox" class="sched-check" value="${g}" ${activeGroups(m).includes(g)?'checked':''}>${SCHEDULE_GROUPS[g]}</label>`).join('')}</div></div><div class="field"><label>Note</label><textarea class="textarea" id="med-note">${esc(m.note||'')}</textarea></div><div class="checks"><label class="check"><input type="checkbox" id="med-is-pack" ${m.is_pack?'checked':''}>Pack / taper</label><label class="check"><input type="checkbox" id="med-is-pain" ${m.is_pain?'checked':''}>Pain level</label></div><button class="btn green" onclick="saveMed('${id||''}')">${isNew?'Create Medication':'Save Medication'}</button>`;if(!isNew){body+=`<div class="btn-row"><button class="btn blue" onclick="openPastDose('${id}')">Log Past Dose</button><button class="btn gray" onclick="openPackEditor('${id}')">Pack Steps</button></div><button class="btn gray" onclick="openConflictEditor('${id}')">Conflict Rules</button>${m.archived?`<button class="btn blue" onclick="setArchived('${id}',false)">Unarchive</button>`:`<button class="btn red" onclick="setArchived('${id}',true)">Archive</button>`}<div class="danger-note">Archive keeps history, leaves it visible in Settings, and removes it from Tracker/logging.</div>`}body+=`<button class="btn gray" onclick="closeSheet()">Close</button>`;openSheet(isNew?'Add Medication':'Medication Settings',m.brand||'',body)}
+async function saveMed(id){const groups=[...document.querySelectorAll('.sched-check:checked')].map(x=>x.value);const doseOptions=(qs('med-dose-options').value
