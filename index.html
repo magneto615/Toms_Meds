@@ -688,8 +688,19 @@ function packTotalDoses(med){const steps=packFor(med);return steps.reduce((sum,s
 function packProgress(med){if(!med.is_pack)return null;const total=packTotalDoses(med);const count=medLogs(med.id).length;return {count,total,done:total>0&&count>=total}}
 function currentPackDose(med){const steps=packFor(med);if(!steps.length)return med.default_dose;let remaining=medLogs(med.id).length;const daily=Math.max(1,activeGroups(med).filter(g=>g!=='prn').length||1);for(const step of steps){const stepDoses=Number(step.duration_days||0)*daily;if(remaining<stepDoses)return toNum(step.dose);remaining-=stepDoses}return toNum(steps[steps.length-1]?.dose)||med.default_dose}
 function currentDose(med){return med.is_pack?currentPackDose(med):med.default_dose}
-function completedGroupToday(med,group){if(group==='prn'||med.is_pain)return false;return logs.some(l=>l.medication_id===med.id&&l.loggedTime>=todayStart()&&l.loggedTime<=todayEnd()&&((l.schedule_group||group)===group))}
-function sectionStats(group){const list=activeMeds().filter(m=>!m.is_pain&&activeGroups(m).includes(group));const total=list.length;const taken=list.filter(m=>completedGroupToday(m,group)).length;return{taken,total,complete:total>0&&taken>=total}}
+function completedGroupToday(med, group) {
+  if (group === 'prn' || med.is_pain) return false;
+
+  const start = todayStart();
+  const end = todayEnd();
+
+  return logs.some(l =>
+    l.medication_id === med.id &&
+    l.loggedTime >= start &&
+    l.loggedTime <= end &&
+    l.schedule_group === group   // 🔥 THIS IS THE FIX
+  );
+}function sectionStats(group){const list=activeMeds().filter(m=>!m.is_pain&&activeGroups(m).includes(group));const total=list.length;const taken=list.filter(m=>completedGroupToday(m,group)).length;return{taken,total,complete:total>0&&taken>=total}}
 function conflictRulesFor(id){return conflicts.filter(c=>c.med_a===id)}
 function conflictWarnings(medId){const out=[];for(const c of conflictRulesFor(medId)){const other=getMed(c.med_b);if(!other)continue;const last=lastLog(other.id);if(!last)continue;const clearTs=last.loggedTime + Number(c.window_hours||0)*3600000;if(clearTs>Date.now())out.push({other,clearTs,message:`Blocked by ${other.brand} for ${waitText(clearTs-Date.now())}`})}return out.sort((a,b)=>b.clearTs-a.clearTs)}
 function availability(med,group){if(med.archived)return{ok:false,label:'Archived',detail:'Archived medications cannot be logged',blocked:false};if(med.is_pain)return{ok:true,label:'Log',detail:'Pain level',blocked:false};const prog=packProgress(med);if(prog?.done)return{ok:false,label:'Complete',detail:'Pack complete',blocked:false};if(group&&group!=='prn'&&completedGroupToday(med,group))return{ok:false,label:'Logged',detail:`${SCHEDULE_GROUPS[group]} completed`,blocked:false};const last=lastLog(med.id),iv=Number(med.interval_hours||0)*3600000;if(last&&iv>0){const next=last.loggedTime+iv;if(Date.now()<next)return{ok:false,label:waitText(next-Date.now()),detail:'Interval wait',blocked:true}}const blocks=conflictWarnings(med.id);if(blocks.length)return{ok:false,label:waitText(blocks[0].clearTs-Date.now()),detail:blocks[0].message,blocked:true};return{ok:true,label:'Log',detail:last?`Last ${since(last.loggedTime)}`:'Not logged yet',blocked:false}}
