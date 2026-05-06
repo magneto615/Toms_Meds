@@ -106,9 +106,469 @@ function renderMedSettings(){qs('page-meds').innerHTML=`<div class="hero"><div c
 function settingsRow(med){const sub=[med.generic,activeGroups(med).map(g=>SCHEDULE_GROUPS[g]||g).join(', '),med.is_pack?'Pack':'',med.archived?'Archived':'Active'].filter(Boolean).join(' · ');return`<div class="row" onclick="openMedEditor('${med.id}')"><div class="med-icon ${esc(med.color||'blue')}">${esc(med.emoji||'💊')}</div><div class="med-text"><div class="med-name">${esc(med.brand)}</div><div class="med-sub">${esc(sub)}</div></div><div class="med-right">${med.archived?'<div class="pill arch">Archived</div>':'<div class="pill ok">Active</div>'}</div><div class="chev">›</div></div>`}
 function renderInsights(){const now=Date.now(),day=86400000;const last7=logs.filter(l=>l.loggedTime>=now-7*day);const today=logs.filter(l=>l.loggedTime>=todayStart());qs('page-insights').innerHTML=`<div class="hero"><div class="hero-top"><div><div class="hero-name">Insights</div><div class="muted">Basic placeholder insights. We can rebuild this later.</div></div></div><div class="metric-grid"><div class="metric"><div class="metric-val">${today.length}</div><div class="metric-lbl">Today</div></div><div class="metric"><div class="metric-val">${last7.length}</div><div class="metric-lbl">7 Days</div></div><div class="metric"><div class="metric-val">${activeMeds().length}</div><div class="metric-lbl">Active</div></div><div class="metric"><div class="metric-val">${meds.filter(m=>m.archived).length}</div><div class="metric-lbl">Archived</div></div></div>${historyGraphSvg(last7)}</div>`}
 function historyGraphSvg(items){const days=Array.from({length:7},(_,i)=>{const d=new Date(Date.now()-(6-i)*86400000);d.setHours(0,0,0,0);return{ts:d.getTime(),label:d.toLocaleDateString(undefined,{weekday:'short'}),count:0}});for(const l of items){const start=new Date(l.loggedTime);start.setHours(0,0,0,0);const x=days.find(d=>d.ts===start.getTime());if(x)x.count++}const max=Math.max(1,...days.map(d=>d.count));const pts=days.map((d,i)=>`${20+i*43},${110-(d.count/max)*80}`).join(' ');return`<svg class="graph" viewBox="0 0 300 130"><polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="3"/><g>${days.map((d,i)=>`<text x="${20+i*43}" y="124" font-size="9" text-anchor="middle" fill="currentColor">${d.label}</text>`).join('')}</g></svg>`}
-function openLogSheet(id,group){const med=getMed(id);if(!med)return;const av=availability(med,group);if(med.archived){toast('Archived medications cannot be logged');return}const dose=currentDose(med);const opts=med.is_pain?Array.from({length:21},(_,i)=>i/2):doseOptions(med);let body='';if(med.note)body+=`<div class="info"><div class="info-label">Note</div><div class="info-val">${esc(med.note)}</div></div>`;if(!av.ok)body+=`<div class="warn-card">${esc(av.detail)}${av.blocked?'<br>Use override only if you intentionally want to bypass this block.':''}</div>`;if(med.is_pain){body+=`<div class="field"><label>Pain level</label><select class="select" id="log-dose">${opts.map(o=>`<option value="${o}">${o.toFixed(1)}/10</option>`).join('')}</select></div>`}else{body+=`<div class="field"><label>Dose</label><div class="chips">${opts.map(o=>`<button class="chip ${Number(o)===Number(dose)?'sel':''}" onclick="selectDose(this,'${o}')">${fmtDose(o,med.dose_unit)}</button>`).join('')}${med.has_custom!==false?`<button class="chip" onclick="showCustomDose(this)">Custom</button>`:''}</div><input type="hidden" id="log-dose" value="${esc(dose)}"><div class="custom-dose-row" id="custom-dose-row"><input class="input" type="number" step="any" id="custom-dose-input" placeholder="Custom dose (${esc(med.dose_unit||'')})" oninput="qs('log-dose').value=this.value"></div><div class="muted" style="font-size:13px">Unit: ${esc(med.dose_unit||'none')}</div></div>`}body+=`<button class="btn green" onclick="saveDose('${med.id}','${group}',false)">Log Dose</button>`;if(av.blocked)body+=`<button class="btn orange" onclick="saveDose('${med.id}','${group}',true)">Override Block and Log</button>`;body+=`<button class="btn gray" onclick="closeSheet()">Cancel</button>`;openSheet(med.brand,med.generic||'',body)}
-function selectDose(btn,val){document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));btn.classList.add('sel');qs('log-dose').value=val;qs('custom-dose-row')?.classList.remove('show')}
-function showCustomDose(btn){document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));btn.classList.add('sel');qs('custom-dose-row').classList.add('show');qs('custom-dose-input').focus();qs('log-dose').value=qs('custom-dose-input').value||''}
-async function saveDose(id,group,override){const med=getMed(id);if(!med||med.archived)return toast('Cannot log archived medication');const av=availability(med,group);if(!override&&!av.ok&&av.blocked)return toast('Blocked. Use override if appropriate.');if(!override&&!av.ok&&!av.blocked)return toast(av.detail||'Not ready yet');const dose=Number(qs('log-dose')?.value);if(!Number.isFinite(dose)||dose<0)return toast('Enter a valid dose');try{await supa('POST','doses',{medication_id:id,medication_name:med.brand,dose,time:Date.now(),dose_unit:med.dose_unit||'',schedule_group:group,group_context:group,override:!!override});toast('Logged');closeSheet();await loadAll()}catch(e){toast('Log failed: '+e.message.slice(0,130))}}
-function openMedEditor(id){const med=id?getMed(id):null;const isNew=!med;const m=med||{brand:'',generic:'',emoji:'💊',color:'blue',dose_unit:'mg',default_dose:null,dose_options:[],interval_hours:0,tablet_mg:null,note:'',schedule_groups:['prn'],archived:false,is_pack:false,is_pain:false};let body=`<div class="form-grid"><div class="field"><label>Brand / Name</label><input class="input" id="med-brand" value="${esc(m.brand||'')}"></div><div class="field"><label>Generic</label><input class="input" id="med-generic" value="${esc(m.generic||'')}"></div><div class="field"><label>Default dose</label><input class="input" type="number" step="any" id="med-default-dose" value="${esc(m.default_dose??'')}"></div><div class="field"><label>Dose unit</label><input class="input" id="med-dose-unit" value="${esc(m.dose_unit||'')}"></div><div class="field"><label>Dose options</label><input class="input" id="med-dose-options" value="${esc(doseOptions(m).join(','))}"></div><div class="field"><label>Interval hours</label><input class="input" type="number" step="any" id="med-interval" value="${esc(m.interval_hours||0)}"></div><div class="field"><label>Tablet mg</label><input class="input" type="number" step="any" id="med-tablet" value="${esc(m.tablet_mg??'')}"></div><div class="field"><label>Color</label><select class="select" id="med-color">${['blue','green','orange','yellow','purple','teal','red'].map(c=>`<option value="${c}" ${m.color===c?'selected':''}>${c}</option>`).join('')}</select></div></div><div class="field"><label>Emoji</label><input class="input" id="med-emoji" value="${esc(m.emoji||'💊')}"></div><div class="field"><label>Schedule groups</label><div class="checks">${Object.keys(SCHEDULE_GROUPS).map(g=>`<label class="check"><input type="checkbox" class="sched-check" value="${g}" ${activeGroups(m).includes(g)?'checked':''}>${SCHEDULE_GROUPS[g]}</label>`).join('')}</div></div><div class="field"><label>Note</label><textarea class="textarea" id="med-note">${esc(m.note||'')}</textarea></div><div class="checks"><label class="check"><input type="checkbox" id="med-is-pack" ${m.is_pack?'checked':''}>Pack / taper</label><label class="check"><input type="checkbox" id="med-is-pain" ${m.is_pain?'checked':''}>Pain level</label></div><button class="btn green" onclick="saveMed('${id||''}')">${isNew?'Create Medication':'Save Medication'}</button>`;if(!isNew){body+=`<div class="btn-row"><button class="btn blue" onclick="openPastDose('${id}')">Log Past Dose</button><button class="btn gray" onclick="openPackEditor('${id}')">Pack Steps</button></div><button class="btn gray" onclick="openConflictEditor('${id}')">Conflict Rules</button>${m.archived?`<button class="btn blue" onclick="setArchived('${id}',false)">Unarchive</button>`:`<button class="btn red" onclick="setArchived('${id}',true)">Archive</button>`}<div class="danger-note">Archive keeps history, leaves it visible in Settings, and removes it from Tracker/logging.</div>`}body+=`<button class="btn gray" onclick="closeSheet()">Close</button>`;openSheet(isNew?'Add Medication':'Medication Settings',m.brand||'',body)}
-async function saveMed(id){const groups=[...document.querySelectorAll('.sched-check:checked')].map(x=>x.value);const doseOptions=(qs('med-dose-options').value
+.icon-btn{
+border:none;
+background:var(--fill2);
+color:var(--lbl);
+border-radius:999px;
+padding:10px 12px;
+font-size:14px;
+font-weight:750;
+cursor:pointer}
+.sync-dot{
+display:inline-block;
+width:8px;
+height:8px;
+border-radius:50%;
+background:var(--lbl3);
+margin-right:6px}
+.sync-dot.ok{
+background:var(--green)}
+.sync-dot.err{
+background:var(--red)}
+.sync-dot.busy{
+background:var(--orange)}
+
+.wrap{
+max-width:1100px;
+margin:0 auto;
+padding:16px 16px calc(env(safe-area-inset-bottom,20px) + 96px)}
+.page{
+display:none}
+.page.active{
+display:block}
+
+.hero{
+background:linear-gradient(180deg,var(--bg2),rgba(255,255,255,.72));
+border:1px solid var(--sep);
+border-radius:28px;
+padding:16px;
+margin-bottom:16px;
+box-shadow:var(--shadow)}
+body[data-theme=dark] .hero{
+background:linear-gradient(180deg,var(--bg2),rgba(26,36,54,.82))}
+
+.hero-top{
+display:flex;
+justify-content:space-between;
+gap:12px;
+align-items:flex-start}
+.hero-name{
+font-size:24px;
+font-weight:850;
+letter-spacing:-.04em}
+.muted{
+color:var(--lbl2)}
+
+.metric-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:10px;
+margin-top:14px}
+.metric{
+background:var(--bg3);
+border-radius:18px;
+padding:12px;
+text-align:center}
+.metric-val{
+font-size:20px;
+font-weight:800}
+.metric-lbl{
+font-size:11px;
+color:var(--lbl2);
+text-transform:uppercase;
+letter-spacing:.06em;
+margin-top:4px}
+
+.section{
+margin:0 0 16px}
+.section-head{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+padding:0 4px 8px;
+cursor:pointer}
+.section-title{
+font-size:13px;
+font-weight:850;
+text-transform:uppercase;
+letter-spacing:.06em;
+color:var(--lbl2)}
+.section-meta{
+font-size:12px;
+color:var(--lbl3);
+font-weight:750}
+.section.collapsed .card{
+display:none}
+.card{
+background:var(--bg2);
+border:1px solid var(--sep);
+border-radius:24px;
+overflow:hidden;
+box-shadow:var(--shadow)}
+
+.row{
+display:flex;
+align-items:center;
+gap:13px;
+padding:14px 16px;
+position:relative;
+cursor:pointer}
+.row:not(:last-child):after{
+content:'';
+position:absolute;
+left:16px;
+right:0;
+bottom:0;
+height:1px;
+background:var(--sep)}
+.row:active{
+background:var(--fill)}
+.row.disabled{
+opacity:.55;
+cursor:default}
+
+.med-icon{
+width:44px;
+height:44px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:21px;
+flex-shrink:0;
+background:var(--bg3)}
+.med-icon.orange{
+background:#ffe6c7}
+.med-icon.green{
+background:#d6f4e4}
+.med-icon.blue{
+background:#d9ecff}
+.med-icon.yellow{
+background:#ffefbf}
+.med-icon.purple{
+background:#e2dcff}
+.med-icon.teal{
+background:#d7f5f8}
+.med-icon.red{
+background:#ffd8d3}
+body[data-theme=dark] .med-icon.orange{
+background:#473528}
+body[data-theme=dark] .med-icon.green{
+background:#293e35}
+body[data-theme=dark] .med-icon.blue{
+background:#283948}
+body[data-theme=dark] .med-icon.yellow{
+background:#4f452d}
+body[data-theme=dark] .med-icon.purple{
+background:#39344c}
+body[data-theme=dark] .med-icon.teal{
+background:#294046}
+body[data-theme=dark] .med-icon.red{
+background:#4b3030}
+
+.med-text{
+flex:1;
+min-width:0}
+.med-name{
+font-size:17px;
+font-weight:800;
+letter-spacing:-.02em}
+.med-generic{
+font-size:13px;
+color:var(--lbl2);
+margin-top:1px}
+.med-sub{
+font-size:12px;
+color:var(--lbl2);
+margin-top:4px;
+line-height:1.35}
+.med-right{
+text-align:right;
+flex-shrink:0}
+.pill{
+font-size:12px;
+font-weight:850;
+padding:7px 10px;
+border-radius:999px;
+background:var(--fill2);
+display:inline-block}
+.pill.ok{
+background:rgba(92,202,146,.20);
+color:#27845a}
+.pill.wait{
+background:rgba(244,177,99,.25);
+color:#a75f18}
+.pill.block{
+background:rgba(239,125,116,.20);
+color:#d46d65}
+.pill.arch{
+background:rgba(138,141,242,.22);
+color:var(--purple)}
+.chev{
+color:var(--lbl3);
+font-size:18px;
+margin-left:6px}
+.empty{
+text-align:center;
+padding:44px 20px;
+color:var(--lbl2)}
+.empty-icon{
+font-size:42px;
+margin-bottom:10px}
+.empty-title{
+font-weight:800;
+color:var(--lbl);
+font-size:19px;
+margin-bottom:6px}
+
+.tabbar{
+position:fixed;
+left:50%;
+bottom:calc(env(safe-area-inset-bottom,18px) + 6px);
+transform:translateX(-50%);
+width:min(720px,calc(100vw - 32px));
+z-index:100;
+display:flex;
+background:rgba(255,255,255,.88);
+backdrop-filter:blur(28px);
+border:1px solid var(--sep);
+border-radius:24px;
+box-shadow:0 18px 38px rgba(0,0,0,.18);
+overflow:hidden}
+body[data-theme=dark] .tabbar{
+background:rgba(17,24,39,.82)}
+.tab{
+flex:1;
+border:none;
+background:transparent;
+color:var(--lbl3);
+padding:10px 3px 7px;
+cursor:pointer}
+.tab.active{
+color:var(--blue)}
+.tab-icon{
+font-size:22px;
+line-height:1}
+.tab-label{
+font-size:10px;
+font-weight:650;
+margin-top:2px}
+
+.overlay{
+display:none;
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.50);
+z-index:200}
+.overlay.show{
+display:block}
+.sheet{
+position:fixed;
+left:50%;
+bottom:20px;
+transform:translate(-50%,calc(100% + 40px));
+width:min(820px,calc(100vw - 32px));
+max-height:min(88dvh,900px);
+overflow-y:auto;
+background:rgba(255,255,255,.97);
+border:1px solid var(--sep);
+border-radius:28px;
+z-index:210;
+box-shadow:0 30px 70px rgba(0,0,0,.32);
+transition:transform .28s cubic-bezier(.32,.72,0,1)}
+body[data-theme=dark] .sheet{
+background:rgba(26,36,54,.98)}
+.sheet.show{
+transform:translate(-50%,0)}
+.handle{
+width:44px;
+height:5px;
+border-radius:99px;
+background:var(--sep);
+margin:10px auto 0}
+.sheet-head{
+display:flex;
+justify-content:space-between;
+gap:10px;
+align-items:flex-start;
+padding:14px 20px 0}
+.sheet-title{
+font-size:21px;
+font-weight:850;
+letter-spacing:-.04em}
+.sheet-subtitle{
+font-size:14px;
+color:var(--lbl2);
+margin-top:2px}
+.close{
+width:32px;
+height:32px;
+border-radius:50%;
+border:none;
+background:var(--fill2);
+color:var(--lbl2);
+font-size:16px;
+font-weight:850;
+cursor:pointer}
+.sheet-body{
+padding:16px 20px 22px}
+
+.btn{
+width:100%;
+border:none;
+border-radius:14px;
+padding:14px 16px;
+font-size:16px;
+font-weight:800;
+margin-top:10px;
+cursor:pointer}
+.btn:active{
+transform:scale(.99)}
+.btn.green{
+background:var(--green);
+color:#07120b}
+.btn.blue{
+background:var(--blue);
+color:#06121c}
+.btn.red{
+background:rgba(239,125,116,.18);
+color:var(--red);
+border:1px solid rgba(239,125,116,.35)}
+.btn.gray{
+background:var(--bg3);
+color:var(--lbl)}
+.btn.orange{
+background:var(--orange);
+color:#171007}
+.btn.small{
+width:auto;
+padding:8px 11px;
+font-size:13px;
+margin:0}
+.btn-row{
+display:flex;
+gap:10px}
+.btn-row .btn{
+flex:1}
+
+.form-grid{
+display:grid;
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:12px}
+.field{
+margin-bottom:12px}
+.field label{
+display:block;
+font-size:12px;
+font-weight:800;
+color:var(--lbl2);
+text-transform:uppercase;
+letter-spacing:.06em;
+margin-bottom:6px}
+.input,.select,.textarea{
+width:100%;
+border:1.5px solid var(--bg4);
+background:var(--bg3);
+color:var(--lbl);
+border-radius:14px;
+padding:11px 12px;
+font-size:16px}
+.textarea{
+min-height:74px;
+resize:vertical}
+.checks{
+display:flex;
+gap:8px;
+flex-wrap:wrap}
+.check{
+display:flex;
+align-items:center;
+gap:7px;
+background:var(--bg3);
+border:1px solid var(--bg4);
+border-radius:999px;
+padding:8px 10px;
+font-size:14px}
+.check input{
+width:16px;
+height:16px}
+.chips{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+margin:8px 0 12px}
+.chip{
+border:1.5px solid var(--bg4);
+background:var(--bg3);
+color:var(--lbl2);
+border-radius:999px;
+padding:8px 14px;
+font-weight:750;
+cursor:pointer}
+.chip.sel{
+background:var(--blue);
+border-color:var(--blue);
+color:white}
+.info{
+background:var(--bg3);
+border-radius:18px;
+padding:12px 14px;
+margin-bottom:12px}
+.info-label{
+font-size:12px;
+color:var(--lbl2);
+text-transform:uppercase;
+letter-spacing:.06em}
+.info-val{
+font-weight:750;
+margin-top:3px}
+.warn-card{
+background:rgba(239,125,116,.14);
+border:1px solid rgba(239,125,116,.28);
+border-radius:16px;
+padding:12px 14px;
+margin-bottom:12px;
+font-size:14px;
+color:var(--lbl)}
+.graph{
+width:100%;
+height:auto;
+border:1px solid var(--sep);
+border-radius:16px;
+background:var(--bg3);
+margin-top:12px}
+.history-filter{
+display:flex;
+gap:8px;
+margin-bottom:12px}
+.history-filter .select{
+flex:1}
+.mini-card{
+background:var(--bg3);
+border:1px solid var(--sep);
+border-radius:16px;
+padding:12px;
+margin-bottom:10px}
+.mini-top{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px}
+.toast{
+position:fixed;
+top:calc(env(safe-area-inset-top,20px) + 60px);
+left:50%;
+transform:translate(-50%,-20px);
+opacity:0;
+pointer-events:none;
+z-index:300;
+background:rgba(255,255,255,.96);
+color:var(--lbl);
+border:1px solid var(--sep);
+border-radius:18px;
+padding:12px 16px;
+font-weight:800;
+box-shadow:var(--shadow);
+transition:all .25s}
